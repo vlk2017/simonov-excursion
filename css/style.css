@@ -614,3 +614,16 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .nav-external a { color:var(--muted); text-decoration:underline; text-underline-offset:3px; }
 .leaflet-popup-content-wrapper,.leaflet-popup-tip { background:#211a14; color:#f2e6d1; }
 .leaflet-popup-content { font-family:var(--font-sans); font-size:13px; }
+
+
+/* Turn-by-turn walking guidance */
+.route-guidance { margin-top:12px; color:#d8d0c1; font-size:12px; line-height:1.55; }
+.route-guidance strong { display:block; color:var(--gold); font-size:10px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px; }
+.route-guidance p { margin:4px 0; padding-left:8px; border-left:2px solid #806d4d; }
+.route-guidance:empty { display:none; }
+.route-guidance:not(:empty) { padding:10px 12px; background:#11110f; border:1px solid #39352e; }
+@media(max-width:600px) {
+  .map { height:clamp(280px,42vh,420px); }
+  .map-control { min-height:42px; font-size:12px; }
+  .nav-actions .nav-route { min-height:50px; font-size:12px; }
+}
