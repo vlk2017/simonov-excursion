@@ -567,6 +567,21 @@ function openPoint(id, play) {
     sceneCard.classList.add("hidden");
   }
 
+  const filmCard = $("#archival-film");
+  if (p.archivalFilm) {
+    filmCard.classList.remove("hidden");
+    $("#film-title").textContent = p.archivalFilm.title;
+    $("#film-date").textContent = p.archivalFilm.date;
+    $("#film-description").textContent = p.archivalFilm.description;
+    $("#film-links").innerHTML = p.archivalFilm.sources.map(s =>
+      `<a class="film-link" href="${s.url}" target="_blank" rel="noopener">${esc(s.label)} ↗</a>`
+    ).join("");
+    $("#film-rights").textContent = p.archivalFilm.rights;
+  } else {
+    filmCard.classList.add("hidden");
+    $("#film-links").textContent = "";
+  }
+
   const audio = $("#player");
   audio.src = p.audio;
   audio.load();
