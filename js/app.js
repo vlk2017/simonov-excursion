@@ -28,29 +28,36 @@ const state = {
   routeCoords: [],
   routeManeuvers: [],
   routeProgressIndex: 0,
-  orientationHandler: null,
   accuracyCircle: null,
   targetHalo: null,
   navIndex: 0,
   visited: {},
   heading: null,
+  headingAt: 0,
+  headingUi: 0,
+  arrowAngle: null,
+  compassOn: false,
+  routeCum: [],
+  routeProj: null,
+  routeSeq: 0,
+  routeAbort: null,
+  routeLastAt: 0,
+  offRoute: NavCore.createOffRouteTracker(),
 };
+
+const ROUTE_ENDPOINT = "https://valhalla1.openstreetmap.de/route";
+const ROUTE_TIMEOUT_MS = 10000;      // ждать ответ маршрутизатора не дольше
+const ROUTE_MIN_INTERVAL_MS = 15000; // не чаще одного запроса в 15 с (fair-use FOSSGIS)
 
 const RADIUS = 25;
 
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
+const { haversine, bearingTo, dirName, fmtDist, decodePolyline6, normalizeAngle, angleDelta } = NavCore;
 
-function fmtDist(m) {
-  if (m == null || Number.isNaN(m)) return "—";
-  if (m < 1000) return `${Math.round(m)} м`;
-  return `${(m/1000).toFixed(1)} км`;
-}
+/* localStorage бывает недоступен (приватный режим, переполнение): не даём упасть из-за этого */
+function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { console.warn("localStorage", e); } }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { console.warn("localStorage", e); } }
+function saveVisited() { lsSet("simonov-visited", JSON.stringify(state.visited)); }
 
 function showScreen(id) {
   $$(".screen").forEach(s => s.classList.toggle("active", s.id === id));
@@ -136,24 +143,18 @@ function clearPedestrianRoute() {
   state.routeTargetId = null;
   state.routeLastOrigin = null;
   state.routeCoords = [];
+  state.routeCum = [];
+  state.routeProj = null;
   state.routeManeuvers = [];
   state.routeProgressIndex = 0;
+  state.arrowAngle = null;
+  state.offRoute.reset();
   const guidance = $("#route-guidance");
   if (guidance) { guidance.replaceChildren(); guidance.classList.remove("route-guidance-active"); }
+  const hud = $("#navigation-hud");
+  if (hud) hud.classList.add("hidden");
 }
-function nearestRouteProgress() {
-  const coords = state.routeCoords;
-  if (!coords.length || !state.pos) return 0;
-  const start = Math.max(0, state.routeProgressIndex - 3);
-  const end = Math.min(coords.length - 1, state.routeProgressIndex + 90);
-  let best = start, bestDistance = Infinity;
-  for (let i = start; i <= end; i++) {
-    const d = haversine(state.pos.lat, state.pos.lon, coords[i][0], coords[i][1]);
-    if (d < bestDistance) { bestDistance = d; best = i; }
-  }
-  if (best >= state.routeProgressIndex) state.routeProgressIndex = best;
-  return state.routeProgressIndex;
-}
+function hasFreshHeading() { return state.heading != null && Date.now() - state.headingAt < 3000; }
 function updateNavigationHud() {
   const hud = $("#navigation-hud");
   if (!hud) return;
@@ -162,36 +163,46 @@ function updateNavigationHud() {
     return;
   }
   hud.classList.remove("hidden");
-  const coords = state.routeCoords;
-  const index = nearestRouteProgress();
-  const cumulative = [0];
-  for (let i=1;i<coords.length;i++) cumulative[i] = cumulative[i-1] + haversine(coords[i-1][0],coords[i-1][1],coords[i][0],coords[i][1]);
-  const remaining = Math.max(0, cumulative[cumulative.length-1] - cumulative[index]);
-  const maneuvers = state.routeManeuvers;
-  const next = maneuvers.find(m => Number(m.begin_shape_index ?? 0) > index + 1) || maneuvers[maneuvers.length-1];
-  let maneuverDistance = null;
-  if (next && Number.isFinite(Number(next.begin_shape_index))) {
-    const mi = Math.max(index, Math.min(coords.length-1, Number(next.begin_shape_index)));
-    maneuverDistance = Math.max(0, cumulative[mi]-cumulative[index]);
-  }
-  const lookIndex = Math.min(coords.length-1, index + 4);
-  const bearing = bearingTo(state.pos.lat,state.pos.lon,coords[lookIndex][0],coords[lookIndex][1]);
+  const coords = state.routeCoords, cum = state.routeCum;
+  const pr = NavCore.projectOnRoute(coords, cum, state.pos, state.routeProgressIndex);
+  state.routeProj = pr;
+  if (pr.index > state.routeProgressIndex) state.routeProgressIndex = pr.index;
+  const remaining = NavCore.remainingDistance(cum, pr);
+  const next = NavCore.pickNextManeuver(state.routeManeuvers, pr.index);
+  const maneuverDistance = NavCore.distanceToManeuver(next, cum, pr, coords.length);
+  // стрелка смотрит на точку маршрута примерно в 8 м впереди (а не на соседнюю вершину, которая может быть в метре)
+  let li = pr.index + 1;
+  while (li < coords.length - 1 && cum[li] - pr.along < 8) li++;
+  const bearing = bearingTo(state.pos.lat, state.pos.lon, coords[li][0], coords[li][1]);
+  const withCompass = hasFreshHeading();
+  const target = normalizeAngle(bearing - (withCompass ? state.heading : 0));
+  const prev = state.arrowAngle == null ? target : state.arrowAngle;
+  state.arrowAngle = prev + angleDelta(prev, target); // кратчайший поворот, без раскрутки на 360°
   const arrow = $("#nav-arrow");
-  if (arrow) arrow.style.transform = `rotate(${bearing - (state.heading == null ? 0 : state.heading)}deg)`;
+  if (arrow) arrow.style.transform = `rotate(${state.arrowAngle}deg)`;
+  const note = $("#nav-arrow-note");
+  if (note) note.textContent = withCompass ? "" : "Компас выключен: стрелка показывает направление относительно севера (вверх — север).";
+  const compassBtn = $("#nav-compass");
+  if (compassBtn) compassBtn.classList.toggle("hidden", withCompass);
   $("#nav-turn-title").textContent = next?.instruction || "Продолжайте по маршруту";
   $("#nav-turn-distance").textContent = maneuverDistance == null || maneuverDistance < 12
     ? "Сейчас"
     : `Через ${fmtDist(maneuverDistance)}`;
-  $("#nav-route-remaining").textContent = `До остановки ${fmtDist(remaining)} · около ${Math.max(1,Math.round(remaining/75))} мин пешком`;
-  const accuracy = state.pos.acc == null ? 999 : state.pos.acc;
-  const target = state.data.points[nextUnvisitedIndex()];
-  const direct = target ? haversine(state.pos.lat,state.pos.lon,target.lat,target.lon) : Infinity;
+  $("#nav-route-remaining").textContent = `До остановки ${fmtDist(remaining)} · около ${NavCore.walkMinutes(remaining)} мин пешком`;
+  const target0 = state.data.points[nextUnvisitedIndex()];
+  const arrive = NavCore.arrivalState(state.pos, target0);
+  const q = NavCore.gpsQuality(state.pos.acc);
+  const gps = $("#nav-gps");
+  if (gps) {
+    gps.dataset.level = q.level;
+    gps.textContent = q.label + (arrive.reason === "poor-accuracy" && arrive.distance <= 60 ? " · вы рядом, ждём точный GPS для «Я на месте»" : "") +
+      (pr.distance > NavCore.OFF_ROUTE_DISTANCE_M && Number.isFinite(state.pos.acc) && state.pos.acc <= NavCore.OFF_ROUTE_MAX_ACCURACY_M ? " · вы в стороне от маршрута" : "");
+  }
   const arrival = $("#nav-arrived");
   if (arrival) {
-    const ready = !!target && direct <= 22 && accuracy <= 20;
-    arrival.classList.toggle("hidden", !ready);
-    arrival.textContent = ready ? `Я на месте — открыть рассказ «${target.title}»` : "Подтвердить прибытие";
-    arrival.disabled = !ready;
+    arrival.classList.toggle("hidden", !arrive.ready);
+    arrival.textContent = arrive.ready ? `Я на месте — открыть рассказ «${target0.title}»` : "Подтвердить прибытие";
+    arrival.disabled = !arrive.ready;
   }
 }
 function renderRouteGuidance(maneuvers) {
@@ -209,26 +220,6 @@ function renderRouteGuidance(maneuvers) {
     box.appendChild(line);
   });
 }
-function decodePolyline6(encoded) {
-  let index = 0, lat = 0, lon = 0;
-  const points = [];
-  const readValue = () => {
-    let result = 0, shift = 0, byte;
-    do {
-      if (index >= encoded.length) throw new Error("Некорректная геометрия маршрута");
-      byte = encoded.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-    return (result & 1) ? ~(result >> 1) : (result >> 1);
-  };
-  while (index < encoded.length) {
-    lat += readValue();
-    lon += readValue();
-    points.push([lat / 1e6, lon / 1e6]);
-  }
-  return points;
-}
 async function buildWalkingRoute(force = false) {
   if (!state.data || !state.map) return;
   const p = state.data.points[nextUnvisitedIndex()];
@@ -239,24 +230,33 @@ async function buildWalkingRoute(force = false) {
     toast("Определяем ваше место. Как только GPS ответит, построим пеший путь.");
     return;
   }
-  if (state.routeBusy) return;
-  if (!force && state.routeInfo && state.routeTargetId === p.id && state.routeLastOrigin &&
-      haversine(state.pos.lat,state.pos.lon,state.routeLastOrigin.lat,state.routeLastOrigin.lon) < 35) return;
+  if (state.routeBusy && !force) return;
+  if (!force && state.routeInfo && state.routeTargetId === p.id) return;
+  // новый запрос отменяет старый; ответ старого запроса, если всё же придёт, будет отброшен по номеру
+  if (state.routeAbort) state.routeAbort.abort();
+  const seq = ++state.routeSeq;
+  const ctl = new AbortController();
+  state.routeAbort = ctl;
+  const timer = setTimeout(() => ctl.abort(), ROUTE_TIMEOUT_MS);
+  const origin = { lat: state.pos.lat, lon: state.pos.lon };
+  const isReroute = !!state.routeInfo && state.routeTargetId === p.id;
   state.routeBusy = true;
   state.routeRequested = false;
+  state.routeLastAt = Date.now();
   $("#nav-route").disabled = true;
   $("#nav-route").textContent = "Строим пеший путь…";
-  $("#route-guidance").textContent = "Ищем пешеходные дорожки и переходы…";
+  $("#route-guidance").textContent = isReroute ? "Вы ушли с маршрута. Ищем новый путь…" : "Ищем пешеходные дорожки и переходы…";
   try {
-    const response = await fetch("https://valhalla1.openstreetmap.de/route", {
+    const response = await fetch(ROUTE_ENDPOINT, {
       method: "POST",
+      signal: ctl.signal,
       headers: {
         "Content-Type": "application/json",
         "X-Client-Id": "simonov-excursion.github.io"
       },
       body: JSON.stringify({
         locations: [
-          { lat: state.pos.lat, lon: state.pos.lon },
+          { lat: origin.lat, lon: origin.lon },
           { lat: p.lat, lon: p.lon }
         ],
         costing: "pedestrian",
@@ -264,41 +264,49 @@ async function buildWalkingRoute(force = false) {
         language: "ru-RU"
       })
     });
-    if (!response.ok) throw new Error("Маршрутизатор ответил " + response.status);
+    if (!response.ok) { const e = new Error("Маршрутизатор ответил " + response.status); e.status = response.status; throw e; }
     const data = await response.json();
-    const leg = data.trip?.legs?.[0];
-    const coords = typeof leg?.shape === "string" ? decodePolyline6(leg.shape) : [];
-    if (!Array.isArray(coords) || coords.length < 2) throw new Error("В ответе нет линии маршрута");
+    if (seq !== state.routeSeq) return;                                   // устарел: есть более новый запрос
+    const nowTarget = state.data.points[nextUnvisitedIndex()];
+    if (!nowTarget || nowTarget.id !== p.id) return;                      // за это время остановку отметили или пропустили
+    const route = NavCore.parseValhallaRoute(data);
     if (state.routeLayer) state.map.removeLayer(state.routeLayer);
-    state.routeLayer = L.polyline(coords, {
+    state.routeLayer = L.polyline(route.coords, {
       color:"#e6b85f", weight:6, opacity:.96, lineCap:"round", lineJoin:"round"
     }).addTo(state.map);
-    const summary = leg.summary || data.trip.summary || {};
-    state.routeInfo = {
-      distance: Number(summary.length || 0) * 1000,
-      duration: Number(summary.time || 0)
-    };
-    state.routeCoords = coords;
-    state.routeManeuvers = leg.maneuvers || [];
+    state.routeInfo = { distance: route.distance, duration: route.duration };
+    state.routeCoords = route.coords;
+    state.routeCum = route.cum;
+    state.routeManeuvers = route.maneuvers;
     state.routeProgressIndex = 0;
+    state.routeProj = null;
+    state.arrowAngle = null;
+    state.offRoute.reset();
     state.routeTargetId = p.id;
-    state.routeLastOrigin = { lat:state.pos.lat, lon:state.pos.lon };
+    state.routeLastOrigin = origin;
     const bounds = state.routeLayer.getBounds();
-    if (bounds.isValid()) state.map.fitBounds(bounds.pad(.18), { maxZoom:19 });
-    renderRouteGuidance(leg.maneuvers || []);
+    if (bounds.isValid() && !isReroute) state.map.fitBounds(bounds.pad(.18), { maxZoom:19 });
+    renderRouteGuidance(route.maneuvers);
     updateNavigator();
     updateNavigationHud();
     $("#route-guidance").classList.add("route-guidance-active");
+    if (isReroute) toast("Маршрут перестроен.");
   } catch (error) {
+    if (seq !== state.routeSeq) return;                                   // отменён нашим же новым запросом
     console.warn("Pedestrian routing unavailable:", error);
-    clearPedestrianRoute();
-    $("#route-guidance").textContent = "Не удалось получить пеший маршрут. На карте показаны остановки; воспользуйтесь внешней пешеходной картой ниже. Не идите по прямой через здания или ограждения.";
+    const reason = NavCore.routingErrorMessage(error);
+    if (!isReroute) clearPedestrianRoute();                               // старый путь при перестроении оставляем: по нему ещё можно идти
+    $("#route-guidance").textContent = reason + " На карте показаны остановки; воспользуйтесь внешней пешеходной картой ниже. Не идите по прямой через здания или ограждения.";
     updateNavigator();
-    toast("Пешеходный маршрут временно недоступен. Попробуйте ещё раз.");
+    toast(isReroute ? "Не удалось перестроить маршрут. " + reason : "Пешеходный маршрут недоступен. " + reason);
   } finally {
-    state.routeBusy = false;
-    $("#nav-route").disabled = nextUnvisitedIndex() < 0;
-    $("#nav-route").textContent = "Проложить пеший путь";
+    clearTimeout(timer);
+    if (seq === state.routeSeq) {
+      state.routeBusy = false;
+      state.routeAbort = null;
+      $("#nav-route").disabled = nextUnvisitedIndex() < 0;
+      $("#nav-route").textContent = "Проложить пеший путь";
+    }
   }
 }
 function updateRouteOnMap() {
@@ -331,7 +339,7 @@ function markVisited(id) {
   if (!id || state.visited[id]) return;
   if (state.routeTargetId === id) clearPedestrianRoute();
   state.visited[id] = true;
-  localStorage.setItem("simonov-visited", JSON.stringify(state.visited));
+  saveVisited();
   renderList();
   updateNavigator();
   toast("Остановка отмечена. Маршрут обновлён.");
@@ -413,7 +421,7 @@ function setGpsPill(ok, acc) {
 }
 
 function onPosition(pos) {
-  state.pos = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy };
+  state.pos = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy, t: Date.now() };
   setGpsPill(true, state.pos.acc);
   updateYouMarker();
   renderList();
@@ -422,7 +430,17 @@ function onPosition(pos) {
   updateStandLive();
   updateNavigationHud();
   if (state.routeRequested && !state.routeBusy) buildWalkingRoute(true);
-  else if (state.routeInfo && !state.routeBusy) buildWalkingRoute(false);
+  else checkOffRoute();
+}
+
+/* Перестраиваем путь только при настоящем уходе с маршрута (несколько точных измерений подряд дальше порога)
+   и не чаще, чем раз в ROUTE_MIN_INTERVAL_MS. Один GPS-скачок ничего не запускает. */
+function checkOffRoute() {
+  if (!state.routeInfo || !state.routeProj || !state.pos) return;
+  if (!state.offRoute.update(state.routeProj.distance, state.pos.acc)) return;
+  if (state.routeBusy || Date.now() - state.routeLastAt < ROUTE_MIN_INTERVAL_MS) return;
+  state.offRoute.reset();
+  buildWalkingRoute(true);
 }
 
 function maybeAutoTrigger() {
@@ -458,9 +476,20 @@ function enableGps() {
   state.watchId = navigator.geolocation.watchPosition(
     onPosition,
     (err) => {
-      setGpsPill(false);
-      toast("Не удалось найти место. Откройте точку в списке или нажмите «Я на месте».");
       console.warn(err);
+      if (err && err.code === 1) {
+        // доступ запрещён: слежение бесполезно, остаёмся в ручном режиме
+        if (state.watchId != null) navigator.geolocation.clearWatch(state.watchId);
+        state.watchId = null;
+        state.routeRequested = false;
+        setGpsPill(false);
+        toast("Доступ к геолокации запрещён. Разрешите его в настройках браузера или открывайте точки из списка.");
+      } else if (err && err.code === 3) {
+        toast("GPS долго не отвечает. Выйдите на открытое место.");
+      } else {
+        setGpsPill(false);
+        toast("Не удалось найти место. Откройте точку в списке или нажмите «Я на месте».");
+      }
     },
     { enableHighAccuracy: true, maximumAge: 2000, timeout: 12000 }
   );
@@ -486,18 +515,11 @@ function bindImg(img, local, remote, alt) {
 
 /* ---------- Photos, viewpoint, then/now ---------- */
 const DIRS = ["север", "северо-восток", "восток", "юго-восток", "юг", "юго-запад", "запад", "северо-запад"];
-function dirName(b) { return DIRS[Math.round(((b % 360) + 360) % 360 / 45) % 8]; }
 function thumbOf(src) {
   if (!src) return "";
   if (src.startsWith("img/then/")) return src.replace("img/then/", "img/thumbs/");
   if (src.startsWith("img/now/")) return src.replace("img/now/", "img/thumbs/").replace(/\.jpg$/, "-now.jpg");
   return src;
-}
-function bearingTo(lat1, lon1, lat2, lon2) {
-  const r = Math.PI / 180;
-  const y = Math.sin((lon2 - lon1) * r) * Math.cos(lat2 * r);
-  const x = Math.cos(lat1 * r) * Math.sin(lat2 * r) - Math.sin(lat1 * r) * Math.cos(lat2 * r) * Math.cos((lon2 - lon1) * r);
-  return (Math.atan2(y, x) / r + 360) % 360;
 }
 function shortAuthor(a) { return (a || "автор неизвестен").replace(/\s*\(.*$/, ""); }
 function esc(t) { return String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
@@ -683,34 +705,47 @@ function initCompare() {
 }
 
 /* live hint: how far and which way to step to reach the photographer's spot */
+function onOrientation(e) {
+  let heading = null;
+  if (typeof e.webkitCompassHeading === "number" && e.webkitCompassHeading >= 0 && !(e.webkitCompassAccuracy < 0)) heading = e.webkitCompassHeading;
+  else if (e.absolute === true && typeof e.alpha === "number") heading = (360 - e.alpha) % 360;
+  if (heading == null) return;
+  state.heading = NavCore.smoothAngle(state.heading, heading);
+  const now = Date.now();
+  state.headingAt = now;
+  if (now - state.headingUi < 150) return;   // события приходят десятки раз в секунду: интерфейс обновляем реже
+  state.headingUi = now;
+  updateStandLive();
+  updateNavigationHud();
+}
+
+function stopCompassListeners() {
+  window.removeEventListener("deviceorientation", onOrientation, true);
+  window.removeEventListener("deviceorientationabsolute", onOrientation, true);
+}
+
 async function enableCompass() {
   if (!("DeviceOrientationEvent" in window)) {
     toast("Компас не поддерживается этим телефоном. Используйте направление на карте.");
     return;
   }
   try {
+    // iOS 13+: разрешение можно запросить только из нажатия, поэтому вызываем его первым
     if (typeof DeviceOrientationEvent.requestPermission === "function") {
       const permission = await DeviceOrientationEvent.requestPermission();
       if (permission !== "granted") {
-        toast("Доступ к компасу не разрешён.");
+        toast("Доступ к компасу не разрешён. Стрелка будет показывать направление относительно севера.");
         return;
       }
     }
-    if (state.orientationHandler) window.removeEventListener("deviceorientation", state.orientationHandler, true);
-    const handler = e => {
-      let heading = null;
-      if (typeof e.webkitCompassHeading === "number") heading = e.webkitCompassHeading;
-      else if (e.absolute && typeof e.alpha === "number") heading = (360 - e.alpha) % 360;
-      if (heading != null) {
-        state.heading = heading;
-        updateStandLive();
-        updateNavigationHud();
-      }
-    };
-    state.orientationHandler = handler;
-    window.addEventListener("deviceorientation", handler, true);
-    toast("Компас включён. Держите телефон перед собой.");
+    stopCompassListeners();                                   // повторное нажатие не плодит обработчики
+    window.addEventListener("deviceorientation", onOrientation, true);
+    // Android Chrome отдаёт азимут от севера только в deviceorientationabsolute
+    if ("ondeviceorientationabsolute" in window) window.addEventListener("deviceorientationabsolute", onOrientation, true);
+    state.compassOn = true;
+    toast("Компас включён. Держите телефон горизонтально, экраном вверх. Если данных нет, стрелка останется относительно севера.");
   } catch (err) {
+    console.warn(err);
     toast("Не удалось включить компас. Проверьте разрешения телефона.");
   }
 }
@@ -974,7 +1009,7 @@ function initOffline() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
   navigator.serviceWorker.register("sw.js").then(async reg => {
     await navigator.serviceWorker.ready;
-    if (localStorage.getItem("simonov-offline") === "v3") return;
+    if (lsGet("simonov-offline") === "v3") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -983,7 +1018,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { localStorage.setItem("simonov-offline", "v3"); toast("Экскурсия сохранена: рассказы и фото будут работать без интернета."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v3"); toast("Экскурсия сохранена: рассказы и фото будут работать без интернета."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -991,9 +1026,9 @@ function initOffline() {
 
 async function main() {
   await loadData();
-  state.rate = Number(localStorage.getItem("simonov-rate")) || 1;
-  state.arriveOn = localStorage.getItem("simonov-arrive") !== "0";
-  try { state.visited = JSON.parse(localStorage.getItem("simonov-visited") || "{}") || {}; } catch { state.visited = {}; }
+  state.rate = Number(lsGet("simonov-rate")) || 1;
+  state.arriveOn = lsGet("simonov-arrive") !== "0";
+  try { state.visited = JSON.parse(lsGet("simonov-visited") || "{}") || {}; } catch { state.visited = {}; }
   $("#opt-arrive").checked = state.arriveOn;
   $("#cover-title").textContent = state.data.title;
   $("#cover-lead").textContent = state.data.subtitle;
@@ -1012,7 +1047,7 @@ async function main() {
   $("#map-fit-route").addEventListener("click", fitFullRoute);
   $("#nav-arrived").addEventListener("click", () => {
     const p = state.data.points[nextUnvisitedIndex()];
-    if (!p || !state.pos || state.pos.acc > 20 || haversine(state.pos.lat,state.pos.lon,p.lat,p.lon) > 22) return;
+    if (!p || !NavCore.arrivalState(state.pos, p).ready) return;   // те же пороги, что и у показа кнопки
     markVisited(p.id);
     $("#navigation-hud").classList.add("hidden");
     openPoint(p.id, false);
@@ -1025,13 +1060,13 @@ async function main() {
   $("#nav-next").addEventListener("click", () => {
     if (nextUnvisitedIndex() < 0) {
       state.visited = {};
-      localStorage.removeItem("simonov-visited");
+      lsDel("simonov-visited");
       renderList();
       updateNavigator();
     } else {
       const p = state.data.points[nextUnvisitedIndex()];
       state.visited[p.id] = true;
-      localStorage.setItem("simonov-visited", JSON.stringify(state.visited));
+      saveVisited();
       renderList();
       updateNavigator();
       toast("Точка пропущена. Показали следующую.");
@@ -1054,6 +1089,7 @@ async function main() {
   $("#btn-here").addEventListener("click", imHere);
   $("#btn-camera").addEventListener("click", () => { state.cameraOn ? stopCamera() : startCamera(); });
   $("#btn-compass").addEventListener("click", enableCompass);
+  $("#nav-compass").addEventListener("click", enableCompass);
   $("#then-img").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
   $("#then-img").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightboxForCurrent(currentPhoto().src); } });
   $("#btn-full").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
@@ -1066,7 +1102,7 @@ async function main() {
   });
   $("#opt-arrive").addEventListener("change", e => {
     state.arriveOn = e.target.checked;
-    localStorage.setItem("simonov-arrive", state.arriveOn ? "1" : "0");
+    lsSet("simonov-arrive", state.arriveOn ? "1" : "0");
   });
   $("#arrive-go").addEventListener("click", () => {
     $("#arrive").classList.add("hidden");
@@ -1090,7 +1126,7 @@ async function main() {
   $$("#speed button").forEach(b => b.addEventListener("click", () => {
     state.rate = Number(b.dataset.rate);
     player.playbackRate = state.rate;
-    localStorage.setItem("simonov-rate", String(state.rate));
+    lsSet("simonov-rate", String(state.rate));
     markRate();
   }));
   markRate();

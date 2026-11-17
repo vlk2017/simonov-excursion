@@ -48,17 +48,22 @@
         <div class="nav-main"><div class="nav-step" id="nav-step">01</div>
           <div class="nav-copy"><h3 id="nav-title">Первая остановка</h3><p id="nav-distance">Включите геолокацию, чтобы увидеть расстояние</p></div>
         </div>
+        <div class="navigation-hud hidden" id="navigation-hud">
+          <div class="nav-arrow-wrap"><div class="nav-arrow" id="nav-arrow" aria-hidden="true">↑</div></div>
+          <div class="nav-turn-copy"><span id="nav-turn-distance">—</span><strong id="nav-turn-title">Следующий поворот</strong><small id="nav-route-remaining">До остановки —</small></div>
+          <div class="nav-hud-status">
+            <small id="nav-gps" class="nav-gps" data-level="unknown">GPS: точность неизвестна</small>
+            <small id="nav-arrow-note" class="nav-arrow-note"></small>
+            <button class="btn-ghost nav-compass" id="nav-compass" type="button">Включить компас</button>
+          </div>
+          <button class="btn-primary nav-arrived hidden" id="nav-arrived" type="button" disabled>Я на месте</button>
+        </div>
         <div class="nav-actions">
           <button class="btn-primary nav-route" id="nav-route" type="button">Проложить пеший путь</button>
           <button class="btn-ghost" id="nav-open">Открыть остановку</button>
           <button class="btn-ghost" id="nav-next">Следующая точка →</button>
         </div>
         <p class="nav-note" id="nav-note">Подсказка, где безопасно остановиться и осмотреться.</p>
-        <div class="navigation-hud hidden" id="navigation-hud" aria-live="polite">
-          <div class="nav-arrow-wrap"><div class="nav-arrow" id="nav-arrow" aria-hidden="true">↑</div></div>
-          <div class="nav-turn-copy"><span id="nav-turn-distance">—</span><strong id="nav-turn-title">Следующий поворот</strong><small id="nav-route-remaining">До остановки —</small></div>
-          <button class="btn-primary nav-arrived hidden" id="nav-arrived" type="button" disabled>Я на месте</button>
-        </div>
         <div class="route-guidance" id="route-guidance" aria-live="polite"></div>
         <p class="nav-progress" id="nav-progress">Пройдено 0 из 8</p><p class="nav-external"><a id="nav-external" href="#" target="_blank" rel="noopener">Открыть пеший маршрут во внешних картах ↗</a></p>
       </section>
@@ -201,6 +206,7 @@
     <div class="lb-cap" id="lb-cap"></div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/nav-core.js"></script>
   <script src="js/app.js"></script>
   <script>
     document.getElementById("btn-about-2")?.addEventListener("click", (e) => {

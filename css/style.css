@@ -634,14 +634,22 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .nav-arrow-wrap { width:58px; height:58px; display:grid; place-items:center; background:#25231f; border:1px solid #6d6049; border-radius:50%; }
 .nav-arrow { color:#e9c477; font-size:46px; line-height:1; font-weight:300; transform-origin:50% 50%; transition:transform .2s ease; }
 .nav-turn-copy { min-width:0; display:flex; flex-direction:column; gap:4px; }
-.nav-turn-copy span { color:#e9c477; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
-.nav-turn-copy strong { color:#f2e6d1; font-size:14px; line-height:1.3; }
-.nav-turn-copy small { color:#b9b1a2; font-size:11px; }
+.nav-turn-copy span { color:#e9c477; font-size:15px; font-weight:600; }
+.nav-turn-copy strong { color:#f2e6d1; font-size:17px; line-height:1.3; }
+.nav-turn-copy small { color:#b9b1a2; font-size:13px; }
+.nav-hud-status { grid-column:1/-1; display:flex; flex-direction:column; gap:6px; }
+.nav-gps, .nav-arrow-note { color:#b9b1a2; font-size:13px; line-height:1.35; }
+.nav-gps::before { content:"● "; }
+.nav-gps[data-level=good] { color:#9ab77b; }
+.nav-gps[data-level=fair] { color:#e9c477; }
+.nav-gps[data-level=poor], .nav-gps[data-level=unknown] { color:#d98a72; }
+.nav-arrow-note:empty { display:none; }
+.nav-compass { min-height:44px; width:100%; }
 .nav-arrived { grid-column:1/-1; min-height:46px; width:100%; }
 .nav-arrived:disabled { display:none; }
 @media(max-width:600px) {
  .navigation-hud { grid-template-columns:56px minmax(0,1fr); gap:10px; padding:12px; }
  .nav-arrow-wrap { width:52px; height:52px; }
  .nav-arrow { font-size:40px; }
- .nav-turn-copy strong { font-size:13px; }
+ .nav-turn-copy strong { font-size:16px; }
 }
