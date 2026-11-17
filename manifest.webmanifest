@@ -1,0 +1,9 @@
+{
+  "name": "Симонов монастырь — аудиоэкскурсия",
+  "short_name": "Симонов",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#16110d",
+  "theme_color": "#16110d",
+  "lang": "ru"
+}

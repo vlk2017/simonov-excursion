@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:," />
 </head>
 <body>
   <div class="app">
@@ -36,7 +38,8 @@
       </header>
       <div id="map" class="map" role="img" aria-label="Карта точек экскурсии"></div>
       <div class="list">
-        <p class="hint">Восемь точек вокруг монастыря. Когда вы подойдёте примерно на 25 метров, рассказ включится сам. Если телефон не нашёл место, откройте точку и нажмите «Я на месте».</p>
+        <p class="hint">Восемь точек вокруг монастыря. Когда вы подойдёте примерно на 25 метров, телефон предложит включить рассказ. Сам он без вашего нажатия не заиграет. Если место не нашлось, откройте точку и нажмите «Я на месте».</p>
+        <label class="switch"><input type="checkbox" id="opt-arrive" checked /> Подсказывать у точек</label>
         <div id="list"></div>
         <button class="btn-ghost" data-back="tour" id="btn-about-2" onclick="document.getElementById('btn-about').click()">Как устроена прогулка</button>
       </div>
@@ -50,46 +53,66 @@
       <div class="point">
         <div class="hero" id="hero">
           <img id="then-img" alt="Старое фото" />
-          <img id="base-now" class="hidden" alt="Современный вид" />
           <video id="live-video" class="hidden" playsinline muted autoplay></video>
           <img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" />
-          <div class="slider-wrap">
-            <label><span>Тогда</span><span id="opacity-val">55%</span><span>Сейчас</span></label>
+          <div class="hero-actions">
+            <button class="icon-btn" id="btn-full" aria-label="Открыть фото на весь экран" title="На весь экран">⤢</button>
+          </div>
+          <div class="hero-count" id="hero-count"></div>
+          <div class="slider-wrap hidden" id="cam-slider">
+            <label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label>
             <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" />
           </div>
         </div>
+        <div class="thumbs" id="thumbs" role="list"></div>
         <p class="photo-caption" id="photo-caption"></p>
+        <div class="stand" id="stand">
+          <div class="stand-arrow" id="stand-arrow" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56"><circle cx="32" cy="32" r="30" fill="none" stroke="#6b5a45" stroke-width="2"/><text x="32" y="12" text-anchor="middle" font-size="9" fill="#b5a68c">С</text><g id="stand-needle"><path d="M32 10 L40 36 L32 31 L24 36 Z" fill="#d4b06a"/></g></svg>
+          </div>
+          <div class="stand-text">
+            <b>Где стоял фотограф</b>
+            <p id="stand-text"></p>
+            <p class="stand-live" id="stand-live"></p>
+            <p class="stand-links" id="stand-links"></p>
+          </div>
+        </div>
+        <div class="compare hidden" id="compare">
+          <div class="cmp-frame" id="cmp-frame">
+            <img id="cmp-now" alt="Сейчас" />
+            <div class="cmp-then-wrap" id="cmp-then-wrap"><img id="cmp-then" alt="Тогда" /></div>
+            <div class="cmp-handle" id="cmp-handle" role="slider" aria-label="Тогда — сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><span>‹ ›</span></div>
+            <span class="cmp-tag cmp-tag-l">Тогда</span><span class="cmp-tag cmp-tag-r">Сейчас</span>
+          </div>
+          <p class="hint" id="cmp-note"></p>
+        </div>
         <div class="point-body">
           <p class="cover-kicker" id="point-dir"></p>
           <h2 id="point-title"></h2>
           <p class="short" id="point-short"></p>
           <div class="audio-box">
-            <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
               <strong>Рассказ</strong>
               <button class="btn-ghost" id="btn-play" style="min-height:36px;padding:0 12px;font-size:13px">Слушать</button>
             </div>
             <audio id="player" controls preload="metadata"></audio>
+            <div class="speed" id="speed" role="group" aria-label="Скорость">
+              <span>Скорость</span>
+              <button data-rate="0.75">0,75×</button><button data-rate="1" class="on">1×</button><button data-rate="1.25">1,25×</button><button data-rate="1.5">1,5×</button>
+            </div>
           </div>
           <div class="row-btns">
             <button class="btn-primary" id="btn-here">Я на месте</button>
             <button class="btn-ghost" id="btn-camera">Открыть камеру</button>
           </div>
-          <button class="btn-ghost" id="btn-compare" style="width:100%;margin-bottom:12px">Сравнить снимки рядом</button>
-          <div id="compare-box" class="compare-box hidden">
-            <div class="side-by-side">
-              <figure>
-                <img id="then-img-2" alt="Тогда" style="display:none" />
-                <figcaption>Тогда</figcaption>
-              </figure>
-              <figure id="now-side">
-                <img id="now-img" alt="Сейчас" />
-                <figcaption id="now-cap">Сейчас</figcaption>
-              </figure>
-            </div>
-            <p class="hint" style="padding-top:8px">Если камера не открылась или современного снимка нет, смотрите два кадра рядом — или только старый.</p>
-          </div>
-          <div class="note" id="point-accuracy"></div>
-          <div class="note hidden" id="exact-point"></div>
+          <details class="text-box" id="text-box">
+            <summary>Текст рассказа</summary>
+            <div id="script-text" class="script-text"></div>
+          </details>
+          <figure class="now-context hidden" id="now-context">
+            <img id="now-context-img" alt="Как это выглядит сейчас" />
+            <figcaption id="now-context-cap"></figcaption>
+          </figure>
           <div class="rights" id="photo-meta"></div>
         </div>
       </div>
@@ -103,11 +126,12 @@
       <div class="about">
         <h2>Как устроена прогулка</h2>
         <p>Это короткая аудиоэкскурсия по Симонову монастырю. Приложение ставить не нужно: страница открывается в браузере телефона.</p>
-        <p>Восемь остановок вокруг стен и храма. На каждой звучит рассказ примерно на две минуты. На экране — старое фото этого места. Ползунком «тогда — сейчас» его можно наложить на камеру или сравнить два кадра рядом.</p>
-        <p>Если телефон найдёт ваше место, рассказ включится сам, когда вы подойдёте к точке. Если нет — откройте точку в списке и нажмите «Я на месте».</p>
+        <p>Восемь остановок вокруг стен и храма. На каждой звучит рассказ на три-четыре минуты, а текст можно читать с экрана. У каждой точки несколько старых фото. Нажмите на снимок — он откроется на весь экран, его можно увеличить двумя пальцами и листать.</p>
+        <p>Под фото написано, где стоял фотограф и куда он смотрел. Где нашёлся современный снимок с той же точки, есть ползунок «тогда — сейчас». Где такого снимка нет, мы так и пишем.</p>
+        <p>Если телефон найдёт ваше место, у точки он предложит включить рассказ. Сам звук без вашего нажатия не включится. После первого открытия рассказы и фото сохраняются в телефоне и работают без интернета (кроме карты).</p>
         <p>Факты в рассказе взяты только из открытых источников. Если даты в них расходятся, это сказано прямо. Ничего не выдумано.</p>
         <h3>Старые фотографии</h3>
-        <p>Снимки взяты с Викисклада, где они помечены как свободные. Точки съёмки, где это было возможно, сверены с PastVu. Часть ракурсов приблизительная: городской GPS легко ошибается на несколько метров.</p>
+        <p>Снимки взяты с Викисклада, где они помечены как свободные. Точки съёмки, где это было возможно, сверены с PastVu. Сами изображения с PastVu мы не берём: их правила разрешают только личное некоммерческое использование. Часть ракурсов приблизительная: городской GPS легко ошибается на несколько метров.</p>
         <h3>Официальный храм</h3>
         <p>Патриаршее подворье Симонова монастыря, храм Тихвинской иконы Божией Матери: <a href="https://tihchurch.ru/" target="_blank" rel="noopener">tihchurch.ru</a>. На сайте подворья указаны воскресные экскурсии с 12:00, экскурсовод Елена Юрьевна, телефон +7 926 113 01 72.</p>
         <h3>Источники</h3>
@@ -128,15 +152,20 @@
     </section>
   </div>
   <div class="toast" id="toast" role="status"></div>
+  <div class="arrive hidden" id="arrive" role="dialog" aria-live="polite">
+    <p id="arrive-text"></p>
+    <div class="arrive-btns"><button class="btn-primary" id="arrive-go">Слушать</button><button class="btn-ghost" id="arrive-no">Не сейчас</button></div>
+  </div>
+  <div class="lb hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото на весь экран">
+    <div class="lb-stage" id="lb-stage"><img id="lb-img" alt="" draggable="false" /></div>
+    <button class="lb-btn lb-close" id="lb-close" aria-label="Закрыть">✕</button>
+    <button class="lb-btn lb-prev" id="lb-prev" aria-label="Предыдущее фото">‹</button>
+    <button class="lb-btn lb-next" id="lb-next" aria-label="Следующее фото">›</button>
+    <div class="lb-cap" id="lb-cap"></div>
+  </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="js/app.js"></script>
   <script>
-    // keep then image in compare box in sync
-    const then1 = document.getElementById("then-img");
-    const then2 = document.getElementById("then-img-2");
-    const sync = () => { if (then1.src) { then2.src = then1.src; then2.style.display = "block"; } };
-    then1.addEventListener("load", sync);
-    document.getElementById("btn-compare").addEventListener("click", sync);
     document.getElementById("btn-about-2")?.addEventListener("click", (e) => {
       e.preventDefault();
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));

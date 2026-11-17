@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio
+import hashlib
 import re
 import subprocess
 import sys
@@ -14,7 +15,7 @@ RATE = "-12%"
 CHUNK = 280
 RETRIES = 8
 TIMEOUT = 70
-BASE = Path("/workspace/excursions/simonov")
+BASE = Path(__file__).resolve().parent.parent
 CACHE = Path("/tmp/simonov-tts-svetlana")
 
 def split_sentences(text: str):
@@ -96,7 +97,7 @@ async def synth_file(txt_path: Path, mp3_path: Path):
     cache.mkdir(parents=True, exist_ok=True)
     files = []
     for i, ch in enumerate(chunks, 1):
-        out = cache / f"{i:02d}.mp3"
+        out = cache / (hashlib.md5((VOICE + RATE + ch).encode()).hexdigest()[:16] + ".mp3")
         print(f"  chunk {i}/{len(chunks)} ({len(ch)} chars)", flush=True)
         parts = await synth_chunk_resilient(ch, out, f"chunk {i}")
         files.extend(parts)
@@ -110,7 +111,9 @@ async def synth_file(txt_path: Path, mp3_path: Path):
 
 async def main():
     only = sys.argv[1:]
-    scripts = sorted((BASE / "scripts").glob("*.txt"))
+    # Текст для синтеза: tts/*.txt, собирается из scripts/*.txt (числа словами, ударения)
+    subprocess.check_call([sys.executable, str(BASE / "tools" / "tts_normalize.py")])
+    scripts = sorted((BASE / "tts").glob("*.txt"))
     if only:
         scripts = [s for s in scripts if s.stem in only or s.name in only]
     for s in scripts:
