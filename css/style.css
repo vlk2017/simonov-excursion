@@ -691,3 +691,11 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .cam-curtain-line { position:absolute; top:0; bottom:0; left:50%; width:3px; margin-left:-1.5px; background:var(--gold); box-shadow:0 0 0 1px rgba(0,0,0,.5); }
 .cam-curtain-grip { position:relative; width:44px; height:44px; border-radius:50%; background:var(--gold); color:var(--ink); display:grid; place-items:center; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.6); }
 .hero { touch-action:pan-y; }
+#screen-point .audio-start { min-height:60px; }
+#screen-point .cam-main, #screen-point .cam-compass { min-height:56px; }
+/* читаемость блока накладки на светлой теме */
+#screen-point .overlay-bar { background:#241a1c; border:1px solid #c7a15c; border-radius:4px; padding:10px 10px 8px; margin-bottom:0; }
+#screen-point .overlay-kicker { color:#e5ca8c; }
+#screen-point .cam-compass { background:#3a2a2d; color:#f6e7c4; border:1px solid #c7a15c; }
+#screen-point .cam-msg { color:#f1e6d0; }
+#screen-point .cam-main:not(.on) { background:linear-gradient(135deg,#e4c783,#b68a43); color:#2b1719; }
