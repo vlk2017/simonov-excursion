@@ -708,6 +708,7 @@ function selectPhoto(i) {
   $$("#thumbs .thumb").forEach((b, k) => b.classList.toggle("on", k === i));
   bindImg($("#then-img"), ph.src, ph.remote, ph.title);
   bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
+  if (!state.rp.on) { rpReset(); applyRpTransform(); }
   $("#hero-count").textContent = p.photos.length > 1 ? `${i + 1} / ${p.photos.length}` : "";
   $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
 
@@ -812,6 +813,7 @@ function onOrientation(e) {
   state.headingUi = now;
   updateStandLive();
   updateApproach();
+  rpUpdateHint();
   updateNavigationHud();
 }
 
@@ -1134,8 +1136,8 @@ function camMessage(text) { const el = $("#cam-msg"); if (el) el.textContent = t
 function setCamMode(mode) {
   if (!CAM_MODES.includes(mode)) mode = "overlay";
   state.camMode = mode;
-  const ov = $("#overlay-img");
-  ov.style.clipPath = ""; ov.style.webkitClipPath = "";
+  const ov = $("#overlay-img"), wrap = $("#overlay-wrap");
+  wrap.style.clipPath = ""; wrap.style.webkitClipPath = "";
   ov.style.opacity = mode === "now" ? 0 : mode === "overlay" ? state.opacity : 1;
   $("#cam-slider").classList.toggle("hidden", !(state.cameraOn && mode === "overlay"));
   $("#cam-curtain").classList.toggle("hidden", !(state.cameraOn && mode === "curtain"));
@@ -1147,23 +1149,250 @@ function setCamMode(mode) {
 function setCurtain(pct) {
   pct = Math.max(0, Math.min(100, pct));
   state.curtain = pct;
-  const ov = $("#overlay-img"), c = $("#cam-curtain");
+  const ov = $("#overlay-wrap"), c = $("#cam-curtain");
   if (state.camMode === "curtain") { ov.style.clipPath = `inset(0 ${100 - pct}% 0 0)`; ov.style.webkitClipPath = `inset(0 ${100 - pct}% 0 0)`; }
   c.style.left = pct + "%";
   c.setAttribute("aria-valuenow", String(Math.round(pct)));
 }
 function initCamControls() {
-  $$("#cam-modes button").forEach(b => b.addEventListener("click", () => setCamMode(b.dataset.mode)));
+  $$("#cam-modes button").forEach(b => b.addEventListener("click", () => { if (b.dataset.mode === "rephoto") startRephoto(); else setCamMode(b.dataset.mode); }));
+  initRephoto();
   const hero = $("#hero"), curtain = $("#cam-curtain");
   let drag = false;
   const move = e => { const r = hero.getBoundingClientRect(); setCurtain((e.clientX - r.left) / r.width * 100); };
-  hero.addEventListener("pointerdown", e => { if (state.camMode !== "curtain" || !state.cameraOn || e.target.closest("button,input,.slider-wrap")) return; drag = true; hero.setPointerCapture(e.pointerId); move(e); });
+  hero.addEventListener("pointerdown", e => { if (state.camMode !== "curtain" || !(state.cameraOn || state.rp.noCam) || e.target.closest("button,input,.slider-wrap")) return; drag = true; hero.setPointerCapture(e.pointerId); move(e); });
   hero.addEventListener("pointermove", e => { if (drag) move(e); });
   const end = () => { drag = false; };
   hero.addEventListener("pointerup", end);
   hero.addEventListener("pointercancel", end);
   curtain.addEventListener("keydown", e => { if (e.key === "ArrowLeft") setCurtain(state.curtain - 5); if (e.key === "ArrowRight") setCurtain(state.curtain + 5); });
 }
+/* ---------- Рефотосъёмка: 1) совместить контур с живой камерой, 2) шторка «тогда/сейчас» на весь экран и снимок ---------- */
+state.rp = { on: false, step: 1, scale: 1, x: 0, y: 0, noCam: false, shot: null, saved: null };
+function rpReset() { const r = state.rp; r.scale = 1; r.x = 0; r.y = 0; }
+function applyRpTransform() {
+  const r = state.rp;
+  $("#overlay-img").style.transform = (r.scale === 1 && r.x === 0 && r.y === 0) ? "" : `translate(${r.x}px, ${r.y}px) scale(${r.scale})`;
+}
+function hasNowPhoto() { const ph = currentPhoto(); return !!(ph && ph.now && (ph.now.src || ph.now.remote)); }
+function rpBearingText() {
+  const ph = currentPhoto(), vp = ph && ph.viewpoint;
+  if (!vp || vp.bearing == null || !Number.isFinite(Number(vp.bearing))) return "";   // азимута нет в данных — ничего не придумываем
+  const b = Number(vp.bearing);
+  let s = `Снимок сделан в сторону: ${dirName(b)} (азимут ${Math.round(b)}°).`;
+  if (hasFreshHeading()) s += ` Сейчас телефон смотрит на ${Math.round(state.heading)}°.`;
+  return s;
+}
+function rpUpdateHint() {
+  const r = state.rp;
+  if (!r.on) return;
+  const hint = $("#rp-hint");
+  if (r.step === 1) {
+    const b = rpBearingText();
+    hint.innerHTML = "Двигайте телефон, пока контур не совпадёт со зданием" + `<small>Двумя пальцами — масштаб, одним — сдвиг накладки.${b ? " " + esc(b) : ""}</small>`;
+  } else if (r.noCam) {
+    hint.innerHTML = "Тяните шторку пальцем<small>Слева старое фото, справа современное.</small>";
+  } else {
+    hint.innerHTML = "Тяните шторку пальцем<small>Слева старое фото, справа живая камера. «Снимок» сохранит кадр.</small>";
+  }
+}
+function rpLayout(step) {
+  const r = state.rp, ph = currentPhoto();
+  r.step = step;
+  const ov = $("#overlay-img"), wrap = $("#overlay-wrap");
+  $("#rp-done").classList.toggle("hidden", step !== 1);
+  $("#rp-reset").classList.toggle("hidden", step !== 1);
+  $("#rp-shot").classList.toggle("hidden", step !== 2);
+  $("#rp-back").classList.toggle("hidden", step !== 2 || r.noCam);
+  $("#rp-label-l").classList.toggle("hidden", step !== 2);
+  $("#rp-label-r").classList.toggle("hidden", step !== 2);
+  $("#rp-label-l").textContent = ph ? String(ph.year) : "Тогда";
+  if (step === 1) {
+    const src = hasNowPhoto() ? ph.now : ph;   // современный снимок того же ракурса; нет — само историческое фото
+    bindImg(ov, src.src, src.remote, "Контур для совмещения");
+    ov.classList.remove("hidden");
+    state.camMode = "overlay";
+    wrap.style.clipPath = ""; wrap.style.webkitClipPath = "";
+    ov.style.opacity = 0.35;
+    $("#cam-curtain").classList.add("hidden");
+    $("#cam-slider").classList.add("hidden");
+  } else {
+    bindImg(ov, ph.src, ph.remote, ph.title);
+    ov.classList.remove("hidden");
+    ov.style.opacity = 1;
+    state.camMode = "curtain";
+    setCurtain(50);
+    $("#cam-curtain").classList.remove("hidden");
+    $("#cam-slider").classList.add("hidden");
+  }
+  applyRpTransform();
+  $$("#cam-modes button").forEach(b => { const on = step === 2 && b.dataset.mode === "curtain"; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+  rpUpdateHint();
+}
+function rpOpenStage() {
+  state.rp.on = true;
+  $("#hero").classList.add("rp-full");
+  document.body.classList.add("rp-lock");
+  $("#rp-ui").classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+function startRephoto() {
+  if (!state.cameraOn) return;
+  state.rp.noCam = false;
+  rpReset();
+  rpOpenStage();
+  rpLayout(1);
+}
+/* без камеры: шторка между историческим и современным фото (если современного снимка нет — честно говорим об этом) */
+function startRephotoNoCam() {
+  const ph = currentPhoto();
+  if (!hasNowPhoto()) { toast("Для этого кадра нет современного фото. Включите камеру."); return; }
+  state.rp.noCam = true;
+  rpReset();
+  const now = $("#rp-now-img");
+  bindImg(now, ph.now.src, ph.now.remote, "Сейчас");
+  now.classList.remove("hidden");
+  $("#then-img").classList.add("hidden");
+  rpOpenStage();
+  rpLayout(2);
+}
+function exitRephoto(silent) {
+  const r = state.rp;
+  if (!r.on) return;
+  const wasStep = r.step, wasNoCam = r.noCam;
+  r.on = false;
+  $("#hero").classList.remove("rp-full");
+  document.body.classList.remove("rp-lock");
+  $("#rp-ui").classList.add("hidden");
+  $("#rp-now-img").classList.add("hidden");
+  if (wasNoCam) {
+    r.noCam = false;
+    $("#overlay-img").classList.add("hidden");
+    $("#then-img").classList.remove("hidden");
+    $("#cam-curtain").classList.add("hidden");
+    const wrap = $("#overlay-wrap"); wrap.style.clipPath = ""; wrap.style.webkitClipPath = "";
+    rpReset(); applyRpTransform();
+    return;
+  }
+  if (silent) return;
+  if (state.cameraOn) {
+    const ph = currentPhoto();
+    bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
+    if (wasStep === 2) setCamMode("curtain");        // совмещённые масштаб и сдвиг остаются
+    else { rpReset(); applyRpTransform(); setCamMode("overlay"); }
+  }
+}
+function rpClamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function initRephoto() {
+  const hero = $("#hero"), r = state.rp, pts = new Map();
+  let base = null;
+  const mid = () => { const a = [...pts.values()]; return a.length === 2 ? { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2, d: Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) } : null; };
+  const active = () => r.on && r.step === 1 && !r.noCam;
+  hero.addEventListener("pointerdown", e => {
+    if (!active() || e.target.closest("button")) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { hero.setPointerCapture(e.pointerId); } catch {}
+    const m = mid();
+    base = m ? { d: m.d, scale: r.scale, mx: m.x, my: m.y, x: r.x, y: r.y } : { px: e.clientX, py: e.clientY, x: r.x, y: r.y };
+  });
+  hero.addEventListener("pointermove", e => {
+    if (!active() || !pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const m = mid();
+    if (m && base && base.d) {
+      r.scale = rpClamp(base.scale * m.d / base.d, 0.3, 6);
+      r.x = base.x + (m.x - base.mx); r.y = base.y + (m.y - base.my);
+    } else if (!m && base && base.px != null) {
+      r.x = base.x + (e.clientX - base.px); r.y = base.y + (e.clientY - base.py);
+    }
+    applyRpTransform();
+  });
+  const up = e => {
+    try { hero.releasePointerCapture(e.pointerId); } catch {}
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    const left = [...pts.values()][0];
+    base = left ? { px: left.x, py: left.y, x: r.x, y: r.y } : null;   // остался один палец: сдвиг продолжается без скачка
+  };
+  hero.addEventListener("pointerup", up);
+  hero.addEventListener("pointercancel", up);
+  hero.addEventListener("wheel", e => { if (!active()) return; e.preventDefault(); r.scale = rpClamp(r.scale * Math.exp(-e.deltaY * 0.002), 0.3, 6); applyRpTransform(); }, { passive: false });
+  $("#rp-done").addEventListener("click", () => { r.saved = { scale: r.scale, x: r.x, y: r.y }; rpLayout(2); });
+  $("#rp-reset").addEventListener("click", () => { rpReset(); applyRpTransform(); });
+  $("#rp-back").addEventListener("click", () => rpLayout(1));
+  $("#rp-exit").addEventListener("click", () => exitRephoto());
+  $("#rp-shot").addEventListener("click", captureRephoto);
+  $("#btn-rp-nocam").addEventListener("click", startRephotoNoCam);
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && r.on) exitRephoto(); });
+}
+function rpLoadImg(img) { return img && img.complete && img.naturalWidth ? img : null; }
+/* Кадр со шторкой через canvas: те же cover/contain, масштаб, сдвиг и положение шторки, что на экране */
+async function captureRephoto() {
+  const r = state.rp, hero = $("#hero"), ph = currentPhoto(), p = currentPoint();
+  if (!r.on || !ph) return;
+  const box = hero.getBoundingClientRect();
+  const W = box.width, H = box.height, k = Math.min(2, 1080 / W), foot = 34;
+  const cv = document.createElement("canvas");
+  cv.width = Math.round(W * k); cv.height = Math.round((H + foot) * k);
+  const c = cv.getContext("2d");
+  c.scale(k, k);
+  c.fillStyle = "#000"; c.fillRect(0, 0, W, H + foot);
+  const fit = (iw, ih, mode) => { const s = (mode === "cover" ? Math.max : Math.min)(W / iw, H / ih); return { w: iw * s, h: ih * s }; };
+  try {
+    if (r.noCam) {
+      const n = rpLoadImg($("#rp-now-img"));
+      if (n) { const d = fit(n.naturalWidth, n.naturalHeight, "contain"); c.drawImage(n, (W - d.w) / 2, (H - d.h) / 2, d.w, d.h); }
+    } else {
+      const v = $("#live-video");
+      if (v.videoWidth) { const d = fit(v.videoWidth, v.videoHeight, "cover"); c.drawImage(v, (W - d.w) / 2, (H - d.h) / 2, d.w, d.h); }
+    }
+    const o = rpLoadImg($("#overlay-img"));
+    if (o) {
+      c.save();
+      c.beginPath(); c.rect(0, 0, W * state.curtain / 100, H); c.clip();
+      const d = fit(o.naturalWidth, o.naturalHeight, "contain"), sc = r.noCam ? 1 : r.scale, tx = r.noCam ? 0 : r.x, ty = r.noCam ? 0 : r.y;
+      c.translate(W / 2 + tx, H / 2 + ty); c.scale(sc, sc);
+      c.drawImage(o, -d.w / 2, -d.h / 2, d.w, d.h);
+      c.restore();
+    }
+    const cx = W * state.curtain / 100;
+    c.fillStyle = "#d4b06a"; c.fillRect(cx - 1.5, 0, 3, H);
+    c.beginPath(); c.arc(cx, H / 2, 20, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#1c1710"; c.font = "700 18px sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("‹ ›", cx, H / 2 + 1);
+    const chip = (txt, x, align) => {
+      c.font = "700 16px sans-serif"; c.textBaseline = "middle"; c.textAlign = align;
+      const w = c.measureText(txt).width + 20, left = align === "left" ? x : x - w;
+      c.fillStyle = "rgba(20,12,14,.78)"; c.fillRect(left, 14, w, 30);
+      c.fillStyle = "#f6e7c4"; c.fillText(txt, align === "left" ? x + 10 : x - 10, 29);
+    };
+    chip(String(ph.year), 14, "left"); chip("Сейчас", W - 14, "right");
+    c.fillStyle = "#14090b"; c.fillRect(0, H, W, foot);
+    c.fillStyle = "#e5ca8c"; c.font = "600 12px sans-serif"; c.textAlign = "left"; c.textBaseline = "middle";
+    const cap = `Симонов монастырь · ${p ? p.title : ""} · тогда: ${ph.year}, ${shortAuthor(ph.author)}`;
+    c.fillText(cap.length > 64 ? cap.slice(0, 63) + "…" : cap, 10, H + foot / 2);
+    const blob = await new Promise((res, rej) => { try { cv.toBlob(b => b ? res(b) : rej(new Error("empty")), "image/jpeg", 0.92); } catch (e) { rej(e); } });
+    const name = `simonov-refoto-${p ? p.id : "kadr"}.jpg`;
+    const file = new File([blob], name, { type: "image/jpeg" });
+    let how = "download";
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: "Симонов монастырь: тогда и сейчас" }); how = "share"; }
+      catch (e) { if (e && e.name === "AbortError") { r.shot = { w: cv.width, h: cv.height, size: blob.size, how: "cancel" }; return; } how = "download"; }
+    }
+    if (how === "download") {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }
+    r.shot = { w: cv.width, h: cv.height, size: blob.size, how, name };
+    toast(how === "share" ? "Снимок отправлен." : "Снимок сохранён в загрузки телефона.");
+  } catch (e) {
+    console.warn(e);
+    r.shot = { error: String((e && e.name) || e) };
+    toast("Не удалось сохранить снимок: фото с внешнего сайта не разрешает копию. Сделайте обычный скриншот экрана.");
+  }
+}
+
 function cameraErrorText(e) {
   const n = e && e.name;
   if (!window.isSecureContext) return "Камере нужен защищённый адрес (https). Откройте сайт по https-ссылке.";
@@ -1177,6 +1406,7 @@ async function startCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     camMessage(window.isSecureContext ? "Камера недоступна в этом браузере. Сравните снимки ниже." : "Камере нужен защищённый адрес (https).");
     toast("Камера недоступна.");
+    $("#btn-rp-nocam").classList.toggle("hidden", !hasNowPhoto());
     return;
   }
   const player = $("#player");
@@ -1199,6 +1429,7 @@ async function startCamera() {
     $("#btn-camera").textContent = "Выключить камеру";
     $("#btn-camera").classList.add("on");
     $("#cam-modes").classList.remove("hidden");
+    $("#btn-rp-nocam").classList.add("hidden");
     state.opacity = 0.55; $("#opacity").value = "0.55"; $("#opacity-val").textContent = "55%";
     state.curtain = 50;
     setCamMode("overlay");
@@ -1210,6 +1441,7 @@ async function startCamera() {
     camMessage(cameraErrorText(e));
     toast(cameraErrorText(e));
     stopCamera(true);
+    $("#btn-rp-nocam").classList.toggle("hidden", !hasNowPhoto());
   }
 }
 
@@ -1227,8 +1459,10 @@ function stopCamera(keepMessage) {
   btn.textContent = "Совместить с камерой";
   btn.classList.remove("on");
   $("#then-img").classList.remove("hidden");
-  const ov = $("#overlay-img");
-  ov.classList.add("hidden"); ov.style.clipPath = ""; ov.style.webkitClipPath = ""; ov.style.opacity = "";
+  if (state.rp && state.rp.on) exitRephoto(true);
+  const ov = $("#overlay-img"), wrap = $("#overlay-wrap");
+  ov.classList.add("hidden"); wrap.style.clipPath = ""; wrap.style.webkitClipPath = ""; ov.style.opacity = "";
+  rpReset(); applyRpTransform();
   $("#cam-slider").classList.add("hidden");
   $("#cam-curtain").classList.add("hidden");
   $("#cam-modes").classList.add("hidden");
@@ -1316,7 +1550,7 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v11") return;
+    if (lsGet("simonov-offline") === "v12") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1325,7 +1559,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v11"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v12"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));

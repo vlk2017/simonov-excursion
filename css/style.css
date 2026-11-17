@@ -723,3 +723,28 @@ audio { display:block; height:42px; filter:grayscale(1); }
 #screen-point .audio-start.is-here:not(.playing) { background:linear-gradient(135deg,#e4c783,#b68a43); color:#2b1719; box-shadow:0 0 0 4px rgba(31,107,58,.55); animation:approach-pulse 1.8s ease-in-out infinite; }
 @keyframes approach-pulse { 50% { box-shadow:0 0 0 8px rgba(31,107,58,.18); } }
 @media (prefers-reduced-motion:reduce) { #screen-point .audio-start.is-here:not(.playing) { animation:none; } }
+
+/* Рефотосъёмка: накладка в обёртке (обрезка шторкой не двигается вместе с масштабом), полноэкранная сцена */
+.overlay-wrap { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.hero .rp-now-img { object-fit:contain; background:#0d0a08; }
+.cam-modes .cam-rephoto { grid-column:1/-1; background:#3a2a2d; border-color:#c7a15c; color:#f6e7c4; }
+.cam-nocam { width:100%; min-height:46px; margin-top:8px; font-size:15px; }
+.rp-ui { position:absolute; inset:0; z-index:6; pointer-events:none; }
+.rp-ui > * { pointer-events:auto; }
+.rp-hint { position:absolute; left:10px; right:10px; top:max(10px, env(safe-area-inset-top)); padding:10px 12px; border-radius:6px; background:rgba(20,9,11,.82); color:#fff4e5; font:700 16px/1.25 var(--font-sans); text-align:center; pointer-events:none; }
+.rp-hint small { display:block; margin-top:4px; font-weight:500; font-size:12px; line-height:1.3; color:#e5ca8c; }
+.rp-label { position:absolute; top:calc(max(10px, env(safe-area-inset-top)) + 74px); z-index:5; padding:5px 10px; border-radius:4px; background:rgba(20,9,11,.8); color:#f6e7c4; font:700 15px var(--font-sans); pointer-events:none; }
+.rp-label-l { left:10px; } .rp-label-r { right:10px; }
+.rp-bar { position:absolute; left:10px; right:10px; bottom:max(12px, env(safe-area-inset-bottom)); display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.rp-btn { flex:1 1 40%; min-height:52px; padding:0 12px; border-radius:6px; border:1px solid #c7a15c; background:rgba(20,9,11,.88); color:#f6e7c4; font:700 16px var(--font-sans); cursor:pointer; }
+.rp-btn.rp-primary { flex:2 1 60%; min-height:56px; background:linear-gradient(135deg,#e4c783,#b68a43); color:#2b1719; border-color:#f0dba8; }
+.rp-btn.hidden { display:none; }
+#screen-point .hero.rp-full { position:fixed; inset:0; z-index:3000; width:100vw; height:100vh; height:100dvh; max-height:none; aspect-ratio:auto; margin:0; border:0; box-shadow:none; background:#000; touch-action:none; }
+#screen-point .hero.rp-full::before, #screen-point .hero.rp-full::after { display:none; }
+#screen-point .hero.rp-full .hero-actions, #screen-point .hero.rp-full .hero-count, #screen-point .hero.rp-full .slider-wrap { display:none; }
+#screen-point .hero.rp-full img, #screen-point .hero.rp-full .overlay-img { object-fit:contain; transform-origin:50% 50%; }
+#screen-point .hero.rp-full video { object-fit:cover; }
+#screen-point .hero.rp-full .cam-curtain { z-index:5; }
+body.rp-lock { overflow:hidden; }
+#toast { pointer-events:none; }
+body.rp-lock #toast { bottom:auto; top:calc(max(10px, env(safe-area-inset-top)) + 96px); }

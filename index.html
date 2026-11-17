@@ -121,15 +121,30 @@
           </div>
           <div class="cam-modes hidden" id="cam-modes" role="group" aria-label="Режим накладки">
             <button type="button" data-mode="then">Раньше</button><button type="button" data-mode="overlay" class="on">Наложить</button><button type="button" data-mode="curtain">Шторка</button><button type="button" data-mode="now">Сейчас</button>
+            <button type="button" data-mode="rephoto" class="cam-rephoto">Рефотосъёмка: совместить и снять</button>
           </div>
           <p class="cam-msg" id="cam-msg" role="status" aria-live="polite"></p>
+          <button type="button" class="btn-ghost cam-nocam hidden" id="btn-rp-nocam">Сравнить без камеры: тогда и сейчас</button>
         </div>
         <div class="hero" id="hero">
           <img id="then-img" alt="Старое фото" role="button" tabindex="0" aria-label="Открыть историческую фотографию на весь экран" />
           <video id="live-video" class="hidden" playsinline webkit-playsinline muted autoplay disablepictureinpicture></video>
-          <img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" />
+          <img id="rp-now-img" class="rp-now-img hidden" alt="Сейчас" crossorigin="anonymous" />
+          <div class="overlay-wrap" id="overlay-wrap"><img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" crossorigin="anonymous" /></div>
           <div class="hero-actions"><button class="icon-btn" id="btn-full" aria-label="Открыть фото на весь экран" title="На весь экран">⤢</button></div>
           <div class="hero-count" id="hero-count"></div>
+          <div class="rp-ui hidden" id="rp-ui">
+            <div class="rp-hint" id="rp-hint" role="status" aria-live="polite"></div>
+            <span class="rp-label rp-label-l hidden" id="rp-label-l"></span>
+            <span class="rp-label rp-label-r hidden" id="rp-label-r">Сейчас</span>
+            <div class="rp-bar" id="rp-bar">
+              <button type="button" class="rp-btn rp-primary" id="rp-done">Совмещено ✓</button>
+              <button type="button" class="rp-btn rp-primary hidden" id="rp-shot">Снимок</button>
+              <button type="button" class="rp-btn hidden" id="rp-back">Совместить заново</button>
+              <button type="button" class="rp-btn" id="rp-reset">Сбросить</button>
+              <button type="button" class="rp-btn" id="rp-exit">Выйти</button>
+            </div>
+          </div>
           <div class="cam-curtain hidden" id="cam-curtain" role="slider" aria-label="Шторка: слева раньше, справа сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><i class="cam-curtain-line"></i><span class="cam-curtain-grip">‹ ›</span></div>
           <div class="slider-wrap hidden" id="cam-slider"><label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" /></div>
         </div>

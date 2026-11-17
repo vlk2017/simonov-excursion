@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v11, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v12, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v11"/);
+  assert.match(sw, /const CACHE = "simonov-v12"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v11"/);
+  assert.match(app, /"simonov-offline"\) === "v12"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -170,4 +170,19 @@ test("плашка «Подойдите к точке»: над «Начать �
   assert.match(app, /classList\.toggle\("is-here"/);
   const f = app.match(/function updateApproach\(\) \{[\s\S]*?\n\}\n/)[0];
   assert.ok(!/disabled|\.pause\(|startNarration/.test(f), "плашка ничего не блокирует и не включает");
+});
+
+test("рефотосъёмка: два шага, жесты, шторка на весь экран, снимок через canvas, режим без камеры; старые режимы сохранены", () => {
+  for (const m of ["then", "overlay", "curtain", "now", "rephoto"]) assert.ok(html.includes(`data-mode="${m}"`), m);
+  for (const id of ["rp-ui", "rp-hint", "rp-done", "rp-shot", "rp-back", "rp-exit", "rp-label-l", "rp-label-r", "overlay-wrap", "rp-now-img", "btn-rp-nocam"]) assert.ok(html.includes(`id="${id}"`), id);
+  assert.ok(html.includes("Совмещено ✓") && html.includes("Снимок"));
+  assert.match(app, /Двигайте телефон, пока контур не совпадёт со зданием/);
+  assert.match(app, /function startRephoto/);
+  assert.match(app, /function startRephotoNoCam/);
+  assert.match(app, /async function captureRephoto/);
+  assert.match(app, /toBlob/);
+  assert.match(app, /navigator\.canShare/);
+  assert.match(app, /opacity = 0\.35/, "накладка на шаге 1 ~35%");
+  assert.match(app, /vp\.bearing == null/, "азимут показывается только если он есть в данных");
+  assert.match(app, /state\.camMode = "curtain"/, "после совмещения по умолчанию шторка");
 });

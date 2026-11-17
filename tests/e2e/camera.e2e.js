@@ -21,7 +21,7 @@ async function open(browser, deny) {
   await page.goto(BASE, { waitUntil: "networkidle2" });
   return { page, ctx, errors };
 }
-const modeState = page => page.evaluate(() => { const ov = document.querySelector("#overlay-img"), v = document.querySelector("#live-video"); return { mode: state.camMode, op: ov.style.opacity, clip: ov.style.clipPath, ovHidden: ov.classList.contains("hidden"), vidHidden: v.classList.contains("hidden"), slider: !document.querySelector("#cam-slider").classList.contains("hidden"), curtain: !document.querySelector("#cam-curtain").classList.contains("hidden"), on: [...document.querySelectorAll("#cam-modes button.on")].map(b => b.dataset.mode) }; });
+const modeState = page => page.evaluate(() => { const ov = document.querySelector("#overlay-img"), v = document.querySelector("#live-video"); return { mode: state.camMode, op: ov.style.opacity, clip: document.querySelector("#overlay-wrap").style.clipPath, ovHidden: ov.classList.contains("hidden"), vidHidden: v.classList.contains("hidden"), slider: !document.querySelector("#cam-slider").classList.contains("hidden"), curtain: !document.querySelector("#cam-curtain").classList.contains("hidden"), on: [...document.querySelectorAll("#cam-modes button.on")].map(b => b.dataset.mode) }; });
 
 (async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.CHROME || "/usr/bin/google-chrome", headless: "new",
@@ -72,7 +72,7 @@ const modeState = page => page.evaluate(() => { const ov = document.querySelecto
   await touch("touchStart", x0); for (let i = 1; i <= 6; i++) await touch("touchMove", x0 + (x1 - x0) * i / 6); await touch("touchEnd");
   const c1 = await page.evaluate(() => state.curtain);
   await touch("touchStart", x1); for (let i = 1; i <= 6; i++) await touch("touchMove", x1 + (x2 - x1) * i / 6); await touch("touchEnd");
-  const c2 = await page.evaluate(() => ({ p: state.curtain, clip: document.querySelector("#overlay-img").style.clipPath, left: document.querySelector("#cam-curtain").style.left }));
+  const c2 = await page.evaluate(() => ({ p: state.curtain, clip: document.querySelector("#overlay-wrap").style.clipPath, left: document.querySelector("#cam-curtain").style.left }));
   ok("Шторка тянется пальцем влево (~20%) и вправо (~85%)", Math.abs(c1 - 20) < 8 && Math.abs(c2.p - 85) < 8 && c2.clip.includes(`${(100 - c2.p)}%`.slice(0, 2)) && c2.left.endsWith("%"), JSON.stringify({ c1, c2 }));
   await tap(page, '#cam-modes [data-mode="overlay"]');
   const sc = await page.evaluate(() => { window.scrollTo(0, 0); return 1; });

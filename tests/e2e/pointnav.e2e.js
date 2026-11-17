@@ -69,13 +69,13 @@ const info = page => page.evaluate(() => { const a = document.querySelector("#pl
   // «Следующая» выделяется primary после конца рассказа
   await page.evaluate(() => { const a = document.querySelector("#player"); a.muted = true; a.playbackRate = 16; });
   await tap(page, "#btn-play");
-  await page.waitForFunction(() => { const a = document.querySelector("#player"); return !a.paused && a.duration > 0; }, { timeout: 15000 }).catch(() => {});
-  await page.evaluate(() => { const a = document.querySelector("#player"); a.currentTime = Math.max(0, a.duration - 1); });
+  await page.waitForFunction(() => { const a = document.querySelector("#player"); return !a.paused && a.duration > 0 && a.buffered.length && a.buffered.end(a.buffered.length - 1) >= a.duration - 0.5; }, { timeout: 30000 }).catch(() => {});   // дожидаемся полной буферизации: сервер без Range не умеет перемотку
+  await page.evaluate(() => { const a = document.querySelector("#player"); a.playbackRate = 16; if (a.seekable.length) a.currentTime = Math.max(0, a.duration - 1); });   // приложение сбрасывает скорость на loadedmetadata, поэтому ставим 16× уже после старта
   await page.waitForFunction(() => document.querySelector("#player").ended, { timeout: 45000 }).catch(() => {});
   await sleep(500);
   s = await info(page);
-  s.ended = await page.evaluate(() => document.querySelector("#player").ended);
-  ok("После конца рассказа «Следующая точка →» выделена (primary)", s.nextPrimary, JSON.stringify({ ended: s.ended, primary: s.nextPrimary }));
+  s.dbg = await page.evaluate(() => { const a = document.querySelector("#player"); return { ended: a.ended, paused: a.paused, t: a.currentTime, d: a.duration, rate: a.playbackRate, src: a.currentSrc.slice(-30), err: a.error && a.error.code, rs: a.readyState, seekable: a.seekable.length && a.seekable.end(0) }; }); s.ended = s.dbg.ended;
+  ok("После конца рассказа «Следующая точка →» выделена (primary)", s.nextPrimary, JSON.stringify({ dbg: s.dbg, primary: s.nextPrimary }));
   await tap(page, "#pt-nav-top .js-next");
   s = await info(page);
   ok("После перехода выделение снято (новая точка)", s.label === "Точка 7 из 8" && !s.nextPrimary);
