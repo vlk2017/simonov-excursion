@@ -25,6 +25,10 @@ const state = {
   routeTargetId: null,
   routeLastOrigin: null,
   routeInfo: null,
+  routeCoords: [],
+  routeManeuvers: [],
+  routeProgressIndex: 0,
+  orientationHandler: null,
   accuracyCircle: null,
   targetHalo: null,
   navIndex: 0,
@@ -131,8 +135,64 @@ function clearPedestrianRoute() {
   state.routeInfo = null;
   state.routeTargetId = null;
   state.routeLastOrigin = null;
+  state.routeCoords = [];
+  state.routeManeuvers = [];
+  state.routeProgressIndex = 0;
   const guidance = $("#route-guidance");
   if (guidance) { guidance.replaceChildren(); guidance.classList.remove("route-guidance-active"); }
+}
+function nearestRouteProgress() {
+  const coords = state.routeCoords;
+  if (!coords.length || !state.pos) return 0;
+  const start = Math.max(0, state.routeProgressIndex - 3);
+  const end = Math.min(coords.length - 1, state.routeProgressIndex + 90);
+  let best = start, bestDistance = Infinity;
+  for (let i = start; i <= end; i++) {
+    const d = haversine(state.pos.lat, state.pos.lon, coords[i][0], coords[i][1]);
+    if (d < bestDistance) { bestDistance = d; best = i; }
+  }
+  if (best >= state.routeProgressIndex) state.routeProgressIndex = best;
+  return state.routeProgressIndex;
+}
+function updateNavigationHud() {
+  const hud = $("#navigation-hud");
+  if (!hud) return;
+  if (!state.routeInfo || !state.routeCoords.length || !state.pos) {
+    hud.classList.add("hidden");
+    return;
+  }
+  hud.classList.remove("hidden");
+  const coords = state.routeCoords;
+  const index = nearestRouteProgress();
+  const cumulative = [0];
+  for (let i=1;i<coords.length;i++) cumulative[i] = cumulative[i-1] + haversine(coords[i-1][0],coords[i-1][1],coords[i][0],coords[i][1]);
+  const remaining = Math.max(0, cumulative[cumulative.length-1] - cumulative[index]);
+  const maneuvers = state.routeManeuvers;
+  const next = maneuvers.find(m => Number(m.begin_shape_index ?? 0) > index + 1) || maneuvers[maneuvers.length-1];
+  let maneuverDistance = null;
+  if (next && Number.isFinite(Number(next.begin_shape_index))) {
+    const mi = Math.max(index, Math.min(coords.length-1, Number(next.begin_shape_index)));
+    maneuverDistance = Math.max(0, cumulative[mi]-cumulative[index]);
+  }
+  const lookIndex = Math.min(coords.length-1, index + 4);
+  const bearing = bearingTo(state.pos.lat,state.pos.lon,coords[lookIndex][0],coords[lookIndex][1]);
+  const arrow = $("#nav-arrow");
+  if (arrow) arrow.style.transform = `rotate(${bearing - (state.heading == null ? 0 : state.heading)}deg)`;
+  $("#nav-turn-title").textContent = next?.instruction || "Продолжайте по маршруту";
+  $("#nav-turn-distance").textContent = maneuverDistance == null || maneuverDistance < 12
+    ? "Сейчас"
+    : `Через ${fmtDist(maneuverDistance)}`;
+  $("#nav-route-remaining").textContent = `До остановки ${fmtDist(remaining)} · около ${Math.max(1,Math.round(remaining/75))} мин пешком`;
+  const accuracy = state.pos.acc == null ? 999 : state.pos.acc;
+  const target = state.data.points[nextUnvisitedIndex()];
+  const direct = target ? haversine(state.pos.lat,state.pos.lon,target.lat,target.lon) : Infinity;
+  const arrival = $("#nav-arrived");
+  if (arrival) {
+    const ready = !!target && direct <= 22 && accuracy <= 20;
+    arrival.classList.toggle("hidden", !ready);
+    arrival.textContent = ready ? `Я на месте — открыть рассказ «${target.title}»` : "Подтвердить прибытие";
+    arrival.disabled = !ready;
+  }
 }
 function renderRouteGuidance(maneuvers) {
   const box = $("#route-guidance");
@@ -218,12 +278,16 @@ async function buildWalkingRoute(force = false) {
       distance: Number(summary.length || 0) * 1000,
       duration: Number(summary.time || 0)
     };
+    state.routeCoords = coords;
+    state.routeManeuvers = leg.maneuvers || [];
+    state.routeProgressIndex = 0;
     state.routeTargetId = p.id;
     state.routeLastOrigin = { lat:state.pos.lat, lon:state.pos.lon };
     const bounds = state.routeLayer.getBounds();
     if (bounds.isValid()) state.map.fitBounds(bounds.pad(.18), { maxZoom:19 });
     renderRouteGuidance(leg.maneuvers || []);
     updateNavigator();
+    updateNavigationHud();
     $("#route-guidance").classList.add("route-guidance-active");
   } catch (error) {
     console.warn("Pedestrian routing unavailable:", error);
@@ -265,6 +329,7 @@ function fitFullRoute() {
 }
 function markVisited(id) {
   if (!id || state.visited[id]) return;
+  if (state.routeTargetId === id) clearPedestrianRoute();
   state.visited[id] = true;
   localStorage.setItem("simonov-visited", JSON.stringify(state.visited));
   renderList();
@@ -355,6 +420,7 @@ function onPosition(pos) {
   updateNavigator();
   maybeAutoTrigger();
   updateStandLive();
+  updateNavigationHud();
   if (state.routeRequested && !state.routeBusy) buildWalkingRoute(true);
   else if (state.routeInfo && !state.routeBusy) buildWalkingRoute(false);
 }
@@ -630,6 +696,7 @@ async function enableCompass() {
         return;
       }
     }
+    if (state.orientationHandler) window.removeEventListener("deviceorientation", state.orientationHandler, true);
     const handler = e => {
       let heading = null;
       if (typeof e.webkitCompassHeading === "number") heading = e.webkitCompassHeading;
@@ -637,8 +704,10 @@ async function enableCompass() {
       if (heading != null) {
         state.heading = heading;
         updateStandLive();
+        updateNavigationHud();
       }
     };
+    state.orientationHandler = handler;
     window.addEventListener("deviceorientation", handler, true);
     toast("Компас включён. Держите телефон перед собой.");
   } catch (err) {
@@ -941,6 +1010,13 @@ async function main() {
     state.map.setView([state.pos.lat,state.pos.lon],18);
   });
   $("#map-fit-route").addEventListener("click", fitFullRoute);
+  $("#nav-arrived").addEventListener("click", () => {
+    const p = state.data.points[nextUnvisitedIndex()];
+    if (!p || !state.pos || state.pos.acc > 20 || haversine(state.pos.lat,state.pos.lon,p.lat,p.lon) > 22) return;
+    markVisited(p.id);
+    $("#navigation-hud").classList.add("hidden");
+    openPoint(p.id, false);
+  });
   $("#nav-open").addEventListener("click", () => {
     const i = nextUnvisitedIndex();
     const p = i < 0 ? state.data.points[0] : state.data.points[i];
