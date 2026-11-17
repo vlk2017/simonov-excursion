@@ -670,6 +670,7 @@ async function main() {
   $("#btn-here").addEventListener("click", imHere);
   $("#btn-camera").addEventListener("click", () => { state.cameraOn ? stopCamera() : startCamera(); });
   $("#then-img").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
+  $("#then-img").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightboxForCurrent(currentPhoto().src); } });
   $("#btn-full").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
   $("#now-context-img").addEventListener("click", () => { const p = currentPoint(); openLightboxForCurrent(p.nowContext.src); });
   $("#cmp-frame").addEventListener("dblclick", () => { const ph = currentPhoto(); openLightboxForCurrent(state.cmp > 50 ? ph.src : ph.now.src); });
