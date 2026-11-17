@@ -7,6 +7,8 @@ const state = {
   watchId: null,
   currentId: null,
   opacity: 0.55,
+  camMode: "overlay",
+  curtain: 50,
   photoIdx: 0,
   cmp: 50,
   rate: 1,
@@ -1006,37 +1008,94 @@ function closePoint() {
   setTimeout(() => state.map && state.map.invalidateSize(), 200);
 }
 
+/* ---------- Историческая накладка: камера + старое фото ---------- */
+const CAM_MODES = ["then", "overlay", "curtain", "now"];
+function camMessage(text) { const el = $("#cam-msg"); if (el) el.textContent = text || ""; }
+
+/* Режим: then — старое фото 100%; now — только камера; overlay — полупрозрачно с ползунком; curtain — вертикальная шторка */
+function setCamMode(mode) {
+  if (!CAM_MODES.includes(mode)) mode = "overlay";
+  state.camMode = mode;
+  const ov = $("#overlay-img");
+  ov.style.clipPath = ""; ov.style.webkitClipPath = "";
+  ov.style.opacity = mode === "now" ? 0 : mode === "overlay" ? state.opacity : 1;
+  $("#cam-slider").classList.toggle("hidden", !(state.cameraOn && mode === "overlay"));
+  $("#cam-curtain").classList.toggle("hidden", !(state.cameraOn && mode === "curtain"));
+  if (mode === "curtain") setCurtain(state.curtain);
+  $$("#cam-modes button").forEach(b => { const on = b.dataset.mode === mode; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false"); });
+  const hints = { then: "Старое фото. Нажмите «Сейчас», чтобы увидеть камеру.", now: "Только камера. «Раньше» вернёт старое фото.", overlay: "Двигайте ползунок прозрачности и совместите здания.", curtain: "Тяните полосу пальцем: слева раньше, справа сейчас." };
+  if (state.cameraOn) camMessage(hints[mode]);
+}
+function setCurtain(pct) {
+  pct = Math.max(0, Math.min(100, pct));
+  state.curtain = pct;
+  const ov = $("#overlay-img"), c = $("#cam-curtain");
+  if (state.camMode === "curtain") { ov.style.clipPath = `inset(0 ${100 - pct}% 0 0)`; ov.style.webkitClipPath = `inset(0 ${100 - pct}% 0 0)`; }
+  c.style.left = pct + "%";
+  c.setAttribute("aria-valuenow", String(Math.round(pct)));
+}
+function initCamControls() {
+  $$("#cam-modes button").forEach(b => b.addEventListener("click", () => setCamMode(b.dataset.mode)));
+  const hero = $("#hero"), curtain = $("#cam-curtain");
+  let drag = false;
+  const move = e => { const r = hero.getBoundingClientRect(); setCurtain((e.clientX - r.left) / r.width * 100); };
+  hero.addEventListener("pointerdown", e => { if (state.camMode !== "curtain" || !state.cameraOn || e.target.closest("button,input,.slider-wrap")) return; drag = true; hero.setPointerCapture(e.pointerId); move(e); });
+  hero.addEventListener("pointermove", e => { if (drag) move(e); });
+  const end = () => { drag = false; };
+  hero.addEventListener("pointerup", end);
+  hero.addEventListener("pointercancel", end);
+  curtain.addEventListener("keydown", e => { if (e.key === "ArrowLeft") setCurtain(state.curtain - 5); if (e.key === "ArrowRight") setCurtain(state.curtain + 5); });
+}
+function cameraErrorText(e) {
+  const n = e && e.name;
+  if (!window.isSecureContext) return "Камере нужен защищённый адрес (https). Откройте сайт по https-ссылке.";
+  if (n === "NotAllowedError" || n === "SecurityError") return "Доступ к камере запрещён. Разрешите камеру для этого сайта в настройках браузера и нажмите кнопку ещё раз.";
+  if (n === "NotFoundError" || n === "OverconstrainedError") return "Камера не найдена на этом устройстве.";
+  if (n === "NotReadableError" || n === "AbortError") return "Камера занята другим приложением. Закройте его и попробуйте снова.";
+  return "Не удалось включить камеру. Сравните снимки ниже.";
+}
+
 async function startCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    toast("Камера недоступна. Сравните снимки ниже.");
+    camMessage(window.isSecureContext ? "Камера недоступна в этом браузере. Сравните снимки ниже." : "Камере нужен защищённый адрес (https).");
+    toast("Камера недоступна.");
     return;
   }
+  const player = $("#player");
+  const wasPlaying = !player.paused && !player.ended;
+  camMessage("Включаем камеру…");
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
-      audio: false
+      audio: false     // микрофон не нужен: так камера не трогает звук рассказа
     });
     state.stream = stream;
     state.cameraOn = true;
     const video = $("#live-video");
+    video.muted = true; video.defaultMuted = true; video.setAttribute("muted", "");
     video.srcObject = stream;
     video.classList.remove("hidden");
     await video.play();
     $("#then-img").classList.add("hidden");
-    const ov = $("#overlay-img");
-    ov.classList.remove("hidden");
-    ov.style.opacity = state.opacity;
-    $("#cam-slider").classList.remove("hidden");
-    $("#btn-camera").textContent = "Закрыть камеру";
-    toast("Встаньте, как подсказано под фото, и двигайте ползунок.");
+    $("#overlay-img").classList.remove("hidden");
+    $("#btn-camera").textContent = "Выключить камеру";
+    $("#btn-camera").classList.add("on");
+    $("#cam-modes").classList.remove("hidden");
+    state.opacity = 0.55; $("#opacity").value = "0.55"; $("#opacity-val").textContent = "55%";
+    state.curtain = 50;
+    setCamMode("overlay");
+    // на iOS включение камеры иногда ставит звук на паузу: возвращаем, если рассказ играл
+    if (wasPlaying && player.paused && !player.ended) player.play().catch(() => {});
+    setTimeout(() => { if (wasPlaying && player.paused && !player.ended && state.cameraOn) player.play().catch(() => {}); }, 600);
   } catch (e) {
     console.warn(e);
-    toast("Нет доступа к камере.");
-    stopCamera();
+    camMessage(cameraErrorText(e));
+    toast(cameraErrorText(e));
+    stopCamera(true);
   }
 }
 
-function stopCamera() {
+function stopCamera(keepMessage) {
   if (state.stream) {
     state.stream.getTracks().forEach(t => t.stop());
     state.stream = null;
@@ -1046,10 +1105,16 @@ function stopCamera() {
   video.srcObject = null;
   video.classList.add("hidden");
   state.cameraOn = false;
-  $("#btn-camera").textContent = "Открыть камеру";
+  const btn = $("#btn-camera");
+  btn.textContent = "Совместить с камерой";
+  btn.classList.remove("on");
   $("#then-img").classList.remove("hidden");
-  $("#overlay-img").classList.add("hidden");
+  const ov = $("#overlay-img");
+  ov.classList.add("hidden"); ov.style.clipPath = ""; ov.style.webkitClipPath = ""; ov.style.opacity = "";
   $("#cam-slider").classList.add("hidden");
+  $("#cam-curtain").classList.add("hidden");
+  $("#cam-modes").classList.add("hidden");
+  if (!keepMessage) camMessage("");
 }
 
 function imHere() {
@@ -1133,7 +1198,7 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v5") return;
+    if (lsGet("simonov-offline") === "v7") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1142,7 +1207,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v5"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v7"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -1159,6 +1224,7 @@ async function main() {
   $("#cover-place").textContent = state.data.place;
   initCompare();
   initLightbox();
+  initCamControls();
   renderList();
   applyHash();
 
@@ -1226,7 +1292,7 @@ async function main() {
   $("#cmp-frame").addEventListener("dblclick", () => { const ph = currentPhoto(); openLightboxForCurrent(state.cmp > 50 ? ph.src : ph.now.src); });
   $("#opacity").addEventListener("input", (e) => {
     state.opacity = Number(e.target.value);
-    $("#overlay-img").style.opacity = state.opacity;
+    if (state.camMode === "overlay") $("#overlay-img").style.opacity = state.opacity;
     $("#opacity-val").textContent = Math.round(state.opacity * 100) + "%";
   });
   $("#opt-arrive").addEventListener("change", e => {

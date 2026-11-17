@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v5, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v7, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v6"/);
+  assert.match(sw, /const CACHE = "simonov-v7"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v5"/);
+  assert.match(app, /"simonov-offline"\) === "v7"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -122,4 +122,25 @@ test("конец рассказа отмечает остановку и пер�
   assert.match(m[0], /markVisited\(id\)/);
   assert.ok(!/startNarration|openPoint/.test(m[0]), "после конца рассказа следующий сам не включается");
   assert.match(m[0], /nextUnvisitedIndex\(\)/);
+});
+
+test("карточка остановки: сверху накладка (камера, компас), затем фото, плеер, архив; кнопки камеры не дублируются внизу", () => {
+  const pos = id => { const i = html.indexOf(`id="${id}"`); assert.ok(i > 0, id); return i; };
+  assert.ok(pos("overlay-bar") < pos("btn-camera") && pos("btn-camera") < pos("hero"), "кнопка камеры выше hero");
+  assert.ok(pos("btn-compass") < pos("hero"), "компас выше hero");
+  assert.ok(pos("hero") < pos("audio-box") && pos("audio-box") < pos("thumbs") && pos("thumbs") < pos("stand") && pos("stand") < pos("compare"));
+  assert.equal(html.split('id="btn-camera"').length - 1, 1);
+  assert.equal(html.split('id="btn-compass"').length - 1, 1);
+  const row = html.slice(html.indexOf('class="row-btns"'), html.indexOf('id="btn-done"'));
+  assert.ok(!/btn-camera|btn-compass/.test(row), "в нижнем ряду кнопок камеры больше нет");
+});
+
+test("накладка: четыре режима, шторка, ползунок прозрачности, сообщения об отказе камеры, звук не отключается", () => {
+  for (const m of ["then", "overlay", "curtain", "now"]) assert.ok(html.includes(`data-mode="${m}"`), m);
+  for (const id of ["cam-modes", "cam-curtain", "cam-slider", "opacity", "cam-msg"]) assert.ok(html.includes(`id="${id}"`), id);
+  assert.match(app, /function setCamMode/);
+  assert.match(app, /function setCurtain/);
+  assert.match(app, /NotAllowedError/);
+  assert.match(app, /audio: false/);
+  assert.match(html, /<video id="live-video"[^>]*\bmuted\b[^>]*playsinline|<video id="live-video"[^>]*playsinline[^>]*\bmuted\b/);
 });
