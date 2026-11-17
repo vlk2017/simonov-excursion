@@ -574,3 +574,16 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .point-card.visited .dist { color:#b9d0a2; }
 .btn-done { width:100%; margin:10px 0 0; min-height:44px; }
 .btn-done:disabled { opacity:.7; color:#c6d4b9; border-color:#59644f; cursor:default; }
+
+
+/* On-site museum scene */
+.look-card { margin:18px 0 22px; padding:18px; background:#1b1b1a; border:1px solid #625640; border-left:3px solid var(--gold); }
+.look-kicker { color:var(--gold); font:600 10px var(--font-sans); letter-spacing:.2em; margin-bottom:16px; }
+.look-step { display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; margin:0 0 14px; }
+.look-step > span { color:var(--gold); font:500 20px var(--font-serif); }
+.look-step b { display:block; color:var(--paper); font-size:13px; margin:1px 0 4px; }
+.look-step p { color:#c4beb2; font-size:13px; line-height:1.55; margin:0; }
+.look-confidence { border-top:1px solid #403b32; padding-top:12px; color:#aaa397; font-size:11px; line-height:1.5; margin:12px 0 8px; }
+.look-sources { display:flex; flex-wrap:wrap; gap:6px 14px; }
+.look-sources a { color:#d4b06a; font-size:11px; text-decoration:underline; text-underline-offset:3px; }
+@media(max-width:600px) { .look-card { padding:15px; margin:14px 0 18px; } .look-step p { font-size:12px; } }
