@@ -566,3 +566,11 @@ audio { display:block; height:42px; filter:grayscale(1); }
 
 .row-btns { flex-wrap:wrap; }
 #btn-compass { border-color:rgba(213,199,163,.5); }
+
+
+/* Route progress and completed stops */
+.nav-progress { margin:12px 0 0; padding-top:10px; border-top:1px solid #39352e; color:#d4b06a; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+.point-card.visited { opacity:.68; border-color:#56614b; }
+.point-card.visited .dist { color:#b9d0a2; }
+.btn-done { width:100%; margin:10px 0 0; min-height:44px; }
+.btn-done:disabled { opacity:.7; color:#c6d4b9; border-color:#59644f; cursor:default; }
