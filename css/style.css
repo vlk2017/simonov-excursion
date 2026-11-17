@@ -656,3 +656,14 @@ audio { display:block; height:42px; filter:grayscale(1); }
 
 .offline-audio { margin:12px 0; }
 .offline-audio .btn-ghost { min-height:44px; width:100%; }
+
+/* ---- Archival film insert ---- */
+.archival-film { margin:14px 16px 16px; padding:clamp(18px,4vw,28px); background:linear-gradient(145deg,#242321,#171716); border:1px solid #625b4b; border-top:2px solid var(--gold); color:var(--paper); }
+.film-kicker { color:var(--gold); font-size:10px; letter-spacing:.24em; margin-bottom:12px; }
+.archival-film h3 { font:500 clamp(27px,5vw,38px)/1.02 var(--font-serif); margin-bottom:8px; }
+.archival-film p { color:#d0cbc1; font-size:14px; line-height:1.65; margin-top:9px; }
+.archival-film .film-date { color:var(--gold-2); font-size:12px; letter-spacing:.06em; text-transform:uppercase; }
+.film-links { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.film-link { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; border:1px solid #766b55; color:var(--paper); text-decoration:none; font-size:11px; letter-spacing:.04em; }
+.film-link:hover { background:#353127; border-color:var(--gold); }
+.archival-film .film-rights { color:#aaa49a; font-size:11px; border-top:1px solid #48443b; padding-top:12px; margin-top:16px; }
