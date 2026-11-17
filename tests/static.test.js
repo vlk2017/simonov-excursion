@@ -77,17 +77,27 @@ test("запрос к Valhalla: только pedestrian, есть таймаут
   assert.match(app, /"X-Client-Id"/);
 });
 
-test("аудио: все рассказы лежат локально (audio/heygen/*.mp3), внешних ссылок нет, файлы не пустые", () => {
+test("аудио: основной источник — внешний (HeyGen), запасной — локальный audio/heygen/*.mp3, оба на месте", () => {
   for (const p of data.points) {
-    assert.ok(!/^https?:/.test(p.audio), `${p.id}: внешняя ссылка на аудио`);
-    assert.match(p.audio, /^audio\/heygen\/0\d-.+\.mp3$/);
-    const f = path.join(root, p.audio);
-    assert.ok(fs.existsSync(f), `${p.audio} не найден`);
-    assert.ok(fs.statSync(f).size > 1_000_000, `${p.audio} подозрительно мал`);
+    assert.match(p.audio, /^https:\/\/resource2\.heygen\.ai\/.+\.mp3$/, `${p.id}: основной источник должен быть внешним`);
+    assert.match(p.audioLocal, /^audio\/heygen\/0\d-.+\.mp3$/, `${p.id}: нет локального запасного файла`);
+    const f = path.join(root, p.audioLocal);
+    assert.ok(fs.existsSync(f), `${p.audioLocal} не найден`);
+    assert.ok(fs.statSync(f).size > 1_000_000, `${p.audioLocal} подозрительно мал`);
     const head = fs.readFileSync(f).subarray(0, 3);
-    assert.ok(head.toString("latin1") === "ID3" || (head[0] === 0xff && (head[1] & 0xe0) === 0xe0), `${p.audio}: это не mp3`);
+    assert.ok(head.toString("latin1") === "ID3" || (head[0] === 0xff && (head[1] & 0xe0) === 0xe0), `${p.audioLocal}: это не mp3`);
   }
   assert.equal(new Set(data.points.map(p => p.audio)).size, 8);
+  assert.equal(new Set(data.points.map(p => p.audioLocal)).size, 8);
+});
+
+test("плеер: переключение на запасной источник при ошибке, сторожевой таймер, плеер стоит сразу под фото", () => {
+  assert.match(app, /function switchNarrationSource/);
+  assert.match(app, /player\.addEventListener\("error", onNarrationError\)/);
+  assert.match(app, /AUDIO_START_TIMEOUT_MS/);
+  const iHero = html.indexOf('id="hero"'), iAudio = html.indexOf('id="player"'), iThumbs = html.indexOf('id="thumbs"'), iStand = html.indexOf('id="stand"'), iText = html.indexOf('id="script-text"');
+  assert.ok(iHero < iAudio && iAudio < iThumbs && iAudio < iStand && iAudio < iText, "плеер должен стоять сразу после фото, до текста и остального");
+  assert.ok(/id="player"[^>]*playsinline/.test(html), "playsinline для iOS");
 });
 
 test("старые локальные audio/*.mp3 не удалены", () => {
@@ -95,18 +105,21 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша поднята до v4, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v5, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v4"/);
+  assert.match(sw, /const CACHE = "simonov-v5"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v4"/);
+  assert.match(app, /"simonov-offline"\) === "v5"/);
+  assert.match(sw, /controllerchange|skipWaiting/);
+  assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
 });
 
 test("конец рассказа отмечает остановку и переключает навигацию (решение владельца)", () => {
   const m = app.match(/player\.addEventListener\("ended", \(\) => \{[\s\S]*?\n  \}\);/);
   assert.ok(m, "обработчик ended не найден");
-  assert.match(m[0], /markVisited\(state\.currentId\)/);
+  assert.match(m[0], /markVisited\(id\)/);
+  assert.ok(!/startNarration|openPoint/.test(m[0]), "после конца рассказа следующий сам не включается");
   assert.match(m[0], /nextUnvisitedIndex\(\)/);
 });

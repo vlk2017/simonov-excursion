@@ -187,7 +187,8 @@ const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers
     await page.goto("http://127.0.0.1:8099/", { waitUntil: "networkidle2" });
     await geo(55.7149, 37.6571, 10);
     await page.evaluate(() => localStorage.clear());
-    await page.evaluate(s => document.querySelector(s).click(), "#btn-start"); await sleep(1200);
+    await page.evaluate(s => document.querySelector(s).click(), "#btn-start"); await sleep(800);
+    await page.evaluate(s => document.querySelector(s).click(), "#btn-back-point"); await sleep(400);   // «Начать» открывает рассказ; возвращаемся к карте
     mode = "ok";
     await page.evaluate(s => document.querySelector(s).click(), "#nav-route"); await sleep(1300);
     const ov = await page.evaluate(() => { const h = document.querySelector("#navigation-hud").getBoundingClientRect(); const els = ["#nav-compass","#nav-turn-title","#nav-gps","#nav-arrow"].map(s => { const r = document.querySelector(s).getBoundingClientRect(); return [s, Math.round(r.width), Math.round(r.height), r.right <= document.documentElement.clientWidth + 1]; }); return { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, hudW: Math.round(h.width), els }; });
@@ -208,9 +209,9 @@ const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers
     return { first: first.num, visited: Object.keys(state.visited), next: second.num, navStep: document.querySelector("#nav-step").textContent, navTitle: document.querySelector("#nav-title").textContent, toast: document.querySelector("#toast").textContent, secondTitle: second.title, audio: document.querySelector("#player").getAttribute("src") };
   });
   ok("Конец аудио: точка 1 отмечена, навигация на точке 2, тост называет следующую", ended.first === 1 && ended.visited.length === 1 && ended.next === 2 && ended.navStep === "02" && ended.navTitle === ended.secondTitle && ended.toast.includes(ended.secondTitle), JSON.stringify(ended));
-  ok("Плеер берёт локальный файл audio/heygen", /^audio\/heygen\//.test(ended.audio), ended.audio);
+  ok("Плеер берёт основной внешний источник HeyGen", /^https:\/\/resource2\.heygen\.ai\//.test(ended.audio), ended.audio);
   const sw = await page.evaluate(async () => { const r = await navigator.serviceWorker.ready; await new Promise(r => setTimeout(r, 1500)); return (await caches.keys()); });
-  ok("Service worker активен, кэш simonov-v4", sw.includes("simonov-v4"), JSON.stringify(sw));
+  ok("Service worker активен, кэш simonov-v5", sw.includes("simonov-v5"), JSON.stringify(sw));
   const expectedNoise = e => /Failed to load resource|ERR_FAILED|status of (500|429)|net::ERR/.test(e);
   const real = errors.filter(e => !expectedNoise(e));
   ok("Нет неожиданных ошибок консоли и pageerror", real.length === 0, real.join(" | "));
