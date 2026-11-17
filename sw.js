@@ -1,9 +1,9 @@
 /* Simonov excursion: offline cache. Pages and data: network first. Audio and photos: cache first. */
-const CACHE = "simonov-v4";
+const CACHE = "simonov-v5";
 const CORE = ["./", "index.html", "css/style.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -35,7 +35,7 @@ async function rangeFrom(resp, range) {
   end = Math.min(end, size - 1);
   return new Response(buf.slice(start, end + 1), {
     status: 206, statusText: "Partial Content",
-    headers: { "Content-Type": resp.headers.get("Content-Type") || "audio/mpeg", "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes" }
+    headers: { "Content-Type": "audio/mpeg", "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes" }
   });
 }
 
@@ -44,23 +44,35 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
+  const isAudio = /\.mp3$/.test(url.pathname);
   const media = /\/(audio|img)\//.test(url.pathname) || /\/scripts\/.*\.txt$/.test(url.pathname);
-  if (media) {
+  if (isAudio) {
+    // Аудио: из кэша отдаём только если файл там уже целиком (с правильным 206 на Range, как требует iOS Safari).
+    // Если в кэше нет — НЕ перехватываем запрос: браузер сам идёт в сеть с Range и начинает играть сразу,
+    // а не ждёт, пока service worker скачает весь файл. Кэшируем только по кнопке «Скачать рассказы для офлайна».
     e.respondWith((async () => {
       const c = await caches.open(CACHE);
-      const key = url.pathname.endsWith(".mp3") ? new Request(url.href) : req;
-      let hit = await c.match(key, { ignoreSearch: true });
-      if (!hit) {
-        const net = await fetch(url.href);
-        if (net.ok && net.status === 200) { await c.put(url.href, net.clone()); hit = net; }
-        else return net;
-      }
+      const hit = await c.match(new Request(url.href), { ignoreSearch: true });
+      if (!hit) return fetch(req);
       const range = req.headers.get("range");
       return range ? rangeFrom(hit.clone(), range) : hit;
     })());
     return;
   }
-  e.respondWith(fetch(req).then(r => {
+  if (media) {
+    e.respondWith((async () => {
+      const c = await caches.open(CACHE);
+      let hit = await c.match(req, { ignoreSearch: true });
+      if (!hit) {
+        const net = await fetch(url.href);
+        if (net.ok && net.status === 200) { await c.put(url.href, net.clone()); hit = net; }
+        else return net;
+      }
+      return hit;
+    })());
+    return;
+  }
+  e.respondWith(fetch(req, { cache: "no-cache" }).then(r => {
     if (r.ok) { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); }
     return r;
   }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match("index.html"))));
