@@ -147,6 +147,26 @@ function renderRouteGuidance(maneuvers) {
     box.appendChild(line);
   });
 }
+function decodePolyline6(encoded) {
+  let index = 0, lat = 0, lon = 0;
+  const points = [];
+  const readValue = () => {
+    let result = 0, shift = 0, byte;
+    do {
+      if (index >= encoded.length) throw new Error("Некорректная геометрия маршрута");
+      byte = encoded.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+    return (result & 1) ? ~(result >> 1) : (result >> 1);
+  };
+  while (index < encoded.length) {
+    lat += readValue();
+    lon += readValue();
+    points.push([lat / 1e6, lon / 1e6]);
+  }
+  return points;
+}
 async function buildWalkingRoute(force = false) {
   if (!state.data || !state.map) return;
   const p = state.data.points[nextUnvisitedIndex()];
@@ -178,20 +198,18 @@ async function buildWalkingRoute(force = false) {
           { lat: p.lat, lon: p.lon }
         ],
         costing: "pedestrian",
-        units: "kilometers",
-        language: "ru-RU",
-        shape_format: "geojson",
-        directions_options: { units: "kilometers" }
+        units: "km",
+        language: "ru-RU"
       })
     });
     if (!response.ok) throw new Error("Маршрутизатор ответил " + response.status);
     const data = await response.json();
     const leg = data.trip?.legs?.[0];
-    const coords = leg?.shape?.coordinates;
+    const coords = typeof leg?.shape === "string" ? decodePolyline6(leg.shape) : [];
     if (!Array.isArray(coords) || coords.length < 2) throw new Error("В ответе нет линии маршрута");
     if (state.routeLayer) state.map.removeLayer(state.routeLayer);
-    state.routeLayer = L.geoJSON({ type:"LineString", coordinates:coords }, {
-      style: { color:"#e6b85f", weight:6, opacity:.96, lineCap:"round", lineJoin:"round" }
+    state.routeLayer = L.polyline(coords, {
+      color:"#e6b85f", weight:6, opacity:.96, lineCap:"round", lineJoin:"round"
     }).addTo(state.map);
     const summary = leg.summary || data.trip.summary || {};
     state.routeInfo = {
