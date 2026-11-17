@@ -95,7 +95,7 @@ test("плеер: переключение на запасной источни�
   assert.match(app, /function switchNarrationSource/);
   assert.match(app, /player\.addEventListener\("error", onNarrationError\)/);
   assert.match(app, /AUDIO_START_TIMEOUT_MS/);
-  const iHero = html.indexOf('id="hero"'), iAudio = html.indexOf('id="player"'), iThumbs = html.indexOf('id="thumbs"'), iStand = html.indexOf('id="stand"'), iText = html.indexOf('id="script-text"');
+  const iHero = html.indexOf('id="hero"'), iAudio = html.indexOf('id="player"'), iThumbs = html.indexOf('id="photo-caption"'), iStand = html.indexOf('id="stand"'), iText = html.indexOf('id="script-text"');
   assert.ok(iHero < iAudio && iAudio < iThumbs && iAudio < iStand && iAudio < iText, "плеер должен стоять сразу после фото, до текста и остального");
   assert.ok(/id="player"[^>]*playsinline/.test(html), "playsinline для iOS");
 });
@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v12, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v13, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v12"/);
+  assert.match(sw, /const CACHE = "simonov-v13"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v12"/);
+  assert.match(app, /"simonov-offline"\) === "v13"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -128,7 +128,7 @@ test("карточка остановки: сверху накладка (кам
   const pos = id => { const i = html.indexOf(`id="${id}"`); assert.ok(i > 0, id); return i; };
   assert.ok(pos("overlay-bar") < pos("btn-camera") && pos("btn-camera") < pos("hero"), "кнопка камеры выше hero");
   assert.ok(pos("btn-compass") < pos("hero"), "компас выше hero");
-  assert.ok(pos("hero") < pos("audio-box") && pos("audio-box") < pos("thumbs") && pos("thumbs") < pos("stand") && pos("stand") < pos("compare"));
+  assert.ok(pos("hero") < pos("audio-box") && pos("audio-box") < pos("photo-caption") && pos("photo-caption") < pos("stand") && pos("stand") < pos("compare"));
   assert.equal(html.split('id="btn-camera"').length - 1, 1);
   assert.equal(html.split('id="btn-compass"').length - 1, 1);
   const row = html.slice(html.indexOf('class="row-btns"'), html.indexOf('id="btn-done"'));
@@ -148,7 +148,7 @@ test("накладка: четыре режима, шторка, ползуно�
 test("карточка остановки: кнопки «Предыдущая»/«Следующая точка» сверху под плеером и дубль внизу, логика перехода в app.js", () => {
   const i = s => { const k = html.indexOf(s); assert.ok(k > 0, s); return k; };
   const top = i('id="pt-nav-top"'), bottom = i('id="pt-nav-bottom"');
-  assert.ok(i('id="player"') < top && top < i('id="thumbs"'), "верхняя панель сразу под плеером");
+  assert.ok(i('id="player"') < top && top < i('id="photo-caption"'), "верхняя панель сразу под плеером");
   assert.ok(bottom > i('id="photo-meta"'), "нижний дубль в конце карточки");
   assert.equal(html.split("js-prev").length - 1, 2);
   assert.equal(html.split("js-next").length - 1, 2);
@@ -185,4 +185,18 @@ test("рефотосъёмка: два шага, жесты, шторка на �
   assert.match(app, /opacity = 0\.35/, "накладка на шаге 1 ~35%");
   assert.match(app, /vp\.bearing == null/, "азимут показывается только если он есть в данных");
   assert.match(app, /state\.camMode = "curtain"/, "после совмещения по умолчанию шторка");
+});
+
+test("карусель архивных фото: scroll-snap, стрелки, точки, один слайд — без управления; миниатюр-списка нет", () => {
+  for (const id of ["car", "car-track", "car-prev", "car-next", "car-dots", "hero-count"]) assert.ok(html.includes(`id="${id}"`), id);
+  assert.ok(!html.includes('id="thumbs"'), "список миниатюр убран");
+  assert.ok(html.indexOf('id="car"') > html.indexOf('id="hero"') && html.indexOf('id="car"') < html.indexOf('id="player"'), "карусель в верхней рамке над плеером");
+  assert.ok(html.indexOf('id="overlay-bar"') < html.indexOf('id="hero"'), "блок накладки остаётся сверху");
+  const css = read("css/style.css");
+  assert.match(css, /scroll-snap-type:\s*x mandatory/);
+  assert.match(css, /\.car\.single \.car-arrow, \.car\.single \.car-dots \{ display:none; \}/);
+  assert.match(css, /\.hero\.cam-on \.car/);
+  assert.match(app, /function buildCarousel/);
+  assert.match(app, /classList\.toggle\("single", n < 2\)/);
+  assert.match(app, /openLightboxForCurrent\(ph\.src\)/, "тап по слайду открывает фото на весь экран");
 });

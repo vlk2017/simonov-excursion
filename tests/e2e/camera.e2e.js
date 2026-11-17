@@ -33,11 +33,11 @@ const modeState = page => page.evaluate(() => { const ov = document.querySelecto
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForFunction(() => !document.querySelector("#toast").classList.contains("show"), { timeout: 8000 }).catch(() => {});
   await sleep(300);
-  const lay = await page.evaluate(() => { const r = s => { const b = document.querySelector(s).getBoundingClientRect(); return { top: Math.round(b.top + scrollY), bottom: Math.round(b.bottom + scrollY), h: Math.round(b.height), w: Math.round(b.width) }; }; return { cam: r("#btn-camera"), comp: r("#btn-compass"), hero: r("#hero"), audioBox: r("#audio-box"), play: r("#btn-play"), thumbs: r("#thumbs"), vh: innerHeight, sw: document.documentElement.scrollWidth }; });
+  const lay = await page.evaluate(() => { const r = s => { const b = document.querySelector(s).getBoundingClientRect(); return { top: Math.round(b.top + scrollY), bottom: Math.round(b.bottom + scrollY), h: Math.round(b.height), w: Math.round(b.width) }; }; return { cam: r("#btn-camera"), comp: r("#btn-compass"), hero: r("#hero"), audioBox: r("#audio-box"), play: r("#btn-play"), thumbs: r("#photo-caption"), vh: innerHeight, sw: document.documentElement.scrollWidth }; });
   ok("Кнопка «Совместить с камерой» выше фото и на первом экране (390×844)", lay.cam.bottom < lay.hero.top && lay.cam.bottom <= lay.vh && lay.cam.h >= 56 && lay.cam.w > 200, JSON.stringify(lay.cam));
   ok("Компас рядом с камерой (выше фото, ≥44 px)", lay.comp.bottom < lay.hero.top && lay.comp.h >= 44, JSON.stringify(lay.comp));
   ok("«Начать рассказ» остаётся на первом экране сразу под верхним изображением", lay.play.bottom <= lay.vh && lay.audioBox.top - lay.hero.bottom < 40, JSON.stringify({ hero: lay.hero, audioBox: lay.audioBox, play: lay.play, vh: lay.vh }));
-  ok("Архивные фото (миниатюры) ниже плеера; нет горизонтального скролла", lay.thumbs.top >= lay.audioBox.bottom - 2 && lay.sw <= 391, JSON.stringify({ thumbs: lay.thumbs, sw: lay.sw }));
+  ok("Подпись архивного фото ниже плеера (карусель сверху в рамке); нет горизонтального скролла", lay.thumbs.top >= lay.audioBox.bottom - 2 && lay.sw <= 391, JSON.stringify({ thumbs: lay.thumbs, sw: lay.sw }));
   ok("Нижних дублей кнопок камеры/компаса нет", await page.evaluate(() => document.querySelectorAll("#btn-camera").length === 1 && !document.querySelector(".row-btns #btn-camera, .row-btns #btn-compass")));
   ok("До включения камеры режимы скрыты", await page.$eval("#cam-modes", e => e.classList.contains("hidden")));
   await page.screenshot({ path: process.env.SHOT_TOP || "/tmp/card_top_390.png" });

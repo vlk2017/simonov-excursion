@@ -668,19 +668,7 @@ function openPoint(id, play) {
   updateApproach();
   if (play) startNarration();   // тот же синхронный вызов из обработчика нажатия: iOS разрешает звук только так
 
-  // thumbnails
-  const th = $("#thumbs");
-  th.innerHTML = "";
-  p.photos.forEach((ph, i) => {
-    const b = document.createElement("button");
-    b.className = "thumb";
-    b.setAttribute("role", "listitem");
-    b.setAttribute("aria-label", `${ph.title}, ${ph.year}`);
-    b.innerHTML = `<img src="${thumbOf(ph.src)}" alt="" loading="lazy"><span>${esc(String(ph.year).replace(/^(около|ок\.)\s*/, "~").slice(0, 9))}</span>${ph.now ? '<i title="есть пара сейчас">⇆</i>' : ""}`;
-    b.addEventListener("click", () => selectPhoto(i));
-    th.appendChild(b);
-  });
-  th.classList.toggle("hidden", p.photos.length < 2);
+  buildCarousel(p);
 
   // narration text
   const tb = $("#script-text");
@@ -700,17 +688,79 @@ function openPoint(id, play) {
   selectPhoto(0);
 }
 
+/* ---------- Карусель архивных фото в рамке сверху (при включённой камере скрыта: там живая накладка) ---------- */
+function buildCarousel(p) {
+  const track = $("#car-track"), dots = $("#car-dots");
+  track.innerHTML = ""; dots.innerHTML = "";
+  const n = p.photos.length;
+  p.photos.forEach((ph, i) => {
+    const s = document.createElement("div");
+    s.className = "car-slide";
+    s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "слайд"); s.setAttribute("aria-label", `${i + 1} из ${n}`);
+    const img = document.createElement("img");
+    img.alt = `${ph.title}, ${ph.year}`; img.draggable = false; img.dataset.i = String(i);
+    img.addEventListener("click", () => openLightboxForCurrent(ph.src));
+    s.appendChild(img); track.appendChild(s);
+    const d = document.createElement("button");
+    d.type = "button"; d.className = "car-dot"; d.setAttribute("aria-label", `Фото ${i + 1} из ${n}: ${ph.year}`);
+    d.addEventListener("click", () => carGo(i));
+    dots.appendChild(d);
+  });
+  $("#car").classList.toggle("single", n < 2);   // одно фото: ни стрелок, ни точек
+  track.scrollLeft = 0;
+}
+function carBind(k) {
+  const p = currentPoint(); if (!p) return;
+  const img = $$("#car-track .car-slide img")[k];
+  if (!img || img.dataset.bound || !p.photos[k]) return;
+  img.dataset.bound = "1";
+  bindImg(img, p.photos[k].src, p.photos[k].remote, `${p.photos[k].title}, ${p.photos[k].year}`);
+}
+function carShow(i) {
+  const p = currentPoint(); if (!p) return;
+  const n = p.photos.length;
+  [i - 1, i, i + 1].forEach(k => { if (k >= 0 && k < n) carBind(k); });
+  $$("#car-dots .car-dot").forEach((d, k) => { d.classList.toggle("on", k === i); if (k === i) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current"); });
+  $("#car-prev").disabled = i <= 0;
+  $("#car-next").disabled = i >= n - 1;
+  const track = $("#car-track"), w = track.clientWidth;
+  if (w && Math.abs(track.scrollLeft - i * w) > 2) track.scrollTo({ left: i * w, behavior: state.carInstant ? "instant" : "smooth" });
+}
+function carGo(i) {
+  const p = currentPoint(); if (!p) return;
+  i = Math.max(0, Math.min(p.photos.length - 1, i));
+  if (i !== state.photoIdx) selectPhoto(i);
+  else carShow(i);
+}
+function initCarousel() {
+  const track = $("#car-track");
+  let t = null;
+  const settle = () => {
+    const w = track.clientWidth; if (!w) return;
+    const i = Math.round(track.scrollLeft / w), p = currentPoint();
+    if (p && i >= 0 && i < p.photos.length && i !== state.photoIdx) selectPhoto(i);
+  };
+  track.addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(settle, 90); }, { passive: true });
+  $("#car-prev").addEventListener("click", () => carGo((state.photoIdx || 0) - 1));
+  $("#car-next").addEventListener("click", () => carGo((state.photoIdx || 0) + 1));
+  $("#car").addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); carGo((state.photoIdx || 0) - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); carGo((state.photoIdx || 0) + 1); }
+  });
+  window.addEventListener("resize", () => { const i = state.photoIdx || 0, w = track.clientWidth; if (w) track.scrollTo({ left: i * w, behavior: "instant" }); });
+}
+
 function selectPhoto(i) {
   const p = currentPoint();
   if (!p) return;
   state.photoIdx = i;
   const ph = p.photos[i];
-  $$("#thumbs .thumb").forEach((b, k) => b.classList.toggle("on", k === i));
+  carShow(i);
   bindImg($("#then-img"), ph.src, ph.remote, ph.title);
   bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
   if (!state.rp.on) { rpReset(); applyRpTransform(); }
   $("#hero-count").textContent = p.photos.length > 1 ? `${i + 1} / ${p.photos.length}` : "";
-  $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+  $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${ph.commons ? ` · <a href="${esc(ph.commons)}" target="_blank" rel="noopener">источник: Викисклад</a>` : ""}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
 
   // where to stand
   const vp = ph.viewpoint;
@@ -1157,6 +1207,7 @@ function setCurtain(pct) {
 function initCamControls() {
   $$("#cam-modes button").forEach(b => b.addEventListener("click", () => { if (b.dataset.mode === "rephoto") startRephoto(); else setCamMode(b.dataset.mode); }));
   initRephoto();
+  initCarousel();
   const hero = $("#hero"), curtain = $("#cam-curtain");
   let drag = false;
   const move = e => { const r = hero.getBoundingClientRect(); setCurtain((e.clientX - r.left) / r.width * 100); };
@@ -1425,6 +1476,7 @@ async function startCamera() {
     video.classList.remove("hidden");
     await video.play();
     $("#then-img").classList.add("hidden");
+    $("#hero").classList.add("cam-on");
     $("#overlay-img").classList.remove("hidden");
     $("#btn-camera").textContent = "Выключить камеру";
     $("#btn-camera").classList.add("on");
@@ -1459,6 +1511,7 @@ function stopCamera(keepMessage) {
   btn.textContent = "Совместить с камерой";
   btn.classList.remove("on");
   $("#then-img").classList.remove("hidden");
+  $("#hero").classList.remove("cam-on");
   if (state.rp && state.rp.on) exitRephoto(true);
   const ov = $("#overlay-img"), wrap = $("#overlay-wrap");
   ov.classList.add("hidden"); wrap.style.clipPath = ""; wrap.style.webkitClipPath = ""; ov.style.opacity = "";
@@ -1550,7 +1603,7 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v12") return;
+    if (lsGet("simonov-offline") === "v13") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1559,7 +1612,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v12"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v13"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
