@@ -19,6 +19,12 @@ const state = {
   markers: {},
   youMarker: null,
   userRoute: null,
+  routeLayer: null,
+  routeRequested: false,
+  routeBusy: false,
+  routeTargetId: null,
+  routeLastOrigin: null,
+  routeInfo: null,
   accuracyCircle: null,
   targetHalo: null,
   navIndex: 0,
@@ -90,6 +96,7 @@ function updateNavigator() {
     $("#nav-note").textContent = "Спасибо, что прошли этот маршрут.";
     $("#nav-route").disabled = true;
     $("#nav-external").classList.add("hidden");
+    $("#route-guidance").textContent = "";
     state.navIndex = 0;
     updateRouteOnMap();
     return;
@@ -101,19 +108,114 @@ function updateNavigator() {
   $("#nav-title").textContent = p.title;
   const d = state.pos ? haversine(state.pos.lat, state.pos.lon, p.lat, p.lon) : null;
   const accuracy = state.pos && state.pos.acc ? Math.round(state.pos.acc) : null;
-  $("#nav-distance").textContent = d == null
-    ? "Нажмите «Найти меня». Покажем ваше положение и расстояние до точки."
-    : accuracy > 35
-      ? `До точки примерно ${fmtDist(d)} по прямой. GPS неточен (±${accuracy} м).`
-      : d <= 20 ? "Вы рядом с остановкой. Найдите безопасное место и осмотритесь."
-      : `До точки ${fmtDist(d)} по прямой · направление ${dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon))}`;
+  const activeRoute = state.routeInfo && state.routeTargetId === p.id;
+  $("#nav-distance").textContent = activeRoute
+    ? `Пешком ${fmtDist(state.routeInfo.distance)} · около ${Math.max(1,Math.round(state.routeInfo.duration/60))} мин.`
+    : d == null
+      ? "Нажмите «Проложить пеший путь», затем разрешите геолокацию."
+      : accuracy > 35
+        ? `До точки примерно ${fmtDist(d)} по прямой. GPS неточен (±${accuracy} м).`
+        : d <= 20 ? "Вы рядом с остановкой. Найдите безопасное место и осмотритесь."
+        : `До точки ${fmtDist(d)} по прямой · ${dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon))}`;
   $("#nav-open").textContent = "Рассказ об остановке";
-  $("#nav-note").textContent = p.dir || "На месте откройте исторический вид и сравните его с тем, что перед вами.";
+  $("#nav-note").textContent = p.scene?.where || p.dir || "На месте откройте исторический вид и сравните его с тем, что перед вами.";
   const origin = state.pos ? state.pos.lat + "," + state.pos.lon : "";
   const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(p.lat + "," + p.lon) + "&travelmode=walking" + (origin ? "&origin=" + encodeURIComponent(origin) : "");
   $("#nav-external").href = url;
   $("#nav-external").classList.remove("hidden");
   updateRouteOnMap();
+}
+function clearPedestrianRoute() {
+  if (state.routeLayer && state.map) state.map.removeLayer(state.routeLayer);
+  state.routeLayer = null;
+  state.routeInfo = null;
+  state.routeTargetId = null;
+  state.routeLastOrigin = null;
+}
+function renderRouteGuidance(maneuvers) {
+  const box = $("#route-guidance");
+  if (!box) return;
+  box.replaceChildren();
+  if (!maneuvers || !maneuvers.length) return;
+  const heading = document.createElement("strong");
+  heading.textContent = "Как идти";
+  box.appendChild(heading);
+  maneuvers.slice(0,3).forEach((m, i) => {
+    const line = document.createElement("p");
+    const distance = Number(m.length) > 0 ? fmtDist(Number(m.length) * 1000) : "";
+    line.textContent = `${i + 1}. ${m.instruction || "Продолжайте по маршруту"}${distance ? " · " + distance : ""}`;
+    box.appendChild(line);
+  });
+}
+async function buildWalkingRoute(force = false) {
+  if (!state.data || !state.map) return;
+  const p = state.data.points[nextUnvisitedIndex()];
+  if (!p) { fitFullRoute(); return; }
+  if (!state.pos) {
+    state.routeRequested = true;
+    enableGps();
+    toast("Определяем ваше место. Как только GPS ответит, построим пеший путь.");
+    return;
+  }
+  if (state.routeBusy) return;
+  if (!force && state.routeInfo && state.routeTargetId === p.id && state.routeLastOrigin &&
+      haversine(state.pos.lat,state.pos.lon,state.routeLastOrigin.lat,state.routeLastOrigin.lon) < 35) return;
+  state.routeBusy = true;
+  state.routeRequested = false;
+  $("#nav-route").disabled = true;
+  $("#nav-route").textContent = "Строим пеший путь…";
+  $("#route-guidance").textContent = "Ищем пешеходные дорожки и переходы…";
+  try {
+    const response = await fetch("https://valhalla1.openstreetmap.de/route", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Client-Id": "simonov-excursion.github.io"
+      },
+      body: JSON.stringify({
+        locations: [
+          { lat: state.pos.lat, lon: state.pos.lon },
+          { lat: p.lat, lon: p.lon }
+        ],
+        costing: "pedestrian",
+        units: "kilometers",
+        language: "ru-RU",
+        shape_format: "geojson",
+        directions_options: { units: "kilometers" }
+      })
+    });
+    if (!response.ok) throw new Error("Маршрутизатор ответил " + response.status);
+    const data = await response.json();
+    const leg = data.trip?.legs?.[0];
+    const coords = leg?.shape?.coordinates;
+    if (!Array.isArray(coords) || coords.length < 2) throw new Error("В ответе нет линии маршрута");
+    if (state.routeLayer) state.map.removeLayer(state.routeLayer);
+    state.routeLayer = L.geoJSON({ type:"LineString", coordinates:coords }, {
+      style: { color:"#e6b85f", weight:6, opacity:.96, lineCap:"round", lineJoin:"round" }
+    }).addTo(state.map);
+    const summary = leg.summary || data.trip.summary || {};
+    state.routeInfo = {
+      distance: Number(summary.length || 0) * 1000,
+      duration: Number(summary.time || 0)
+    };
+    state.routeTargetId = p.id;
+    state.routeLastOrigin = { lat:state.pos.lat, lon:state.pos.lon };
+    const bounds = state.routeLayer.getBounds();
+    if (bounds.isValid()) state.map.fitBounds(bounds.pad(.18), { maxZoom:19 });
+    renderRouteGuidance(leg.maneuvers || []);
+    updateNavigator();
+    $("#route-guidance").classList.add("route-guidance-active");
+  } catch (error) {
+    console.warn("Pedestrian routing unavailable:", error);
+    clearPedestrianRoute();
+    $("#route-guidance").textContent = "Не удалось получить пеший маршрут. На карте показаны остановки; воспользуйтесь внешней пешеходной картой ниже. Не идите по прямой через здания или ограждения.";
+    updateNavigator();
+    toast("Пешеходный маршрут временно недоступен. Попробуйте ещё раз.");
+  } finally {
+    state.routeBusy = false;
+    $("#nav-route").disabled = nextUnvisitedIndex() < 0;
+    $("#nav-route").textContent = "Проложить пеший путь";
+  }
 }
 function updateRouteOnMap() {
   if (!state.map || !state.data) return;
@@ -129,21 +231,11 @@ function updateRouteOnMap() {
   });
   if (state.targetHalo) { state.map.removeLayer(state.targetHalo); state.targetHalo = null; }
   if (next) state.targetHalo = L.circle([next.lat,next.lon], {radius:24,color:"#e3bd76",weight:1,fillOpacity:0.06,dashArray:"4 5"}).addTo(state.map);
-  if (state.userRoute) { state.map.removeLayer(state.userRoute); state.userRoute = null; }
-  if (state.pos && next) {
-    state.userRoute = L.polyline([[state.pos.lat,state.pos.lon],[next.lat,next.lon]], {
-      color:"#f1d08c",weight:4,opacity:.95,dashArray:"8 7",lineCap:"round"
-    }).addTo(state.map);
-  }
+  if (state.routeTargetId && next && state.routeTargetId !== next.id) clearPedestrianRoute();
 }
 function focusNextOnMap() {
   if (!state.map || !state.data) return;
-  const p = state.data.points[nextUnvisitedIndex()];
-  if (!p) { fitFullRoute(); return; }
-  if (state.pos) {
-    const bounds = L.latLngBounds([[state.pos.lat,state.pos.lon],[p.lat,p.lon]]);
-    state.map.fitBounds(bounds.pad(.28), {maxZoom:18});
-  } else state.map.setView([p.lat,p.lon],18);
+  buildWalkingRoute(true);
 }
 function fitFullRoute() {
   if (!state.map || !state.data) return;
@@ -151,7 +243,6 @@ function fitFullRoute() {
   if (state.pos) pts.push([state.pos.lat,state.pos.lon]);
   state.map.fitBounds(L.latLngBounds(pts).pad(.18));
 }
-
 function markVisited(id) {
   if (!id || state.visited[id]) return;
   state.visited[id] = true;
@@ -244,6 +335,8 @@ function onPosition(pos) {
   updateNavigator();
   maybeAutoTrigger();
   updateStandLive();
+  if (state.routeRequested && !state.routeBusy) buildWalkingRoute(true);
+  else if (state.routeInfo && !state.routeBusy) buildWalkingRoute(false);
 }
 
 function maybeAutoTrigger() {
