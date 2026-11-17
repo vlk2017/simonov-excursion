@@ -518,3 +518,34 @@ audio { display:block; height:42px; filter:grayscale(1); }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; }
 }
+
+
+/* Photo interaction: reveal the full-screen action on hover; tap/click opens the immersive viewer. */
+.hero img#then-img {
+  transition: transform .35s ease, filter .35s ease;
+  cursor: zoom-in;
+}
+.hero:hover img#then-img { transform: scale(1.025); }
+.hero::after {
+  content: "НАЖМИТЕ — ОТКРЫТЬ НА ВЕСЬ ЭКРАН";
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  padding: 9px 12px;
+  color: #f3f0e9;
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(243,240,233,.35);
+  font: 600 9px/1.2 var(--font-sans);
+  letter-spacing: .16em;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+}
+.hero:hover::after, .hero:focus-within::after { opacity: 1; transform: none; }
+.hero .hero-actions { z-index: 4; }
+@media (hover: none) {
+  .hero::after { opacity: 1; transform: none; font-size: 8px; }
+  .hero:hover img#then-img { transform: none; }
+}
