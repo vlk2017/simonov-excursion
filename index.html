@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#16110d" />
+  <title>Симонов монастырь — аудиоэкскурсия</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <section class="screen active" id="screen-cover">
+      <div class="cover">
+        <div class="cover-kicker">Прогулка с аудиогидом</div>
+        <h1 id="cover-title">Симонов монастырь</h1>
+        <p class="cover-lead" id="cover-lead">Восемь остановок вокруг монастыря. На каждой точке звучит короткий рассказ, а на экране — старое фото. Можно совместить его с тем, что вы видите сейчас.</p>
+        <div class="cover-foot">
+          <p class="cover-meta" id="cover-place">Москва, Восточная улица, 4</p>
+          <div class="cover-actions">
+            <button class="btn-primary" id="btn-start">Начать прогулку</button>
+            <button class="btn-ghost" id="btn-about">Как это устроено</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-tour">
+      <header class="topbar">
+        <h2>Маршрут</h2>
+        <div class="gps-pill off" id="gps-pill">Место не найдено</div>
+        <button class="btn-ghost" id="btn-gps" style="min-height:40px;padding:0 10px;font-size:13px">Найти меня</button>
+      </header>
+      <div id="map" class="map" role="img" aria-label="Карта точек экскурсии"></div>
+      <div class="list">
+        <p class="hint">Восемь точек вокруг монастыря. Когда вы подойдёте примерно на 25 метров, рассказ включится сам. Если телефон не нашёл место, откройте точку и нажмите «Я на месте».</p>
+        <div id="list"></div>
+        <button class="btn-ghost" data-back="tour" id="btn-about-2" onclick="document.getElementById('btn-about').click()">Как устроена прогулка</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-point">
+      <header class="topbar">
+        <button class="btn-ghost" id="btn-back-point" style="min-height:40px;padding:0 12px">Назад</button>
+        <h2 id="point-num-label">Точка</h2>
+      </header>
+      <div class="point">
+        <div class="hero" id="hero">
+          <img id="then-img" alt="Старое фото" />
+          <img id="base-now" class="hidden" alt="Современный вид" />
+          <video id="live-video" class="hidden" playsinline muted autoplay></video>
+          <img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" />
+          <div class="slider-wrap">
+            <label><span>Тогда</span><span id="opacity-val">55%</span><span>Сейчас</span></label>
+            <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" />
+          </div>
+        </div>
+        <p class="photo-caption" id="photo-caption"></p>
+        <div class="point-body">
+          <p class="cover-kicker" id="point-dir"></p>
+          <h2 id="point-title"></h2>
+          <p class="short" id="point-short"></p>
+          <div class="audio-box">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Рассказ</strong>
+              <button class="btn-ghost" id="btn-play" style="min-height:36px;padding:0 12px;font-size:13px">Слушать</button>
+            </div>
+            <audio id="player" controls preload="metadata"></audio>
+          </div>
+          <div class="row-btns">
+            <button class="btn-primary" id="btn-here">Я на месте</button>
+            <button class="btn-ghost" id="btn-camera">Открыть камеру</button>
+          </div>
+          <button class="btn-ghost" id="btn-compare" style="width:100%;margin-bottom:12px">Сравнить снимки рядом</button>
+          <div id="compare-box" class="compare-box hidden">
+            <div class="side-by-side">
+              <figure>
+                <img id="then-img-2" alt="Тогда" style="display:none" />
+                <figcaption>Тогда</figcaption>
+              </figure>
+              <figure id="now-side">
+                <img id="now-img" alt="Сейчас" />
+                <figcaption id="now-cap">Сейчас</figcaption>
+              </figure>
+            </div>
+            <p class="hint" style="padding-top:8px">Если камера не открылась или современного снимка нет, смотрите два кадра рядом — или только старый.</p>
+          </div>
+          <div class="note" id="point-accuracy"></div>
+          <div class="note hidden" id="exact-point"></div>
+          <div class="rights" id="photo-meta"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-about">
+      <header class="topbar">
+        <button class="btn-ghost" data-back="tour" style="min-height:40px;padding:0 12px">Назад</button>
+        <h2>О прогулке</h2>
+      </header>
+      <div class="about">
+        <h2>Как устроена прогулка</h2>
+        <p>Это короткая аудиоэкскурсия по Симонову монастырю. Приложение ставить не нужно: страница открывается в браузере телефона.</p>
+        <p>Восемь остановок вокруг стен и храма. На каждой звучит рассказ примерно на две минуты. На экране — старое фото этого места. Ползунком «тогда — сейчас» его можно наложить на камеру или сравнить два кадра рядом.</p>
+        <p>Если телефон найдёт ваше место, рассказ включится сам, когда вы подойдёте к точке. Если нет — откройте точку в списке и нажмите «Я на месте».</p>
+        <p>Факты в рассказе взяты только из открытых источников. Если даты в них расходятся, это сказано прямо. Ничего не выдумано.</p>
+        <h3>Старые фотографии</h3>
+        <p>Снимки взяты с Викисклада, где они помечены как свободные. Точки съёмки, где это было возможно, сверены с PastVu. Часть ракурсов приблизительная: городской GPS легко ошибается на несколько метров.</p>
+        <h3>Официальный храм</h3>
+        <p>Патриаршее подворье Симонова монастыря, храм Тихвинской иконы Божией Матери: <a href="https://tihchurch.ru/" target="_blank" rel="noopener">tihchurch.ru</a>. На сайте подворья указаны воскресные экскурсии с 12:00, экскурсовод Елена Юрьевна, телефон +7 926 113 01 72.</p>
+        <h3>Источники</h3>
+        <ul>
+          <li><a href="https://tihchurch.ru/simonov-history/" target="_blank" rel="noopener">История Симонова монастыря — сайт подворья</a></li>
+          <li><a href="https://tihchurch.ru/church-history/" target="_blank" rel="noopener">История храма — сайт подворья</a></li>
+          <li><a href="https://sobory.ru/article/?object=03108" target="_blank" rel="noopener">Симонов монастырь — sobory.ru</a></li>
+          <li><a href="https://ru.wikipedia.org/wiki/Симонов_монастырь" target="_blank" rel="noopener">Симонов монастырь — Википедия</a></li>
+          <li><a href="https://um.mos.ru/houses/simonov-monastyr/" target="_blank" rel="noopener">Симонов монастырь — «Узнай Москву»</a></li>
+          <li><a href="https://ru.wikipedia.org/wiki/Храм_Рождества_Пресвятой_Богородицы_в_Старом_Симонове" target="_blank" rel="noopener">Храм в Старом Симонове — Википедия</a></li>
+          <li><a href="https://pastvu.com" target="_blank" rel="noopener">PastVu</a> — координаты и направления съёмки</li>
+          <li>Викисклад — файлы старых и современных фотографий с указанием лицензии</li>
+        </ul>
+        <p>Полный список точек, прав на снимки и оговорок лежит в файлах <code>SOURCES.md</code> и <code>RIGHTS.md</code> рядом с этой страницей.</p>
+        <h3>Карта</h3>
+        <p>Фоновая карта — OpenStreetMap, &copy; участники OpenStreetMap.</p>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/app.js"></script>
+  <script>
+    // keep then image in compare box in sync
+    const then1 = document.getElementById("then-img");
+    const then2 = document.getElementById("then-img-2");
+    const sync = () => { if (then1.src) { then2.src = then1.src; then2.style.display = "block"; } };
+    then1.addEventListener("load", sync);
+    document.getElementById("btn-compare").addEventListener("click", sync);
+    document.getElementById("btn-about-2")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById("screen-about").classList.add("active");
+    });
+  </script>
+</body>
+</html>
