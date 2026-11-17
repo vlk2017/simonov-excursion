@@ -97,9 +97,10 @@ function updateNavigator() {
   $("#nav-step").textContent = String(p.num).padStart(2, "0");
   $("#nav-title").textContent = p.title;
   const d = state.pos ? haversine(state.pos.lat, state.pos.lon, p.lat, p.lon) : null;
+  const gpsNote = state.pos && state.pos.acc > 35 ? " · GPS неточен, сверяйтесь с картой" : "";
   $("#nav-distance").textContent = d == null
     ? "Включите геолокацию — покажем расстояние до остановки"
-    : d <= 20 ? "Вы рядом. Остановитесь и осмотритесь." : "До остановки " + fmtDist(d) + " · направление " + dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon));
+    : d <= 20 ? "Вы рядом. Остановитесь и осмотритесь." + gpsNote : "До остановки " + fmtDist(d) + " · направление " + dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon)) + gpsNote;
   const destination = p.lat + "," + p.lon;
   const origin = state.pos ? state.pos.lat + "," + state.pos.lon : "";
   $("#nav-route").href = state.pos
@@ -203,8 +204,11 @@ function maybeAutoTrigger() {
   // Never autoplay: only offer. Audio starts from the user's tap (iOS requirement).
   if (!state.pos || !state.data || !state.arriveOn) return;
   const r = state.data.radiusM || RADIUS;
+  // Do not offer an arrival when GPS accuracy is too poor: a false prompt is worse than no prompt.
+  if (state.pos.acc != null && state.pos.acc > 35) return;
   let closest = null;
   for (const p of state.data.points) {
+    if (state.visited[p.id]) continue;
     const d = haversine(state.pos.lat, state.pos.lon, p.lat, p.lon);
     if (d <= r && (!closest || d < closest.d)) closest = { p, d };
   }
@@ -489,6 +493,10 @@ function updateStandLive() {
   }
   const d = haversine(state.pos.lat, state.pos.lon, vp.lat, vp.lon);
   const acc = state.pos.acc ? Math.round(state.pos.acc) : null;
+  if (acc && acc > 30) {
+    el.textContent = `GPS сейчас неточен (погрешность около ${acc} м). Ориентируйтесь по зданию и карте, а не по шагам.`;
+    return;
+  }
   if (d > 60) {
     el.textContent = `Точка съёмки в ${fmtDist(d)} от вас, на ${dirName(bearingTo(state.pos.lat, state.pos.lon, vp.lat, vp.lon))}.`;
     return;
