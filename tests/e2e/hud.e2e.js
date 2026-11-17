@@ -194,6 +194,23 @@ const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers
     ok(`ширина ${w}: HUD виден, нет горизонтального скролла, всё внутри экрана, кнопка компаса ≥44 px`, ov.hudW > 100 && ov.sw <= ov.cw + 1 && ov.els.every(e => e[3]) && ov.els[0][2] >= 44, JSON.stringify(ov));
     await page.screenshot({ path: `${process.env.OUT || "/tmp"}/hud${w}.png` });
   }
+  // решение владельца: конец рассказа отмечает остановку, навигация переключается на следующую
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+  await page.goto("http://127.0.0.1:8099/", { waitUntil: "networkidle2" });
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "networkidle2" });
+  await page.evaluate(s => document.querySelector(s).click(), "#btn-start"); await sleep(500);
+  const ended = await page.evaluate(() => {
+    const first = state.data.points[nextUnvisitedIndex()];
+    openPoint(first.id, false);
+    document.querySelector("#player").dispatchEvent(new Event("ended"));
+    const second = state.data.points[nextUnvisitedIndex()];
+    return { first: first.num, visited: Object.keys(state.visited), next: second.num, navStep: document.querySelector("#nav-step").textContent, navTitle: document.querySelector("#nav-title").textContent, toast: document.querySelector("#toast").textContent, secondTitle: second.title, audio: document.querySelector("#player").getAttribute("src") };
+  });
+  ok("Конец аудио: точка 1 отмечена, навигация на точке 2, тост называет следующую", ended.first === 1 && ended.visited.length === 1 && ended.next === 2 && ended.navStep === "02" && ended.navTitle === ended.secondTitle && ended.toast.includes(ended.secondTitle), JSON.stringify(ended));
+  ok("Плеер берёт локальный файл audio/heygen", /^audio\/heygen\//.test(ended.audio), ended.audio);
+  const sw = await page.evaluate(async () => { const r = await navigator.serviceWorker.ready; await new Promise(r => setTimeout(r, 1500)); return (await caches.keys()); });
+  ok("Service worker активен, кэш simonov-v4", sw.includes("simonov-v4"), JSON.stringify(sw));
   const expectedNoise = e => /Failed to load resource|ERR_FAILED|status of (500|429)|net::ERR/.test(e);
   const real = errors.filter(e => !expectedNoise(e));
   ok("Нет неожиданных ошибок консоли и pageerror", real.length === 0, real.join(" | "));

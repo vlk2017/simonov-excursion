@@ -76,3 +76,37 @@ test("запрос к Valhalla: только pedestrian, есть таймаут
   assert.match(app, /ROUTE_TIMEOUT_MS/);
   assert.match(app, /"X-Client-Id"/);
 });
+
+test("аудио: все рассказы лежат локально (audio/heygen/*.mp3), внешних ссылок нет, файлы не пустые", () => {
+  for (const p of data.points) {
+    assert.ok(!/^https?:/.test(p.audio), `${p.id}: внешняя ссылка на аудио`);
+    assert.match(p.audio, /^audio\/heygen\/0\d-.+\.mp3$/);
+    const f = path.join(root, p.audio);
+    assert.ok(fs.existsSync(f), `${p.audio} не найден`);
+    assert.ok(fs.statSync(f).size > 1_000_000, `${p.audio} подозрительно мал`);
+    const head = fs.readFileSync(f).subarray(0, 3);
+    assert.ok(head.toString("latin1") === "ID3" || (head[0] === 0xff && (head[1] & 0xe0) === 0xe0), `${p.audio}: это не mp3`);
+  }
+  assert.equal(new Set(data.points.map(p => p.audio)).size, 8);
+});
+
+test("старые локальные audio/*.mp3 не удалены", () => {
+  for (const f of ["01-osnovanie", "02-kolokolnya", "03-sobor-dkzil", "04-tikhvin", "05-solevaya", "06-kuznechnaya-stena", "07-dulo", "08-1930"])
+    assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
+});
+
+test("sw.js: версия кэша поднята до v4, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+  const sw = read("sw.js");
+  assert.match(sw, /const CACHE = "simonov-v4"/);
+  assert.match(sw, /progress/);
+  assert.match(app, /downloadAudioOffline/);
+  assert.match(app, /"simonov-offline"\) === "v4"/);
+  assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
+});
+
+test("конец рассказа отмечает остановку и переключает навигацию (решение владельца)", () => {
+  const m = app.match(/player\.addEventListener\("ended", \(\) => \{[\s\S]*?\n  \}\);/);
+  assert.ok(m, "обработчик ended не найден");
+  assert.match(m[0], /markVisited\(state\.currentId\)/);
+  assert.match(m[0], /nextUnvisitedIndex\(\)/);
+});
