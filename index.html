@@ -54,6 +54,11 @@
           <button class="btn-ghost" id="nav-next">Следующая точка →</button>
         </div>
         <p class="nav-note" id="nav-note">Подсказка, где безопасно остановиться и осмотреться.</p>
+        <div class="navigation-hud hidden" id="navigation-hud" aria-live="polite">
+          <div class="nav-arrow-wrap"><div class="nav-arrow" id="nav-arrow" aria-hidden="true">↑</div></div>
+          <div class="nav-turn-copy"><span id="nav-turn-distance">—</span><strong id="nav-turn-title">Следующий поворот</strong><small id="nav-route-remaining">До остановки —</small></div>
+          <button class="btn-primary nav-arrived hidden" id="nav-arrived" type="button" disabled>Я на месте</button>
+        </div>
         <div class="route-guidance" id="route-guidance" aria-live="polite"></div>
         <p class="nav-progress" id="nav-progress">Пройдено 0 из 8</p><p class="nav-external"><a id="nav-external" href="#" target="_blank" rel="noopener">Открыть пеший маршрут во внешних картах ↗</a></p>
       </section>
