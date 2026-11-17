@@ -18,6 +18,7 @@ const state = {
   map: null,
   markers: {},
   youMarker: null,
+  navIndex: 0,
 };
 
 const RADIUS = 25;
@@ -66,6 +67,26 @@ function distances() {
   return out;
 }
 
+function updateNavigator() {
+  if (!state.data) return;
+  const points = state.data.points;
+  const p = points[Math.min(state.navIndex, points.length - 1)];
+  if (!p) return;
+  $("#nav-step").textContent = String(p.num).padStart(2, "0");
+  $("#nav-title").textContent = p.title;
+  const d = state.pos ? haversine(state.pos.lat, state.pos.lon, p.lat, p.lon) : null;
+  $("#nav-distance").textContent = d == null
+    ? "Включите геолокацию — покажем расстояние до остановки"
+    : d <= 20 ? "Вы рядом. Остановитесь и осмотритесь." : "До остановки " + fmtDist(d) + " · направление " + dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon));
+  const destination = p.lat + "," + p.lon;
+  const origin = state.pos ? state.pos.lat + "," + state.pos.lon : "";
+  $("#nav-route").href = state.pos
+    ? "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) + "&destination=" + encodeURIComponent(destination) + "&travelmode=walking"
+    : "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination) + "&travelmode=walking";
+  $("#nav-open").textContent = "Открыть точку " + p.num;
+  $("#nav-note").textContent = p.dir || "На месте откройте исторический вид и сравните его с тем, что перед вами.";
+}
+
 function renderList() {
   const dist = distances();
   const box = $("#list");
@@ -97,6 +118,8 @@ function initMap() {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap"
   }).addTo(state.map);
+  const routeCoords = state.data.points.map(p => [p.lat, p.lon]);
+  L.polyline(routeCoords, { color: "#b9a77e", weight: 3, opacity: .8, dashArray: "5 8" }).addTo(state.map);
   for (const p of state.data.points) {
     const m = L.circleMarker([p.lat, p.lon], {
       radius: 8, color: "#d4b06a", weight: 2, fillColor: "#9a3f2c", fillOpacity: .9
@@ -140,6 +163,7 @@ function onPosition(pos) {
   setGpsPill(true, state.pos.acc);
   updateYouMarker();
   renderList();
+  updateNavigator();
   maybeAutoTrigger();
   updateStandLive();
 }
@@ -608,6 +632,7 @@ function imHere() {
 
 function startTour(opts = {}) {
   showScreen("screen-tour");
+  updateNavigator();
   initMap();
   renderList();
   if (opts.askGps !== false) enableGps();
@@ -660,6 +685,13 @@ async function main() {
   applyHash();
 
   $("#btn-start").addEventListener("click", startTour);
+  $("#nav-open").addEventListener("click", () => openPoint(state.data.points[state.navIndex].id, false));
+  $("#nav-next").addEventListener("click", () => {
+    state.navIndex = (state.navIndex + 1) % state.data.points.length;
+    updateNavigator();
+    const p = state.data.points[state.navIndex];
+    if (state.markers[p.id] && state.map) state.map.setView([p.lat, p.lon], 18);
+  });
   $("#btn-about").addEventListener("click", () => showScreen("screen-about"));
   $$("[data-back=tour]").forEach(b => b.addEventListener("click", () => {
     showScreen("screen-tour");
