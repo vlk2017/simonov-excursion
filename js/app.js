@@ -357,6 +357,8 @@ function selectPhoto(i) {
     if (hasB) needle.setAttribute("transform", `rotate(${state.heading == null ? vp.bearing : (vp.bearing - state.heading + 360) % 360} 32 32)`);
     $("#stand-text").innerHTML = `${esc(ph.stand)}${hasB ? ` <span class="muted">Взгляд — на ${dirName(vp.bearing)}.</span>` : ""}`;
     links.push(`<a href="https://www.openstreetmap.org/?mlat=${vp.lat}&mlon=${vp.lon}#map=19/${vp.lat}/${vp.lon}" target="_blank" rel="noopener">Точка на карте</a>`);
+    const origin = state.pos ? `&origin=${encodeURIComponent(state.pos.lat + "," + state.pos.lon)}` : "";
+    links.push(`<a href="https://www.google.com/maps/dir/?api=1${origin}&destination=${encodeURIComponent(vp.lat + "," + vp.lon)}&travelmode=walking" target="_blank" rel="noopener">Пешком к точке съёмки</a>`);
     if (vp.source && vp.source.includes("pastvu")) links.push(`<a href="${vp.source}" target="_blank" rel="noopener">Источник точки — PastVu</a>`);
   } else {
     needle.style.display = "none";
