@@ -461,7 +461,6 @@ button:focus-visible,a:focus-visible,input:focus-visible { outline:2px solid var
 .point-body .short { max-width:720px; color:#bdb8af; font-size:15px; line-height:1.7; margin-bottom:26px; }
 .audio-box { padding:20px; margin-bottom:16px; }
 .audio-box strong { font:600 11px var(--font-sans); letter-spacing:.16em; text-transform:uppercase; color:var(--gold); }
-.audio-box #btn-play { min-height:38px !important; }
 audio { display:block; height:42px; filter:grayscale(1); }
 .speed { color:#aaa59b; font-size:11px; letter-spacing:.05em; }
 .speed button { border-radius:2px; background:#252525; border:1px solid #414141; }
@@ -667,3 +666,10 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .film-link { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; border:1px solid #766b55; color:var(--paper); text-decoration:none; font-size:11px; letter-spacing:.04em; }
 .film-link:hover { background:#353127; border-color:var(--gold); }
 .archival-film .film-rights { color:#aaa49a; font-size:11px; border-top:1px solid #48443b; padding-top:12px; margin-top:16px; }
+
+/* Плеер сразу под фото: крупно и заметно на телефоне */
+.audio-box.audio-top { margin:14px clamp(16px,4vw,42px) 0; padding:14px; border-color:var(--gold); background:#1c1a16; }
+.audio-start { width:100%; min-height:60px; font-size:19px; font-weight:600; letter-spacing:.02em; }
+.audio-start.playing { background:#2a2620; color:var(--gold); border:1px solid var(--gold); }
+.audio-box.audio-top audio { height:54px; margin-top:10px; filter:none; }
+.audio-box.audio-top .speed button { min-height:40px; min-width:52px; font-size:14px; }

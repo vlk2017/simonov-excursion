@@ -98,6 +98,14 @@
             <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" />
           </div>
         </div>
+        <div class="audio-box audio-top" id="audio-box">
+          <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
+          <audio id="player" controls preload="metadata" playsinline></audio>
+          <div class="speed" id="speed" role="group" aria-label="Скорость">
+            <span>Скорость</span>
+            <button data-rate="0.75">0,75×</button><button data-rate="1" class="on">1×</button><button data-rate="1.25">1,25×</button><button data-rate="1.5">1,5×</button>
+          </div>
+        </div>
         <div class="thumbs" id="thumbs" role="list"></div>
         <p class="photo-caption" id="photo-caption"></p>
         <div class="stand" id="stand">
@@ -142,17 +150,6 @@
             <div class="film-links" id="film-links"></div>
             <p class="film-rights" id="film-rights"></p>
           </section>
-          <div class="audio-box">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-              <strong>Рассказ</strong>
-              <button class="btn-ghost" id="btn-play" style="min-height:36px;padding:0 12px;font-size:13px">Слушать</button>
-            </div>
-            <audio id="player" controls preload="metadata"></audio>
-            <div class="speed" id="speed" role="group" aria-label="Скорость">
-              <span>Скорость</span>
-              <button data-rate="0.75">0,75×</button><button data-rate="1" class="on">1×</button><button data-rate="1.25">1,25×</button><button data-rate="1.5">1,5×</button>
-            </div>
-          </div>
           <div class="row-btns">
             <button class="btn-primary" id="btn-here">Я на месте</button>
             <button class="btn-ghost" id="btn-camera">Открыть камеру</button>

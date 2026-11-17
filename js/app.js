@@ -535,6 +535,73 @@ function galleryItems(p) {
   return out;
 }
 
+/* ---------- Рассказ: основной источник — интернет (HeyGen), запасной — локальный файл в репозитории ---------- */
+const AUDIO_START_TIMEOUT_MS = 8000;
+const narr = { sources: [], idx: 0, wantPlay: false, timer: null, failed: false };
+
+/* Порядок источников: без сети сначала локальный (если он скачан в кэш), иначе сначала внешний. */
+function narrationSources(p) {
+  const ext = p.audio && /^https?:/.test(p.audio) ? p.audio : null;
+  const loc = p.audioLocal || (p.audio && !ext ? p.audio : null);
+  const list = navigator.onLine === false ? [loc, ext] : [ext, loc];
+  return list.filter(Boolean).filter((u, i, a) => a.indexOf(u) === i);
+}
+function loadNarration(p) {
+  const audio = $("#player");
+  clearTimeout(narr.timer);
+  narr.sources = narrationSources(p);
+  narr.idx = 0;
+  narr.wantPlay = false;
+  narr.failed = false;
+  audio.src = narr.sources[0] || "";
+  audio.load();
+  audio.playbackRate = state.rate;
+}
+/* Следующий источник; true, если переключились. Позицию не сохраняем: ошибка случается в начале загрузки. */
+function switchNarrationSource(reason) {
+  const audio = $("#player");
+  if (narr.idx + 1 >= narr.sources.length) return false;
+  const want = narr.wantPlay;
+  narr.idx++;
+  console.warn("Рассказ: переключаюсь на запасной источник —", reason, narr.sources[narr.idx]);
+  const t = audio.currentTime;
+  audio.src = narr.sources[narr.idx];
+  audio.load();
+  audio.playbackRate = state.rate;
+  if (t > 1) audio.addEventListener("loadedmetadata", () => { try { audio.currentTime = t; } catch {} }, { once: true });
+  narr.wantPlay = want;
+  if (want) audio.play().catch(() => {});
+  armStartWatchdog();
+  return true;
+}
+/* Если за AUDIO_START_TIMEOUT_MS звук не пошёл (зависшая внешняя ссылка), берём запасной файл. */
+function armStartWatchdog() {
+  clearTimeout(narr.timer);
+  if (!narr.wantPlay || narr.idx + 1 >= narr.sources.length) return;
+  narr.timer = setTimeout(() => {
+    const a = $("#player");
+    if (narr.wantPlay && a.currentTime === 0) switchNarrationSource("нет звука за " + AUDIO_START_TIMEOUT_MS + " мс");
+  }, AUDIO_START_TIMEOUT_MS);
+}
+function startNarration() {
+  const audio = $("#player");
+  narr.wantPlay = true;
+  audio.playbackRate = state.rate;
+  const pr = audio.play();
+  armStartWatchdog();
+  if (pr && pr.catch) pr.catch(err => {
+    if (err && err.name === "NotAllowedError") { narr.wantPlay = false; toast("Нажмите «Начать рассказ», чтобы включить звук."); }
+    else if (err && err.name !== "AbortError") { if (!switchNarrationSource("play(): " + err.name)) toast("Рассказ не загрузился. Проверьте интернет."); }
+  });
+}
+function onNarrationError() {
+  const audio = $("#player");
+  if (!audio.getAttribute("src")) return;
+  if (switchNarrationSource("ошибка загрузки")) return;
+  narr.failed = true; narr.wantPlay = false;
+  toast("Рассказ не загрузился. Проверьте интернет или скачайте рассказы для офлайна.");
+}
+
 function openPoint(id, play) {
   const p = state.data.points.find(x => x.id === id);
   if (!p) return;
@@ -582,11 +649,8 @@ function openPoint(id, play) {
     $("#film-links").textContent = "";
   }
 
-  const audio = $("#player");
-  audio.src = p.audio;
-  audio.load();
-  audio.playbackRate = state.rate;
-  if (play) audio.play().catch(() => toast("Нажмите «Слушать», чтобы включить рассказ"));
+  loadNarration(p);
+  if (play) startNarration();   // тот же синхронный вызов из обработчика нажатия: iOS разрешает звук только так
 
   // thumbnails
   const th = $("#thumbs");
@@ -993,9 +1057,8 @@ function imHere() {
   if (!p) return;
   state.lastTrigger[p.id] = Date.now();
   const audio = $("#player");
-  audio.currentTime = 0;
-  audio.playbackRate = state.rate;
-  audio.play().catch(() => toast("Нажмите «Слушать», чтобы включить рассказ"));
+  try { audio.currentTime = 0; } catch {}
+  startNarration();
 }
 
 function startTour(opts = {}) {
@@ -1022,7 +1085,7 @@ function applyHash() {
 
 /* Рассказы (~19 МБ) не качаются сами: слушанный рассказ кэшируется service worker'ом при первом проигрывании,
    остальные скачиваются кнопкой «Скачать рассказы для офлайна». */
-function audioFiles() { return state.data.points.map(p => p.audio).filter(a => a && !/^https?:/.test(a)); }
+function audioFiles() { return state.data.points.map(p => p.audioLocal || p.audio).filter(a => a && !/^https?:/.test(a)); }
 async function updateOfflineAudioStatus() {
   const el = $("#offline-audio-status");
   if (!el || !("caches" in window)) return;
@@ -1055,9 +1118,22 @@ async function downloadAudioOffline() {
 /* offline: service worker caches pages, audio and photos */
 function initOffline() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+  // Новая версия service worker: перезагружаем страницу один раз, чтобы телефон сразу получил свежие файлы.
+  // Не перезагружаем, пока играет рассказ: дождёмся паузы или конца.
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  const reloadWhenIdle = () => {
+    if (reloaded) return;
+    const pl = $("#player");
+    if (pl && !pl.paused && !pl.ended) { pl.addEventListener("pause", reloadWhenIdle, { once: true }); pl.addEventListener("ended", reloadWhenIdle, { once: true }); return; }
+    reloaded = true;
+    location.reload();
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadController) reloadWhenIdle(); });
   navigator.serviceWorker.register("sw.js").then(async reg => {
+    reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v4") return;
+    if (lsGet("simonov-offline") === "v5") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1066,7 +1142,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v4"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v5"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -1086,7 +1162,12 @@ async function main() {
   renderList();
   applyHash();
 
-  $("#btn-start").addEventListener("click", startTour);
+  // «Начать»: открываем рассказ текущей остановки и сразу запускаем звук в этом же нажатии (требование iOS)
+  $("#btn-start").addEventListener("click", () => {
+    startTour();
+    const i = nextUnvisitedIndex();
+    if (i >= 0) { openPoint(state.data.points[i].id, true); }
+  });
   $("#nav-route").addEventListener("click", focusNextOnMap);
   $("#map-my-location").addEventListener("click", () => {
     if (!state.pos) { enableGps(); toast("Ищем ваше местоположение…"); return; }
@@ -1103,7 +1184,7 @@ async function main() {
   $("#nav-open").addEventListener("click", () => {
     const i = nextUnvisitedIndex();
     const p = i < 0 ? state.data.points[0] : state.data.points[i];
-    openPoint(p.id, false);
+    openPoint(p.id, true);   // явное нажатие «Рассказ об остановке» — сразу включаем звук
   });
   $("#nav-next").addEventListener("click", () => {
     if (nextUnvisitedIndex() < 0) {
@@ -1160,16 +1241,30 @@ async function main() {
 
   const player = $("#player");
   const playBtn = $("#btn-play");
+  const setPlayLabel = () => {
+    playBtn.textContent = !player.paused && !player.ended ? "Пауза" : (player.ended ? "Повторить рассказ" : (player.currentTime > 1 ? "Продолжить" : "Начать рассказ"));
+    playBtn.classList.toggle("playing", !player.paused && !player.ended);
+  };
   playBtn.addEventListener("click", () => {
-    if (player.paused) { player.playbackRate = state.rate; player.play(); } else player.pause();
+    if (player.paused || player.ended) { if (player.ended) { try { player.currentTime = 0; } catch {} } startNarration(); }
+    else { narr.wantPlay = false; clearTimeout(narr.timer); player.pause(); }
   });
-  player.addEventListener("play", () => { playBtn.textContent = "Пауза"; });
-  player.addEventListener("pause", () => { playBtn.textContent = "Слушать"; });
+  player.addEventListener("play", setPlayLabel);
+  player.addEventListener("playing", () => { clearTimeout(narr.timer); setPlayLabel(); });
+  player.addEventListener("pause", () => { if (!player.ended) narr.wantPlay = false; setPlayLabel(); });
+  player.addEventListener("error", onNarrationError);
+  player.addEventListener("emptied", setPlayLabel);
   player.addEventListener("ended", () => {
-    playBtn.textContent = "Слушать";
-    // решение владельца: остановка отмечается пройденной сама по окончании рассказа, навигация переходит к следующей
+    narr.wantPlay = false;
+    clearTimeout(narr.timer);
+    setPlayLabel();
+    // решение владельца: остановка отмечается пройденной сама по окончании рассказа, навигация переходит к следующей.
+    // Следующий рассказ сам НЕ включается: человек ещё идёт, звук запускается кнопкой «Начать рассказ» или «Я на месте».
     if (state.currentId) {
-      markVisited(state.currentId);
+      const id = state.currentId;
+      markVisited(id);
+      $("#btn-done").textContent = "Остановка пройдена ✓";
+      $("#btn-done").disabled = true;
       const nx = state.data.points[nextUnvisitedIndex()];
       toast(nx ? `Остановка пройдена. Дальше: ${nx.num}. ${nx.title}` : "Остановка пройдена. Это была последняя.");
     }
