@@ -297,6 +297,19 @@ function openPoint(id, play) {
   $("#point-num-label").textContent = `Точка ${p.num} из ${state.data.points.length}`;
   $("#point-short").textContent = p.summary || p.short;
   $("#point-dir").textContent = p.dir || "";
+  const scene = p.scene;
+  const sceneCard = $("#look-card");
+  if (scene) {
+    sceneCard.classList.remove("hidden");
+    $("#scene-where").textContent = scene.where;
+    $("#scene-look").textContent = scene.look;
+    $("#scene-notice").textContent = scene.notice;
+    $("#scene-then").textContent = scene.then;
+    $("#scene-confidence").textContent = "Надёжность и оговорки: " + scene.confidence;
+    $("#scene-sources").innerHTML = (scene.sources || []).map(s => `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(" · ");
+  } else {
+    sceneCard.classList.add("hidden");
+  }
 
   const audio = $("#player");
   audio.src = p.audio;
