@@ -627,3 +627,21 @@ audio { display:block; height:42px; filter:grayscale(1); }
   .map-control { min-height:42px; font-size:12px; }
   .nav-actions .nav-route { min-height:50px; font-size:12px; }
 }
+
+
+/* Live pedestrian navigation HUD */
+.navigation-hud { display:grid; grid-template-columns:64px minmax(0,1fr); gap:12px; align-items:center; margin-top:14px; padding:14px; background:#11110f; border:1px solid #8b785b; border-radius:8px; }
+.nav-arrow-wrap { width:58px; height:58px; display:grid; place-items:center; background:#25231f; border:1px solid #6d6049; border-radius:50%; }
+.nav-arrow { color:#e9c477; font-size:46px; line-height:1; font-weight:300; transform-origin:50% 50%; transition:transform .2s ease; }
+.nav-turn-copy { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.nav-turn-copy span { color:#e9c477; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+.nav-turn-copy strong { color:#f2e6d1; font-size:14px; line-height:1.3; }
+.nav-turn-copy small { color:#b9b1a2; font-size:11px; }
+.nav-arrived { grid-column:1/-1; min-height:46px; width:100%; }
+.nav-arrived:disabled { display:none; }
+@media(max-width:600px) {
+ .navigation-hud { grid-template-columns:56px minmax(0,1fr); gap:10px; padding:12px; }
+ .nav-arrow-wrap { width:52px; height:52px; }
+ .nav-arrow { font-size:40px; }
+ .nav-turn-copy strong { font-size:13px; }
+}
