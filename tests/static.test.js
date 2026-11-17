@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v7, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v8, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v7"/);
+  assert.match(sw, /const CACHE = "simonov-v8"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v7"/);
+  assert.match(app, /"simonov-offline"\) === "v8"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -143,4 +143,18 @@ test("накладка: четыре режима, шторка, ползуно�
   assert.match(app, /NotAllowedError/);
   assert.match(app, /audio: false/);
   assert.match(html, /<video id="live-video"[^>]*\bmuted\b[^>]*playsinline|<video id="live-video"[^>]*playsinline[^>]*\bmuted\b/);
+});
+
+test("карточка остановки: кнопки «Предыдущая»/«Следующая точка» сверху под плеером и дубль внизу, логика перехода в app.js", () => {
+  const i = s => { const k = html.indexOf(s); assert.ok(k > 0, s); return k; };
+  const top = i('id="pt-nav-top"'), bottom = i('id="pt-nav-bottom"');
+  assert.ok(i('id="player"') < top && top < i('id="thumbs"'), "верхняя панель сразу под плеером");
+  assert.ok(bottom > i('id="photo-meta"'), "нижний дубль в конце карточки");
+  assert.equal(html.split("js-prev").length - 1, 2);
+  assert.equal(html.split("js-next").length - 1, 2);
+  assert.match(app, /function gotoNeighbor/);
+  assert.match(app, /Завершить прогулку/);
+  assert.match(app, /is-primary/);
+  assert.match(app, /state\.navPref = pts\[j\]\.id/);
+  assert.match(app, /openPoint\(pts\[j\]\.id, false\)/, "соседняя точка открывается без автозвука");
 });

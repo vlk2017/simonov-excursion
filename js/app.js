@@ -33,6 +33,7 @@ const state = {
   accuracyCircle: null,
   targetHalo: null,
   navIndex: 0,
+  navPref: null,
   visited: {},
   heading: null,
   headingAt: 0,
@@ -94,13 +95,21 @@ function distances() {
 function nextUnvisitedIndex() {
   return state.data.points.findIndex(p => !state.visited[p.id]);
 }
+/* Цель навигации: точка, выбранная кнопками «Предыдущая/Следующая точка» (пока не отмечена пройденной), иначе первая непройденная */
+function navTargetIndex() {
+  if (state.navPref) {
+    const i = state.data.points.findIndex(p => p.id === state.navPref);
+    if (i >= 0) return i;
+  }
+  return nextUnvisitedIndex();
+}
 
 function updateNavigator() {
   if (!state.data) return;
   const points = state.data.points;
   const done = points.filter(p => state.visited[p.id]).length;
   $("#nav-progress").textContent = `Пройдено ${done} из ${points.length}`;
-  const nextIndex = nextUnvisitedIndex();
+  const nextIndex = navTargetIndex();
   if (nextIndex < 0) {
     $("#nav-step").textContent = "✓";
     $("#nav-title").textContent = "Маршрут завершён";
@@ -191,7 +200,7 @@ function updateNavigationHud() {
     ? "Сейчас"
     : `Через ${fmtDist(maneuverDistance)}`;
   $("#nav-route-remaining").textContent = `До остановки ${fmtDist(remaining)} · около ${NavCore.walkMinutes(remaining)} мин пешком`;
-  const target0 = state.data.points[nextUnvisitedIndex()];
+  const target0 = state.data.points[navTargetIndex()];
   const arrive = NavCore.arrivalState(state.pos, target0);
   const q = NavCore.gpsQuality(state.pos.acc);
   const gps = $("#nav-gps");
@@ -224,7 +233,7 @@ function renderRouteGuidance(maneuvers) {
 }
 async function buildWalkingRoute(force = false) {
   if (!state.data || !state.map) return;
-  const p = state.data.points[nextUnvisitedIndex()];
+  const p = state.data.points[navTargetIndex()];
   if (!p) { fitFullRoute(); return; }
   if (!state.pos) {
     state.routeRequested = true;
@@ -269,7 +278,7 @@ async function buildWalkingRoute(force = false) {
     if (!response.ok) { const e = new Error("Маршрутизатор ответил " + response.status); e.status = response.status; throw e; }
     const data = await response.json();
     if (seq !== state.routeSeq) return;                                   // устарел: есть более новый запрос
-    const nowTarget = state.data.points[nextUnvisitedIndex()];
+    const nowTarget = state.data.points[navTargetIndex()];
     if (!nowTarget || nowTarget.id !== p.id) return;                      // за это время остановку отметили или пропустили
     const route = NavCore.parseValhallaRoute(data);
     if (state.routeLayer) state.map.removeLayer(state.routeLayer);
@@ -306,7 +315,7 @@ async function buildWalkingRoute(force = false) {
     if (seq === state.routeSeq) {
       state.routeBusy = false;
       state.routeAbort = null;
-      $("#nav-route").disabled = nextUnvisitedIndex() < 0;
+      $("#nav-route").disabled = navTargetIndex() < 0;
       $("#nav-route").textContent = "Проложить пеший путь";
     }
   }
@@ -314,7 +323,7 @@ async function buildWalkingRoute(force = false) {
 function updateRouteOnMap() {
   if (!state.map || !state.data) return;
   const points = state.data.points;
-  const next = points[nextUnvisitedIndex()];
+  const next = points[navTargetIndex()];
   Object.entries(state.markers).forEach(([id, marker]) => {
     const p = points.find(x => x.id === id);
     if (!p) return;
@@ -338,6 +347,7 @@ function fitFullRoute() {
   state.map.fitBounds(L.latLngBounds(pts).pad(.18));
 }
 function markVisited(id) {
+  if (id && state.navPref === id) { state.navPref = null; updateNavigator(); }
   if (!id || state.visited[id]) return;
   if (state.routeTargetId === id) clearPedestrianRoute();
   state.visited[id] = true;
@@ -652,6 +662,7 @@ function openPoint(id, play) {
   }
 
   loadNarration(p);
+  updatePointNav();
   if (play) startNarration();   // тот же синхронный вызов из обработчика нажатия: iOS разрешает звук только так
 
   // thumbnails
@@ -1000,6 +1011,57 @@ function openLightboxForCurrent(src) {
   lbOpen(items, Math.max(0, i));
 }
 
+/* Кнопки «Предыдущая» / «Следующая точка» (сверху под плеером и дубль внизу карточки) */
+function updatePointNav() {
+  const pts = state.data.points;
+  const i = pts.findIndex(p => p.id === state.currentId);
+  if (i < 0) return;
+  const prev = pts[i - 1], next = pts[i + 1];
+  const player = $("#player");
+  const ended = !!player.ended;
+  $$(".js-prev").forEach(b => {
+    b.classList.toggle("hidden", !prev);
+    b.disabled = !prev;
+    if (prev) b.querySelector("small").textContent = `${prev.num}. ${prev.title}`;
+  });
+  $$(".js-next").forEach(b => {
+    b.querySelector("b").textContent = next ? "Следующая точка →" : "Завершить прогулку";
+    b.querySelector("small").textContent = next ? `${next.num}. ${next.title}` : "К маршруту и итогу";
+    b.classList.toggle("is-primary", ended);
+  });
+  $$(".pt-nav").forEach(n => n.classList.toggle("single", !prev));
+}
+function stopNarrationNow() {
+  const a = $("#player");
+  clearTimeout(narr.timer);
+  narr.wantPlay = false;
+  a.pause();
+}
+function gotoNeighbor(step) {
+  const pts = state.data.points;
+  const i = pts.findIndex(p => p.id === state.currentId);
+  if (i < 0) return;
+  stopNarrationNow();
+  stopCamera();
+  const j = i + step;
+  if (j < 0) return;
+  if (j >= pts.length) {   // последняя точка: завершаем прогулку, показываем экран маршрута
+    state.navPref = null;
+    state.currentId = null;
+    showScreen("screen-tour");
+    updateNavigator();
+    setTimeout(() => state.map && state.map.invalidateSize(), 200);
+    const done = pts.filter(p => state.visited[p.id]).length;
+    toast(done === pts.length ? "Прогулка завершена. Спасибо!" : `Прогулка завершена. Пройдено ${done} из ${pts.length}.`);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    return;
+  }
+  state.navPref = pts[j].id;
+  updateNavigator();
+  openPoint(pts[j].id, false);   // звук сам не включается: «Начать рассказ»
+  window.scrollTo({ top: 0, behavior: "instant" });   // сверху карточки сразу, без плавной прокрутки с конца страницы
+}
+
 function closePoint() {
   $("#player").pause();
   stopCamera();
@@ -1198,7 +1260,7 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v7") return;
+    if (lsGet("simonov-offline") === "v8") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1207,7 +1269,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v7"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v8"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -1241,25 +1303,27 @@ async function main() {
   });
   $("#map-fit-route").addEventListener("click", fitFullRoute);
   $("#nav-arrived").addEventListener("click", () => {
-    const p = state.data.points[nextUnvisitedIndex()];
+    const p = state.data.points[navTargetIndex()];
     if (!p || !NavCore.arrivalState(state.pos, p).ready) return;   // те же пороги, что и у показа кнопки
     markVisited(p.id);
     $("#navigation-hud").classList.add("hidden");
     openPoint(p.id, false);
   });
   $("#nav-open").addEventListener("click", () => {
-    const i = nextUnvisitedIndex();
+    const i = navTargetIndex();
     const p = i < 0 ? state.data.points[0] : state.data.points[i];
     openPoint(p.id, true);   // явное нажатие «Рассказ об остановке» — сразу включаем звук
   });
   $("#nav-next").addEventListener("click", () => {
-    if (nextUnvisitedIndex() < 0) {
+    if (navTargetIndex() < 0) {
+      state.navPref = null;
       state.visited = {};
       lsDel("simonov-visited");
       renderList();
       updateNavigator();
     } else {
-      const p = state.data.points[nextUnvisitedIndex()];
+      const p = state.data.points[navTargetIndex()];
+      state.navPref = null;
       state.visited[p.id] = true;
       saveVisited();
       renderList();
@@ -1280,6 +1344,8 @@ async function main() {
     setTimeout(() => state.map && state.map.invalidateSize(), 200);
   }));
   $("#btn-back-point").addEventListener("click", closePoint);
+  $$(".js-prev").forEach(b => b.addEventListener("click", () => gotoNeighbor(-1)));
+  $$(".js-next").forEach(b => b.addEventListener("click", () => gotoNeighbor(1)));
   $("#btn-gps").addEventListener("click", enableGps);
   $("#btn-here").addEventListener("click", imHere);
   $("#btn-camera").addEventListener("click", () => { state.cameraOn ? stopCamera() : startCamera(); });
@@ -1318,12 +1384,14 @@ async function main() {
   player.addEventListener("play", setPlayLabel);
   player.addEventListener("playing", () => { clearTimeout(narr.timer); setPlayLabel(); });
   player.addEventListener("pause", () => { if (!player.ended) narr.wantPlay = false; setPlayLabel(); });
+  player.addEventListener("play", () => { if (state.currentId) updatePointNav(); });
   player.addEventListener("error", onNarrationError);
   player.addEventListener("emptied", setPlayLabel);
   player.addEventListener("ended", () => {
     narr.wantPlay = false;
     clearTimeout(narr.timer);
     setPlayLabel();
+    updatePointNav();
     // решение владельца: остановка отмечается пройденной сама по окончании рассказа, навигация переходит к следующей.
     // Следующий рассказ сам НЕ включается: человек ещё идёт, звук запускается кнопкой «Начать рассказ» или «Я на месте».
     if (state.currentId) {

@@ -699,3 +699,13 @@ audio { display:block; height:42px; filter:grayscale(1); }
 #screen-point .cam-compass { background:#3a2a2d; color:#f6e7c4; border:1px solid #c7a15c; }
 #screen-point .cam-msg { color:#f1e6d0; }
 #screen-point .cam-main:not(.on) { background:linear-gradient(135deg,#e4c783,#b68a43); color:#2b1719; }
+
+/* Переход между точками: крупные кнопки под плеером и дубль внизу карточки */
+.pt-nav { display:grid; grid-template-columns:1fr 1.35fr; gap:10px; margin:12px clamp(16px,4vw,42px); }
+.pt-nav.single { grid-template-columns:1fr; }
+#screen-point .pt-nav button { min-height:64px; padding:8px 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; text-align:center; text-transform:none; letter-spacing:0; border-radius:4px; font-family:inherit; cursor:pointer; background:#f8f4eb; color:#6b1b29; border:1px solid #b9935a; }
+#screen-point .pt-nav button b { font-size:16px; font-weight:700; line-height:1.2; }
+#screen-point .pt-nav button small { display:block; max-width:100%; font-size:12px; line-height:1.25; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#screen-point .pt-nav button.is-primary { background:linear-gradient(135deg,#e4c783,#b68a43); color:#2b1719; border-color:#f0dba8; box-shadow:0 0 0 3px rgba(182,138,67,.35); }
+#screen-point .pt-nav button.hidden { display:none; }
+#screen-point .point-body .pt-nav { margin:18px 0 8px; }

@@ -134,6 +134,10 @@
           <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
           <audio id="player" controls controlslist="noplaybackrate nodownload" preload="metadata" playsinline></audio>
         </div>
+        <div class="pt-nav" id="pt-nav-top" aria-label="Переход между точками">
+          <button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button>
+          <button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button>
+        </div>
         <div class="thumbs" id="thumbs" role="list"></div>
         <p class="photo-caption" id="photo-caption"></p>
         <div class="stand" id="stand">
@@ -191,6 +195,10 @@
             <figcaption id="now-context-cap"></figcaption>
           </figure>
           <div class="rights" id="photo-meta"></div>
+          <div class="pt-nav" id="pt-nav-bottom" aria-label="Переход между точками">
+          <button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button>
+          <button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button>
+        </div>
         </div>
       </div>
     </section>
