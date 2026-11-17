@@ -587,3 +587,17 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .look-sources { display:flex; flex-wrap:wrap; gap:6px 14px; }
 .look-sources a { color:#d4b06a; font-size:11px; text-decoration:underline; text-underline-offset:3px; }
 @media(max-width:600px) { .look-card { padding:15px; margin:14px 0 18px; } .look-step p { font-size:12px; } }
+
+
+/* Stop-scene navigation */
+.look-route {
+  display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px;
+}
+.look-route a {
+  display:inline-flex; align-items:center; min-height:40px; padding:0 13px;
+  border:1px solid #625943; color:var(--gold-2); text-decoration:none;
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+}
+.look-route a:first-child { background:var(--paper); color:#111; border-color:var(--paper); }
+.look-route a:hover { border-color:var(--gold-2); }
+#scene-sources { margin-top:10px; }
