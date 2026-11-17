@@ -19,6 +19,7 @@ const state = {
   markers: {},
   youMarker: null,
   navIndex: 0,
+  visited: {},
   heading: null,
 };
 
@@ -68,11 +69,31 @@ function distances() {
   return out;
 }
 
+function nextUnvisitedIndex() {
+  return state.data.points.findIndex(p => !state.visited[p.id]);
+}
+
 function updateNavigator() {
   if (!state.data) return;
   const points = state.data.points;
-  const p = points[Math.min(state.navIndex, points.length - 1)];
-  if (!p) return;
+  const done = points.filter(p => state.visited[p.id]).length;
+  const progress = $("#nav-progress");
+  if (progress) progress.textContent = `Пройдено ${done} из ${points.length}`;
+  const nextIndex = nextUnvisitedIndex();
+  if (nextIndex < 0) {
+    $("#nav-step").textContent = "✓";
+    $("#nav-title").textContent = "Маршрут завершён";
+    $("#nav-distance").textContent = "Вы прошли все восемь остановок. Можно вернуться к любой точке на карте.";
+    $("#nav-open").textContent = "Первая точка";
+    $("#nav-note").textContent = "Спасибо, что прошли этот маршрут.";
+    $("#nav-route").classList.add("hidden");
+    $("#nav-next").textContent = "Начать сначала";
+    state.navIndex = 0;
+    return;
+  }
+  state.navIndex = nextIndex;
+  const p = points[nextIndex];
+  $("#nav-route").classList.remove("hidden");
   $("#nav-step").textContent = String(p.num).padStart(2, "0");
   $("#nav-title").textContent = p.title;
   const d = state.pos ? haversine(state.pos.lat, state.pos.lon, p.lat, p.lon) : null;
@@ -88,6 +109,15 @@ function updateNavigator() {
   $("#nav-note").textContent = p.dir || "На месте откройте исторический вид и сравните его с тем, что перед вами.";
 }
 
+function markVisited(id) {
+  if (!id || state.visited[id]) return;
+  state.visited[id] = true;
+  localStorage.setItem("simonov-visited", JSON.stringify(state.visited));
+  renderList();
+  updateNavigator();
+  toast("Остановка отмечена. Маршрут обновлён.");
+}
+
 function renderList() {
   const dist = distances();
   const box = $("#list");
@@ -96,14 +126,14 @@ function renderList() {
     const d = dist[p.id];
     const near = d != null && d <= (state.data.radiusM || RADIUS);
     const btn = document.createElement("button");
-    btn.className = "point-card" + (near ? " near" : "");
+    btn.className = "point-card" + (near ? " near" : "") + (state.visited[p.id] ? " visited" : "");
     btn.innerHTML = `
       <div class="point-num">${p.num}</div>
       <div>
         <h3>${p.title}</h3>
         <p>${p.short}</p>
       </div>
-      <div class="dist">${fmtDist(d)}</div>
+      <div class="dist">${state.visited[p.id] ? "✓ пройдена" : fmtDist(d)}</div>
     `;
     btn.addEventListener("click", () => openPoint(p.id, false));
     box.appendChild(btn);
@@ -258,6 +288,8 @@ function openPoint(id, play) {
   const p = state.data.points.find(x => x.id === id);
   if (!p) return;
   state.currentId = id;
+  $("#btn-done").textContent = state.visited[id] ? "Остановка пройдена ✓" : "Отметить остановку пройденной";
+  $("#btn-done").disabled = !!state.visited[id];
   stopCamera();
   showScreen("screen-point");
   window.scrollTo(0, 0);
@@ -705,6 +737,7 @@ async function main() {
   await loadData();
   state.rate = Number(localStorage.getItem("simonov-rate")) || 1;
   state.arriveOn = localStorage.getItem("simonov-arrive") !== "0";
+  try { state.visited = JSON.parse(localStorage.getItem("simonov-visited") || "{}") || {}; } catch { state.visited = {}; }
   $("#opt-arrive").checked = state.arriveOn;
   $("#cover-title").textContent = state.data.title;
   $("#cover-lead").textContent = state.data.subtitle;
@@ -715,12 +748,32 @@ async function main() {
   applyHash();
 
   $("#btn-start").addEventListener("click", startTour);
-  $("#nav-open").addEventListener("click", () => openPoint(state.data.points[state.navIndex].id, false));
+  $("#nav-open").addEventListener("click", () => {
+    const i = nextUnvisitedIndex();
+    const p = i < 0 ? state.data.points[0] : state.data.points[i];
+    openPoint(p.id, false);
+  });
   $("#nav-next").addEventListener("click", () => {
-    state.navIndex = (state.navIndex + 1) % state.data.points.length;
-    updateNavigator();
+    if (nextUnvisitedIndex() < 0) {
+      state.visited = {};
+      localStorage.removeItem("simonov-visited");
+      renderList();
+      updateNavigator();
+    } else {
+      const p = state.data.points[nextUnvisitedIndex()];
+      state.visited[p.id] = true;
+      localStorage.setItem("simonov-visited", JSON.stringify(state.visited));
+      renderList();
+      updateNavigator();
+      toast("Точка пропущена. Показали следующую.");
+    }
     const p = state.data.points[state.navIndex];
     if (state.markers[p.id] && state.map) state.map.setView([p.lat, p.lon], 18);
+  });
+  $("#btn-done").addEventListener("click", () => {
+    markVisited(state.currentId);
+    $("#btn-done").textContent = "Остановка пройдена ✓";
+    $("#btn-done").disabled = true;
   });
   $("#btn-about").addEventListener("click", () => showScreen("screen-about"));
   $$("[data-back=tour]").forEach(b => b.addEventListener("click", () => {
@@ -759,7 +812,10 @@ async function main() {
   });
   player.addEventListener("play", () => { playBtn.textContent = "Пауза"; });
   player.addEventListener("pause", () => { playBtn.textContent = "Слушать"; });
-  player.addEventListener("ended", () => { playBtn.textContent = "Слушать"; });
+  player.addEventListener("ended", () => {
+    playBtn.textContent = "Слушать";
+    if (state.currentId) markVisited(state.currentId);
+  });
   player.addEventListener("loadedmetadata", () => { player.playbackRate = state.rate; });
   const markRate = () => $$("#speed button").forEach(b => b.classList.toggle("on", Number(b.dataset.rate) === state.rate));
   $$("#speed button").forEach(b => b.addEventListener("click", () => {
