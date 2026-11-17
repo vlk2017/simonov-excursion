@@ -19,6 +19,7 @@ const state = {
   markers: {},
   youMarker: null,
   navIndex: 0,
+  heading: null,
 };
 
 const RADIUS = 25;
@@ -321,7 +322,7 @@ function selectPhoto(i) {
   if (vp) {
     const hasB = vp.bearing != null;
     needle.style.display = hasB ? "" : "none";
-    if (hasB) needle.setAttribute("transform", `rotate(${vp.bearing} 32 32)`);
+    if (hasB) needle.setAttribute("transform", `rotate(${state.heading == null ? vp.bearing : (vp.bearing - state.heading + 360) % 360} 32 32)`);
     $("#stand-text").innerHTML = `${esc(ph.stand)}${hasB ? ` <span class="muted">Взгляд — на ${dirName(vp.bearing)}.</span>` : ""}`;
     links.push(`<a href="https://www.openstreetmap.org/?mlat=${vp.lat}&mlon=${vp.lon}#map=19/${vp.lat}/${vp.lon}" target="_blank" rel="noopener">Точка на карте</a>`);
     if (vp.source && vp.source.includes("pastvu")) links.push(`<a href="${vp.source}" target="_blank" rel="noopener">Источник точки — PastVu</a>`);
@@ -401,6 +402,35 @@ function initCompare() {
 }
 
 /* live hint: how far and which way to step to reach the photographer's spot */
+async function enableCompass() {
+  if (!("DeviceOrientationEvent" in window)) {
+    toast("Компас не поддерживается этим телефоном. Используйте направление на карте.");
+    return;
+  }
+  try {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      const permission = await DeviceOrientationEvent.requestPermission();
+      if (permission !== "granted") {
+        toast("Доступ к компасу не разрешён.");
+        return;
+      }
+    }
+    const handler = e => {
+      let heading = null;
+      if (typeof e.webkitCompassHeading === "number") heading = e.webkitCompassHeading;
+      else if (e.absolute && typeof e.alpha === "number") heading = (360 - e.alpha) % 360;
+      if (heading != null) {
+        state.heading = heading;
+        updateStandLive();
+      }
+    };
+    window.addEventListener("deviceorientation", handler, true);
+    toast("Компас включён. Держите телефон перед собой.");
+  } catch (err) {
+    toast("Не удалось включить компас. Проверьте разрешения телефона.");
+  }
+}
+
 function updateStandLive() {
   const el = $("#stand-live");
   if (!el) return;
@@ -701,6 +731,7 @@ async function main() {
   $("#btn-gps").addEventListener("click", enableGps);
   $("#btn-here").addEventListener("click", imHere);
   $("#btn-camera").addEventListener("click", () => { state.cameraOn ? stopCamera() : startCamera(); });
+  $("#btn-compass").addEventListener("click", enableCompass);
   $("#then-img").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
   $("#then-img").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightboxForCurrent(currentPhoto().src); } });
   $("#btn-full").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
