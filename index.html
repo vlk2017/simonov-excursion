@@ -100,11 +100,7 @@
         </div>
         <div class="audio-box audio-top" id="audio-box">
           <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
-          <audio id="player" controls preload="metadata" playsinline></audio>
-          <div class="speed" id="speed" role="group" aria-label="Скорость">
-            <span>Скорость</span>
-            <button data-rate="0.75">0,75×</button><button data-rate="1" class="on">1×</button><button data-rate="1.25">1,25×</button><button data-rate="1.5">1,5×</button>
-          </div>
+          <audio id="player" controls controlslist="noplaybackrate nodownload" preload="metadata" playsinline></audio>
         </div>
         <div class="thumbs" id="thumbs" role="list"></div>
         <p class="photo-caption" id="photo-caption"></p>

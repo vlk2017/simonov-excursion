@@ -1150,7 +1150,7 @@ function initOffline() {
 
 async function main() {
   await loadData();
-  state.rate = Number(lsGet("simonov-rate")) || 1;
+  state.rate = 1;
   state.arriveOn = lsGet("simonov-arrive") !== "0";
   try { state.visited = JSON.parse(lsGet("simonov-visited") || "{}") || {}; } catch { state.visited = {}; }
   $("#opt-arrive").checked = state.arriveOn;
@@ -1270,14 +1270,6 @@ async function main() {
     }
   });
   player.addEventListener("loadedmetadata", () => { player.playbackRate = state.rate; });
-  const markRate = () => $$("#speed button").forEach(b => b.classList.toggle("on", Number(b.dataset.rate) === state.rate));
-  $$("#speed button").forEach(b => b.addEventListener("click", () => {
-    state.rate = Number(b.dataset.rate);
-    player.playbackRate = state.rate;
-    lsSet("simonov-rate", String(state.rate));
-    markRate();
-  }));
-  markRate();
   $("#btn-offline-audio").addEventListener("click", downloadAudioOffline);
   updateOfflineAudioStatus();
   initOffline();

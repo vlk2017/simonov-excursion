@@ -1,5 +1,5 @@
 /* Simonov excursion: offline cache. Pages and data: network first. Audio and photos: cache first. */
-const CACHE = "simonov-v5";
+const CACHE = "simonov-v6";
 const CORE = ["./", "index.html", "css/style.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {

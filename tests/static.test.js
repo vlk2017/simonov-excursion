@@ -107,7 +107,7 @@ test("старые локальные audio/*.mp3 не удалены", () => {
 
 test("sw.js: версия кэша v5, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v5"/);
+  assert.match(sw, /const CACHE = "simonov-v6"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
   assert.match(app, /"simonov-offline"\) === "v5"/);
