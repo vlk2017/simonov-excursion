@@ -494,7 +494,6 @@ audio { display:block; height:42px; filter:grayscale(1); }
 .leaflet-control-attribution a { color:#d5c7a3!important; }
 
 @media (min-width:900px) {
-  #screen-tour { display:none; }
   .point-card { transition:transform .18s ease,background .18s ease; }
 }
 @media (max-width:600px) {
