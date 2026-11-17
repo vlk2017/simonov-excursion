@@ -131,6 +131,8 @@ function clearPedestrianRoute() {
   state.routeInfo = null;
   state.routeTargetId = null;
   state.routeLastOrigin = null;
+  const guidance = $("#route-guidance");
+  if (guidance) { guidance.replaceChildren(); guidance.classList.remove("route-guidance-active"); }
 }
 function renderRouteGuidance(maneuvers) {
   const box = $("#route-guidance");
