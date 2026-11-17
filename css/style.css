@@ -549,3 +549,17 @@ audio { display:block; height:42px; filter:grayscale(1); }
   .hero::after { opacity: 1; transform: none; font-size: 8px; }
   .hero:hover img#then-img { transform: none; }
 }
+
+
+/* Guided walking navigator */
+.navigator { width:min(100% - 32px,1040px); margin:18px auto 10px; padding:20px; background:linear-gradient(135deg,#22211e,#171716); border:1px solid #6f634d; box-shadow:0 14px 36px rgba(0,0,0,.2); }
+.nav-eyebrow { color:var(--gold); font:600 9px var(--font-sans); letter-spacing:.2em; margin-bottom:14px; }
+.nav-main { display:flex; align-items:center; gap:16px; }
+.nav-step { width:52px; height:52px; flex:none; display:grid; place-items:center; border:1px solid var(--gold); color:var(--gold); font:500 27px var(--font-serif); }
+.nav-copy h3 { color:var(--paper); font:500 27px/1.05 var(--font-serif); margin:0 0 6px; }
+.nav-copy p,.nav-note { color:#b8b2a6; font-size:12px; line-height:1.5; margin:0; }
+.nav-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.nav-actions a,.nav-actions button { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 14px; font-size:10px; text-decoration:none; }
+.nav-actions .nav-route { background:var(--paper); color:#111; }
+.nav-note { margin-top:12px; color:#d5c7a3; }
+@media(max-width:600px) { .navigator { padding:16px; } .nav-copy h3 { font-size:23px; } .nav-actions { display:grid; grid-template-columns:1fr 1fr; } .nav-actions .nav-route { grid-column:1/-1; } }
