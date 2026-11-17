@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v8, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v11, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v8"/);
+  assert.match(sw, /const CACHE = "simonov-v11"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v8"/);
+  assert.match(app, /"simonov-offline"\) === "v11"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -157,4 +157,17 @@ test("карточка остановки: кнопки «Предыдущая»
   assert.match(app, /is-primary/);
   assert.match(app, /state\.navPref = pts\[j\]\.id/);
   assert.match(app, /openPoint\(pts\[j\]\.id, false\)/, "соседняя точка открывается без автозвука");
+});
+
+test("плашка «Подойдите к точке»: над «Начать рассказ», та же логика прибытия, не блокирует рассказ, нейтральный текст без GPS", () => {
+  const i = s => { const k = html.indexOf(s); assert.ok(k > 0, s); return k; };
+  assert.ok(i('id="audio-box"') < i('id="approach"') && i('id="approach"') < i('id="btn-play"'));
+  assert.ok(html.includes('id="btn-approach-path"') && html.includes("Показать путь"));
+  assert.ok(html.includes("Подойдите к точке и начните рассказ"), "нейтральный текст по умолчанию");
+  assert.match(app, /NavCore\.approachState\(state\.pos, p\)/);
+  assert.match(app, /Вы на месте — начните рассказ/);
+  assert.match(app, /Подойдите к точке · /);
+  assert.match(app, /classList\.toggle\("is-here"/);
+  const f = app.match(/function updateApproach\(\) \{[\s\S]*?\n\}\n/)[0];
+  assert.ok(!/disabled|\.pause\(|startNarration/.test(f), "плашка ничего не блокирует и не включает");
 });

@@ -134,6 +134,11 @@
           <div class="slider-wrap hidden" id="cam-slider"><label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" /></div>
         </div>
         <div class="audio-box audio-top" id="audio-box">
+          <div class="approach neutral" id="approach" role="status" aria-live="polite">
+            <span class="approach-arrow hidden" id="approach-arrow" aria-hidden="true">↑</span>
+            <div class="approach-copy"><b id="approach-title">Подойдите к точке и начните рассказ</b><small id="approach-sub"></small></div>
+            <button type="button" class="approach-path hidden" id="btn-approach-path">Показать путь</button>
+          </div>
           <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
           <audio id="player" controls controlslist="noplaybackrate nodownload" preload="metadata" playsinline></audio>
         </div>

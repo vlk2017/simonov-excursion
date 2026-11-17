@@ -440,6 +440,7 @@ function onPosition(pos) {
   updateNavigator();
   maybeAutoTrigger();
   updateStandLive();
+  updateApproach();
   updateNavigationHud();
   if (state.routeRequested && !state.routeBusy) buildWalkingRoute(true);
   else checkOffRoute();
@@ -663,6 +664,8 @@ function openPoint(id, play) {
 
   loadNarration(p);
   updatePointNav();
+  state.approachAngle = null;
+  updateApproach();
   if (play) startNarration();   // тот же синхронный вызов из обработчика нажатия: iOS разрешает звук только так
 
   // thumbnails
@@ -808,6 +811,7 @@ function onOrientation(e) {
   if (now - state.headingUi < 150) return;   // события приходят десятки раз в секунду: интерфейс обновляем реже
   state.headingUi = now;
   updateStandLive();
+  updateApproach();
   updateNavigationHud();
 }
 
@@ -1019,6 +1023,8 @@ function updatePointNav() {
   const prev = pts[i - 1], next = pts[i + 1];
   const player = $("#player");
   const ended = !!player.ended;
+  $("#btn-approach-path").addEventListener("click", showPathToCurrent);
+  setInterval(() => { if (state.currentId) updateApproach(); }, 5000);   // устаревший GPS → нейтральный текст
   $$(".js-prev").forEach(b => {
     b.classList.toggle("hidden", !prev);
     b.disabled = !prev;
@@ -1030,6 +1036,56 @@ function updatePointNav() {
     b.classList.toggle("is-primary", ended);
   });
   $$(".pt-nav").forEach(n => n.classList.toggle("single", !prev));
+}
+/* Плашка над «Начать рассказ»: подталкивает подойти к точке. Рассказ она не блокирует. Радиус и точность те же, что у «Я на месте». */
+function updateApproach() {
+  const box = $("#approach");
+  if (!box || !state.data) return;
+  const p = currentPoint();
+  if (!p) return;
+  const st = NavCore.approachState(state.pos, p);
+  const title = $("#approach-title"), sub = $("#approach-sub"), arrow = $("#approach-arrow"), path = $("#btn-approach-path");
+  const kind = st.kind;
+  box.className = "approach " + (kind === "here" ? "here" : kind === "far" ? "far" : "neutral");
+  $("#btn-play").classList.toggle("is-here", kind === "here");
+  arrow.classList.add("hidden");
+  path.classList.add("hidden");
+  sub.textContent = "";
+  if (kind === "here") {
+    title.textContent = "Вы на месте — начните рассказ";
+  } else if (kind === "far") {
+    title.textContent = `Подойдите к точке · ${fmtDist(st.distance)}`;
+    path.classList.remove("hidden");
+    if (hasFreshHeading()) {
+      arrow.classList.remove("hidden");
+      const target = normalizeAngle(st.bearing - state.heading);
+      const prev = state.approachAngle == null ? target : state.approachAngle;
+      state.approachAngle = prev + angleDelta(prev, target);
+      arrow.style.transform = `rotate(${state.approachAngle}deg)`;
+      sub.textContent = "Идите по стрелке";
+    } else {
+      state.approachAngle = null;
+      sub.textContent = `Направление: ${dirName(st.bearing)}`;
+    }
+  } else if (kind === "near") {
+    title.textContent = `Вы рядом с точкой · ${fmtDist(st.distance)}`;
+    sub.textContent = "Ждём более точный GPS. Рассказ можно начать уже сейчас.";
+  } else {
+    title.textContent = "Подойдите к точке и начните рассказ";
+  }
+}
+function showPathToCurrent() {
+  const p = currentPoint();
+  if (!p) return;
+  stopNarrationNow();
+  stopCamera();
+  state.navPref = p.id;
+  state.currentId = null;
+  showScreen("screen-tour");
+  window.scrollTo({ top: 0, behavior: "instant" });
+  updateNavigator();
+  setTimeout(() => state.map && state.map.invalidateSize(), 200);
+  buildWalkingRoute(true);
 }
 function stopNarrationNow() {
   const a = $("#player");
@@ -1260,7 +1316,7 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v8") return;
+    if (lsGet("simonov-offline") === "v11") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1269,7 +1325,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v8"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v11"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));

@@ -255,3 +255,18 @@ test("поворот ровно на вершине: позиция на вер�
   assert.equal(r.index, 1);
   assert.equal(N.pickNextManeuver(route.maneuvers, r.index).begin_shape_index, 3);
 });
+
+test("approachState: далеко / на месте / близко при плохой точности / нет GPS / устарело", () => {
+  const target = { lat: 55.7148, lon: 37.65725 };
+  const far = N.approachState({ ...offset(target.lat, target.lon, 120, 0), acc: 8 }, target);
+  assert.equal(far.kind, "far");
+  assert.ok(far.distance > 100 && far.distance < 140);
+  assert.ok(far.bearing >= 0 && far.bearing < 360);
+  assert.equal(N.approachState({ ...offset(target.lat, target.lon, 10, 0), acc: 8 }, target).kind, "here");
+  assert.equal(N.approachState({ ...offset(target.lat, target.lon, 30, 0), acc: 8 }, target).kind, "far", "дальше радиуса прибытия 22 м");
+  assert.equal(N.approachState({ ...offset(target.lat, target.lon, 10, 0), acc: 40 }, target).kind, "near");
+  assert.equal(N.approachState({ ...offset(target.lat, target.lon, 300, 0), acc: 40 }, target).kind, "far");
+  assert.equal(N.approachState(null, target).kind, "none");
+  const old = { ...offset(target.lat, target.lon, 10, 0), acc: 8, t: 1000 };
+  assert.equal(N.approachState(old, target, { now: 100000 }).kind, "none");
+});

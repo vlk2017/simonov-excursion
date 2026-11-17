@@ -152,6 +152,18 @@
     return { ready: true, reason: "ok", distance };
   }
 
+  /* Плашка «Подойдите к точке» над кнопкой «Начать рассказ». Тот же радиус и те же требования к точности, что у «Я на месте».
+     kind: here — на месте; far — далеко (distance, bearing); near — близко, но GPS пока неточен; none — места нет или данные устарели. */
+  function approachState(pos, target, opts = {}) {
+    const a = arrivalState(pos, target, opts);
+    if (a.reason === "no-position") return { kind: "none", reason: a.reason, distance: null, bearing: null };
+    const bearing = bearingTo(pos.lat, pos.lon, target.lat, target.lon);
+    if (a.ready) return { kind: "here", reason: a.reason, distance: a.distance, bearing };
+    if (a.reason === "too-far") return { kind: "far", reason: a.reason, distance: a.distance, bearing };
+    if (a.reason === "poor-accuracy") return { kind: a.distance > (opts.nearDistance ?? 60) ? "far" : "near", reason: a.reason, distance: a.distance, bearing };
+    return { kind: "none", reason: a.reason, distance: a.distance, bearing };
+  }
+
   /* Уровень доверия к GPS для HUD */
   function gpsQuality(acc) {
     if (!Number.isFinite(acc)) return { level: "unknown", label: "GPS: точность неизвестна" };
@@ -215,6 +227,6 @@
     haversine, bearingTo, dirName, normalizeAngle, angleDelta, fmtDist,
     decodePolyline6, encodePolyline6, cumulativeDistances, projectOnSegment, projectOnRoute,
     pickNextManeuver, distanceToManeuver, remainingDistance, walkMinutes,
-    arrivalState, gpsQuality, createOffRouteTracker, parseValhallaRoute, routingErrorMessage, smoothAngle
+    arrivalState, approachState, gpsQuality, createOffRouteTracker, parseValhallaRoute, routingErrorMessage, smoothAngle
   };
 });

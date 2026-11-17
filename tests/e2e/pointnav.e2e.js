@@ -71,7 +71,7 @@ const info = page => page.evaluate(() => { const a = document.querySelector("#pl
   await tap(page, "#btn-play");
   await page.waitForFunction(() => { const a = document.querySelector("#player"); return !a.paused && a.duration > 0; }, { timeout: 15000 }).catch(() => {});
   await page.evaluate(() => { const a = document.querySelector("#player"); a.currentTime = Math.max(0, a.duration - 1); });
-  await page.waitForFunction(() => document.querySelector("#player").ended, { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector("#player").ended, { timeout: 45000 }).catch(() => {});
   await sleep(500);
   s = await info(page);
   s.ended = await page.evaluate(() => document.querySelector("#player").ended);

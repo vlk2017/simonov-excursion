@@ -211,7 +211,7 @@ const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers
   ok("Конец аудио: точка 1 отмечена, навигация на точке 2, тост называет следующую", ended.first === 1 && ended.visited.length === 1 && ended.next === 2 && ended.navStep === "02" && ended.navTitle === ended.secondTitle && ended.toast.includes(ended.secondTitle), JSON.stringify(ended));
   ok("Плеер берёт основной внешний источник HeyGen", /^https:\/\/resource2\.heygen\.ai\//.test(ended.audio), ended.audio);
   const sw = await page.evaluate(async () => { const r = await navigator.serviceWorker.ready; await new Promise(r => setTimeout(r, 1500)); return (await caches.keys()); });
-  ok("Service worker активен, кэш simonov-v8", sw.includes("simonov-v8"), JSON.stringify(sw));
+  ok("Service worker активен, кэш simonov-v11", sw.includes("simonov-v11"), JSON.stringify(sw));
   const expectedNoise = e => /Failed to load resource|ERR_FAILED|status of (500|429)|net::ERR/.test(e);
   const real = errors.filter(e => !expectedNoise(e));
   ok("Нет неожиданных ошибок консоли и pageerror", real.length === 0, real.join(" | "));
