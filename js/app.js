@@ -1219,8 +1219,8 @@ async function main() {
   state.arriveOn = lsGet("simonov-arrive") !== "0";
   try { state.visited = JSON.parse(lsGet("simonov-visited") || "{}") || {}; } catch { state.visited = {}; }
   $("#opt-arrive").checked = state.arriveOn;
-  $("#cover-title").textContent = state.data.title;
-  $("#cover-lead").textContent = state.data.subtitle;
+  // The cover title and editorial introduction are intentionally composed in index.html.
+  // Keep them static so the historical opening layout is not flattened by data binding.
   $("#cover-place").textContent = state.data.place;
   initCompare();
   initLightbox();
