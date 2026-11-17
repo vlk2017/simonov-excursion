@@ -1,106 +1,95 @@
-/* SIMONOV MONASTERY — opening page / visual chronicle
-   High contrast, monumental but quiet. The historical photograph remains the subject. */
-#screen-cover{background:#171313;color:#f5efe4;min-height:100svh}
+/* SIMONOV MONASTERY — the opening page as a readable historical chronicle */
+#screen-cover{background:#171513;color:#f5efe4;min-height:100svh}
 #screen-cover .cover{
-  box-sizing:border-box;position:relative;isolation:isolate;overflow:hidden;
-  min-height:100svh;padding:30px clamp(22px,7vw,104px) max(30px,env(safe-area-inset-bottom));
+  box-sizing:border-box;position:relative;isolation:isolate;overflow:visible;
+  min-height:100svh;padding:34px clamp(22px,7vw,104px) max(34px,env(safe-area-inset-bottom));
   display:flex;flex-direction:column;justify-content:flex-end;gap:0;
   background:
-    linear-gradient(180deg,rgba(14,13,12,.08) 0%,rgba(14,13,12,.10) 24%,rgba(17,14,13,.74) 48%,#171313 70%,#171313 100%),
-    linear-gradient(90deg,rgba(17,13,13,.52),rgba(17,13,13,0) 72%),
-    url("../img/then/vostochnaya-1913-1930.jpg") center 30%/cover no-repeat;
+    linear-gradient(180deg,rgba(12,11,10,.12) 0%,rgba(15,13,12,.22) 22%,rgba(17,14,13,.78) 45%,#171513 64%,#171513 100%),
+    linear-gradient(90deg,rgba(17,13,12,.48),rgba(17,13,12,0) 76%),
+    url("../img/then/vostochnaya-1913-1930.jpg") center 26%/cover no-repeat;
 }
-#screen-cover .cover:before{
-  content:"";position:absolute;inset:15px;z-index:0;pointer-events:none;
-  border:1px solid rgba(214,190,145,.52);outline:1px solid rgba(214,190,145,.12);outline-offset:5px;
-}
+#screen-cover .cover:before{content:"";position:absolute;inset:15px;z-index:0;pointer-events:none;border:1px solid rgba(214,190,145,.42);outline:1px solid rgba(214,190,145,.1);outline-offset:5px}
 #screen-cover .cover:after{content:none}
 #screen-cover .cover>*{position:relative;z-index:1}
 #screen-cover .cover-masthead{
-  position:absolute;top:clamp(34px,6vh,66px);left:clamp(34px,8vw,112px);right:34px;
-  display:flex;align-items:center;gap:13px;color:#f0dfbd;
-  font:700 10px/1.5 var(--font-sans);letter-spacing:.22em;text-transform:uppercase;
-  text-shadow:0 2px 12px #000;
+  position:absolute;top:clamp(28px,5vh,58px);left:clamp(30px,7.5vw,104px);right:34px;
+  display:flex;align-items:center;gap:15px;color:#f0dfbd;
+  font:700 10px/1.5 var(--font-sans);letter-spacing:.2em;text-transform:uppercase;text-shadow:0 2px 12px #000;
 }
-#screen-cover .cover-mark{font:26px/1 var(--font-serif);color:#e3c88e}
-#screen-cover .cover-heading{max-width:880px;position:relative}
-#screen-cover .cover-kicker{
-  margin:0 0 18px;color:#e3c88e;font:700 10px/1.5 var(--font-sans);
-  letter-spacing:.2em;text-transform:uppercase;text-shadow:0 2px 12px #000;
-}
+#screen-cover .cover-emblem{width:62px;height:74px;display:grid;place-items:center;flex:0 0 auto;color:#e2c68d;filter:drop-shadow(0 2px 8px #000)}
+#screen-cover .cover-emblem svg{width:100%;height:100%;overflow:visible}
+#screen-cover .cover-heading{max-width:900px;position:relative}
+#screen-cover .cover-kicker{margin:0 0 19px;color:#e3c88e;font:700 10px/1.5 var(--font-sans);letter-spacing:.2em;text-transform:uppercase;text-shadow:0 2px 12px #000}
 #screen-cover .cover-kicker:before{content:none}
-#screen-cover h1{
-  max-width:9em;margin:0;color:#fffaf0;
-  font:600 clamp(64px,10vw,126px)/.78 var(--font-serif);
-  letter-spacing:-.045em;text-wrap:balance;
-  text-shadow:0 4px 26px rgba(0,0,0,.65);
-}
+#screen-cover h1{max-width:9em;margin:0;color:#fffaf0;font:600 clamp(64px,10vw,126px)/.82 var(--font-serif);letter-spacing:-.045em;text-wrap:balance;text-shadow:0 4px 26px rgba(0,0,0,.68)}
 #screen-cover h1 em{font-weight:500;color:#ead9b7}
-#screen-cover .cover-lead{
-  max-width:610px;margin:24px 0 0;color:#f2eee7;
-  font:500 clamp(15px,1.5vw,18px)/1.72 var(--font-sans);
-  text-shadow:0 2px 12px rgba(0,0,0,.75);
-}
-#screen-cover .cover-chronicle{
-  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;
-  max-width:1040px;margin:30px 0 0;border-top:1px solid rgba(220,194,147,.5);
-  border-bottom:1px solid rgba(220,194,147,.28);background:rgba(22,18,17,.58);
-  backdrop-filter:blur(8px);
-}
-#screen-cover .cover-chronicle>div{min-width:0;padding:14px 13px 15px;border-right:1px solid rgba(220,194,147,.22)}
-#screen-cover .cover-chronicle>div:last-child{border-right:0}
-#screen-cover .cover-chronicle b{display:block;color:#e8cf9d;font:600 17px/1.2 var(--font-serif);white-space:nowrap}
-#screen-cover .cover-chronicle span{display:block;margin-top:5px;color:#f1ece4;font:500 10px/1.45 var(--font-sans)}
-#screen-cover .cover-foot{max-width:1040px;width:100%;margin:0;padding-top:22px}
+#screen-cover .cover-lead{max-width:660px;margin:24px 0 0;color:#f4f0e9;font:500 clamp(15px,1.5vw,18px)/1.72 var(--font-sans);text-shadow:0 2px 12px rgba(0,0,0,.8)}
+#screen-cover .cover-history{max-width:1120px;margin:clamp(38px,6vh,66px) 0 0;padding:26px 0 0;border-top:1px solid rgba(222,197,153,.5)}
+#screen-cover .cover-history-heading{margin-bottom:22px}
+#screen-cover .history-overline{display:block;color:#d7b978;font:700 9px/1.5 var(--font-sans);letter-spacing:.24em;text-transform:uppercase}
+#screen-cover .cover-history-heading h2{margin:6px 0 4px;color:#fff8eb;font:600 clamp(30px,4vw,44px)/1.05 var(--font-serif)}
+#screen-cover .cover-history-heading p{margin:0;color:#c9c0b2;font:400 13px/1.5 var(--font-sans)}
+#screen-cover .cover-timeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border-top:1px solid rgba(224,201,161,.24);border-bottom:1px solid rgba(224,201,161,.24)}
+#screen-cover .history-event{position:relative;min-width:0;padding:17px 17px 19px 14px;border-right:1px solid rgba(224,201,161,.2);border-bottom:1px solid rgba(224,201,161,.2);background:rgba(26,22,19,.35)}
+#screen-cover .history-event:nth-child(5n){border-right:0}
+#screen-cover .history-event:nth-last-child(-n+5){border-bottom:0}
+#screen-cover .history-event:before{content:"";position:absolute;top:-4px;left:14px;width:7px;height:7px;border-radius:50%;background:#d4b574;box-shadow:0 0 0 3px #211c18}
+#screen-cover .history-event time{display:block;color:#e4c98f;font:600 17px/1.25 var(--font-serif);white-space:nowrap}
+#screen-cover .history-event h3{margin:8px 0 5px;color:#fff7e9;font:600 18px/1.15 var(--font-serif)}
+#screen-cover .history-event p{margin:0;color:#d7d0c6;font:400 11px/1.6 var(--font-sans)}
+#screen-cover .history-event-loss{background:rgba(75,30,27,.32)}
+#screen-cover .history-event-loss:before{background:#b56e60}
+#screen-cover .history-event-return{background:rgba(70,67,43,.24)}
+#screen-cover .history-event-return:before{background:#c9b47c}
+#screen-cover .history-note{max-width:900px;margin:14px 0 0;color:#bdb3a5;font:400 10px/1.6 var(--font-sans)}
+#screen-cover .history-sources{display:flex;flex-wrap:wrap;gap:18px;margin-top:8px}
+#screen-cover .history-sources a{color:#e2c68d;font:600 10px/1.5 var(--font-sans);text-decoration:underline;text-decoration-color:rgba(226,198,141,.45);text-underline-offset:3px}
+#screen-cover .cover-foot{max-width:1120px;width:100%;margin:0;padding-top:28px}
 #screen-cover .cover-meta{margin:0 0 13px;color:#e8cf9d;font:600 10px/1.5 var(--font-sans);letter-spacing:.15em;text-transform:uppercase}
 #screen-cover .cover-actions{display:flex;flex-direction:row;gap:12px}
-#screen-cover .btn-primary{
-  min-height:56px;padding:0 30px;border:1px solid #e8d3a7;border-radius:2px;
-  background:#e5cf9f;color:#251a18;font:800 13px var(--font-sans);letter-spacing:.04em;
-  box-shadow:none
-}
-#screen-cover .btn-ghost{
-  min-height:56px;padding:0 24px;border:1px solid rgba(235,220,190,.7);
-  border-radius:2px;background:rgba(18,15,14,.48);color:#fff8ed;
-  font:700 12px var(--font-sans)
-}
+#screen-cover .btn-primary{min-height:56px;padding:0 30px;border:1px solid #e8d3a7;border-radius:2px;background:#e5cf9f;color:#251a18;font:800 13px var(--font-sans);letter-spacing:.04em;box-shadow:none}
+#screen-cover .btn-ghost{min-height:56px;padding:0 24px;border:1px solid rgba(235,220,190,.7);border-radius:2px;background:rgba(18,15,14,.48);color:#fff8ed;font:700 12px var(--font-sans)}
 #screen-cover .btn-primary:focus-visible,#screen-cover .btn-ghost:focus-visible{outline:3px solid #fff;outline-offset:4px}
-@media(min-width:1000px){
-  #screen-cover .cover{padding-bottom:clamp(42px,7vh,82px);background-position:center 25%}
-  #screen-cover .cover-heading{margin-bottom:0}
+@media(min-width:1000px){#screen-cover .cover{padding-bottom:clamp(42px,7vh,82px);background-position:center 25%}}
+@media(max-width:900px){
+ #screen-cover .cover-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #screen-cover .history-event:nth-child(5n){border-right:1px solid rgba(224,201,161,.2)}
+ #screen-cover .history-event:nth-child(2n){border-right:0}
+ #screen-cover .history-event:nth-last-child(-n+5){border-bottom:1px solid rgba(224,201,161,.2)}
+ #screen-cover .history-event:nth-last-child(-n+2){border-bottom:0}
 }
 @media(max-width:700px){
-  #screen-cover .cover{
-    min-height:100svh;padding:0 25px max(28px,env(safe-area-inset-bottom));
-    justify-content:flex-end;
-    background:
-      linear-gradient(180deg,rgba(13,12,11,.05) 0%,rgba(13,12,11,.10) 25%,rgba(18,15,14,.72) 43%,#171313 60%,#171313 100%),
-      url("../img/then/vostochnaya-1913-1930.jpg") 53% 18%/auto 56svh no-repeat,
-      #171313;
-  }
-  #screen-cover .cover:before{inset:10px}
-  #screen-cover .cover-masthead{top:27px;left:27px;right:25px;gap:9px;font-size:8px;letter-spacing:.15em}
-  #screen-cover .cover-mark{font-size:22px}
-  #screen-cover .cover-heading{margin-top:0}
-  #screen-cover .cover-kicker{font-size:9px;letter-spacing:.13em;margin-bottom:13px}
-  #screen-cover h1{font-size:clamp(58px,15vw,82px);line-height:.8;max-width:7em}
-  #screen-cover .cover-lead{font-size:13px;line-height:1.62;margin-top:16px;max-width:38em}
-  #screen-cover .cover-chronicle{
-    grid-template-columns:repeat(5,minmax(104px,1fr));overflow-x:auto;
-    margin-top:19px;scrollbar-width:thin;scrollbar-color:#8c744e transparent;
-  }
-  #screen-cover .cover-chronicle>div{padding:10px 9px 11px}
-  #screen-cover .cover-chronicle b{font-size:14px}
-  #screen-cover .cover-chronicle span{font-size:9px;line-height:1.35}
-  #screen-cover .cover-foot{padding-top:17px}
-  #screen-cover .cover-meta{font-size:9px;letter-spacing:.1em}
-  #screen-cover .cover-actions{display:grid;grid-template-columns:1fr;gap:8px}
-  #screen-cover .btn-primary,#screen-cover .btn-ghost{min-height:50px;width:100%;font-size:12px}
+ #screen-cover .cover{min-height:100svh;padding:0 25px max(30px,env(safe-area-inset-bottom));justify-content:flex-end;
+  background:linear-gradient(180deg,rgba(13,12,11,.08) 0%,rgba(13,12,11,.12) 22%,rgba(18,15,14,.7) 39%,#171513 54%,#171513 100%),url("../img/then/vostochnaya-1913-1930.jpg") 53% 14%/auto 55svh no-repeat,#171513}
+ #screen-cover .cover:before{inset:10px}
+ #screen-cover .cover-masthead{top:24px;left:26px;right:24px;gap:10px;font-size:8px;letter-spacing:.13em}
+ #screen-cover .cover-emblem{width:45px;height:55px}
+ #screen-cover .cover-kicker{font-size:9px;letter-spacing:.13em;margin-bottom:13px}
+ #screen-cover h1{font-size:clamp(58px,15vw,82px);line-height:.82;max-width:7em}
+ #screen-cover .cover-lead{font-size:13px;line-height:1.62;margin-top:16px;max-width:38em}
+ #screen-cover .cover-history{margin-top:30px;padding-top:20px}
+ #screen-cover .cover-history-heading{margin-bottom:15px}
+ #screen-cover .cover-history-heading h2{font-size:31px}
+ #screen-cover .cover-history-heading p{font-size:12px}
+ #screen-cover .cover-timeline{grid-template-columns:1fr}
+ #screen-cover .history-event,#screen-cover .history-event:nth-child(5n),#screen-cover .history-event:nth-child(2n){padding:13px 13px 14px 18px;border-right:0;border-bottom:1px solid rgba(224,201,161,.2)}
+ #screen-cover .history-event:nth-last-child(-n+5){border-bottom:1px solid rgba(224,201,161,.2)}
+ #screen-cover .history-event:last-child{border-bottom:0}
+ #screen-cover .history-event:before{left:3px;top:17px;width:6px;height:6px}
+ #screen-cover .history-event time{font-size:16px}
+ #screen-cover .history-event h3{font-size:18px;margin:4px 0}
+ #screen-cover .history-event p{font-size:11px;line-height:1.55}
+ #screen-cover .history-note{font-size:9px}
+ #screen-cover .history-sources{gap:8px 15px}
+ #screen-cover .history-sources a{font-size:9px}
+ #screen-cover .cover-foot{padding-top:20px}
+ #screen-cover .cover-meta{font-size:9px;letter-spacing:.1em}
+ #screen-cover .cover-actions{display:grid;grid-template-columns:1fr;gap:8px}
+ #screen-cover .btn-primary,#screen-cover .btn-ghost{min-height:50px;width:100%;font-size:12px}
 }
 @media(max-height:740px) and (max-width:700px){
-  #screen-cover .cover{padding-top:88px}
-  #screen-cover .cover-lead{margin-top:11px;font-size:12px;line-height:1.48}
-  #screen-cover .cover-chronicle{margin-top:12px}
-  #screen-cover .cover-foot{padding-top:12px}
+ #screen-cover .cover{padding-top:92px}
+ #screen-cover .cover-lead{margin-top:11px;font-size:12px;line-height:1.48}
 }
 @media(prefers-reduced-motion:reduce){#screen-cover *{scroll-behavior:auto}}
