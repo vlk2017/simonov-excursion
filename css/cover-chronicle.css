@@ -1,0 +1,105 @@
+/* SIMONOV MONASTERY — opening page / visual chronicle
+   High contrast, monumental but quiet. The historical photograph remains the subject. */
+#screen-cover{background:#171313;color:#f5efe4;min-height:100svh}
+#screen-cover .cover{
+  box-sizing:border-box;position:relative;isolation:isolate;overflow:hidden;
+  min-height:100svh;padding:30px clamp(22px,7vw,104px) max(30px,env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;justify-content:flex-end;gap:0;
+  background:
+    linear-gradient(180deg,rgba(14,13,12,.08) 0%,rgba(14,13,12,.10) 24%,rgba(17,14,13,.74) 48%,#171313 70%,#171313 100%),
+    linear-gradient(90deg,rgba(17,13,13,.52),rgba(17,13,13,0) 72%),
+    url("../img/then/vostochnaya-1913-1930.jpg") center 30%/cover no-repeat;
+}
+#screen-cover .cover:before{
+  content:"";position:absolute;inset:15px;z-index:-1;pointer-events:none;
+  border:1px solid rgba(214,190,145,.52);outline:1px solid rgba(214,190,145,.12);outline-offset:5px;
+}
+#screen-cover .cover:after{content:none}
+#screen-cover .cover-masthead{
+  position:absolute;top:clamp(34px,6vh,66px);left:clamp(34px,8vw,112px);right:34px;
+  display:flex;align-items:center;gap:13px;color:#f0dfbd;
+  font:700 10px/1.5 var(--font-sans);letter-spacing:.22em;text-transform:uppercase;
+  text-shadow:0 2px 12px #000;
+}
+#screen-cover .cover-mark{font:26px/1 var(--font-serif);color:#e3c88e}
+#screen-cover .cover-heading{max-width:880px;position:relative}
+#screen-cover .cover-kicker{
+  margin:0 0 18px;color:#e3c88e;font:700 10px/1.5 var(--font-sans);
+  letter-spacing:.2em;text-transform:uppercase;text-shadow:0 2px 12px #000;
+}
+#screen-cover .cover-kicker:before{content:none}
+#screen-cover h1{
+  max-width:9em;margin:0;color:#fffaf0;
+  font:600 clamp(64px,10vw,126px)/.78 var(--font-serif);
+  letter-spacing:-.045em;text-wrap:balance;
+  text-shadow:0 4px 26px rgba(0,0,0,.65);
+}
+#screen-cover h1 em{font-weight:500;color:#ead9b7}
+#screen-cover .cover-lead{
+  max-width:610px;margin:24px 0 0;color:#f2eee7;
+  font:500 clamp(15px,1.5vw,18px)/1.72 var(--font-sans);
+  text-shadow:0 2px 12px rgba(0,0,0,.75);
+}
+#screen-cover .cover-chronicle{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;
+  max-width:1040px;margin:30px 0 0;border-top:1px solid rgba(220,194,147,.5);
+  border-bottom:1px solid rgba(220,194,147,.28);background:rgba(22,18,17,.58);
+  backdrop-filter:blur(8px);
+}
+#screen-cover .cover-chronicle>div{min-width:0;padding:14px 13px 15px;border-right:1px solid rgba(220,194,147,.22)}
+#screen-cover .cover-chronicle>div:last-child{border-right:0}
+#screen-cover .cover-chronicle b{display:block;color:#e8cf9d;font:600 17px/1.2 var(--font-serif);white-space:nowrap}
+#screen-cover .cover-chronicle span{display:block;margin-top:5px;color:#f1ece4;font:500 10px/1.45 var(--font-sans)}
+#screen-cover .cover-foot{max-width:1040px;width:100%;margin:0;padding-top:22px}
+#screen-cover .cover-meta{margin:0 0 13px;color:#e8cf9d;font:600 10px/1.5 var(--font-sans);letter-spacing:.15em;text-transform:uppercase}
+#screen-cover .cover-actions{display:flex;flex-direction:row;gap:12px}
+#screen-cover .btn-primary{
+  min-height:56px;padding:0 30px;border:1px solid #e8d3a7;border-radius:2px;
+  background:#e5cf9f;color:#251a18;font:800 13px var(--font-sans);letter-spacing:.04em;
+  box-shadow:none
+}
+#screen-cover .btn-ghost{
+  min-height:56px;padding:0 24px;border:1px solid rgba(235,220,190,.7);
+  border-radius:2px;background:rgba(18,15,14,.48);color:#fff8ed;
+  font:700 12px var(--font-sans)
+}
+#screen-cover .btn-primary:focus-visible,#screen-cover .btn-ghost:focus-visible{outline:3px solid #fff;outline-offset:4px}
+@media(min-width:1000px){
+  #screen-cover .cover{padding-bottom:clamp(42px,7vh,82px);background-position:center 25%}
+  #screen-cover .cover-heading{margin-bottom:0}
+}
+@media(max-width:700px){
+  #screen-cover .cover{
+    min-height:100svh;padding:0 25px max(28px,env(safe-area-inset-bottom));
+    justify-content:flex-end;
+    background:
+      linear-gradient(180deg,rgba(13,12,11,.05) 0%,rgba(13,12,11,.10) 25%,rgba(18,15,14,.72) 43%,#171313 60%,#171313 100%),
+      url("../img/then/vostochnaya-1913-1930.jpg") 53% 18%/auto 56svh no-repeat,
+      #171313;
+  }
+  #screen-cover .cover:before{inset:10px}
+  #screen-cover .cover-masthead{top:27px;left:27px;right:25px;gap:9px;font-size:8px;letter-spacing:.15em}
+  #screen-cover .cover-mark{font-size:22px}
+  #screen-cover .cover-heading{margin-top:0}
+  #screen-cover .cover-kicker{font-size:9px;letter-spacing:.13em;margin-bottom:13px}
+  #screen-cover h1{font-size:clamp(58px,15vw,82px);line-height:.8;max-width:7em}
+  #screen-cover .cover-lead{font-size:13px;line-height:1.62;margin-top:16px;max-width:38em}
+  #screen-cover .cover-chronicle{
+    grid-template-columns:repeat(5,minmax(104px,1fr));overflow-x:auto;
+    margin-top:19px;scrollbar-width:thin;scrollbar-color:#8c744e transparent;
+  }
+  #screen-cover .cover-chronicle>div{padding:10px 9px 11px}
+  #screen-cover .cover-chronicle b{font-size:14px}
+  #screen-cover .cover-chronicle span{font-size:9px;line-height:1.35}
+  #screen-cover .cover-foot{padding-top:17px}
+  #screen-cover .cover-meta{font-size:9px;letter-spacing:.1em}
+  #screen-cover .cover-actions{display:grid;grid-template-columns:1fr;gap:8px}
+  #screen-cover .btn-primary,#screen-cover .btn-ghost{min-height:50px;width:100%;font-size:12px}
+}
+@media(max-height:740px) and (max-width:700px){
+  #screen-cover .cover{padding-top:88px}
+  #screen-cover .cover-lead{margin-top:11px;font-size:12px;line-height:1.48}
+  #screen-cover .cover-chronicle{margin-top:12px}
+  #screen-cover .cover-foot{padding-top:12px}
+}
+@media(prefers-reduced-motion:reduce){#screen-cover *{scroll-behavior:auto}}
