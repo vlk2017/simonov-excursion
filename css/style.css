@@ -653,3 +653,6 @@ audio { display:block; height:42px; filter:grayscale(1); }
  .nav-arrow { font-size:40px; }
  .nav-turn-copy strong { font-size:16px; }
 }
+
+.offline-audio { margin:12px 0; }
+.offline-audio .btn-ghost { min-height:44px; width:100%; }

@@ -1,5 +1,5 @@
 /* Simonov excursion: offline cache. Pages and data: network first. Audio and photos: cache first. */
-const CACHE = "simonov-v3";
+const CACHE = "simonov-v4";
 const CORE = ["./", "index.html", "css/style.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {
@@ -13,11 +13,14 @@ self.addEventListener("message", e => {
   if (!e.data || e.data.type !== "precache") return;
   const port = e.ports && e.ports[0];
   e.waitUntil(caches.open(CACHE).then(async c => {
-    let ok = true;
+    let ok = true, done = 0;
+    const total = e.data.files.length;
     for (const f of e.data.files) {
       try { if (!(await c.match(f))) await c.add(f); } catch (err) { ok = false; }
+      done++;
+      if (e.data.progress && port) port.postMessage({ progress: done, total });
     }
-    port && port.postMessage({ ok });
+    port && port.postMessage({ ok, done: true });
   }));
 });
 

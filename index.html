@@ -70,6 +70,10 @@
       <div class="list">
         <p class="hint">Восемь точек вокруг монастыря. Когда вы подойдёте примерно на 25 метров, телефон предложит включить рассказ. Сам он без вашего нажатия не заиграет. Если место не нашлось, откройте точку и нажмите «Я на месте».</p>
         <label class="switch"><input type="checkbox" id="opt-arrive" checked /> Подсказывать у точек</label>
+        <div class="offline-audio">
+          <button class="btn-ghost" id="btn-offline-audio" type="button">Скачать рассказы для офлайна (~19 МБ)</button>
+          <p class="hint" id="offline-audio-status" aria-live="polite"></p>
+        </div>
         <div id="list"></div>
         <button class="btn-ghost" data-back="tour" id="btn-about-2" onclick="document.getElementById('btn-about').click()">Как устроена прогулка</button>
       </div>

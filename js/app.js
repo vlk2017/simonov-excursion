@@ -1004,12 +1004,45 @@ function applyHash() {
   }
 }
 
+
+/* Рассказы (~19 МБ) не качаются сами: слушанный рассказ кэшируется service worker'ом при первом проигрывании,
+   остальные скачиваются кнопкой «Скачать рассказы для офлайна». */
+function audioFiles() { return state.data.points.map(p => p.audio).filter(a => a && !/^https?:/.test(a)); }
+async function updateOfflineAudioStatus() {
+  const el = $("#offline-audio-status");
+  if (!el || !("caches" in window)) return;
+  const files = audioFiles();
+  let have = 0;
+  for (const f of files) { try { if (await caches.match(f, { ignoreSearch: true })) have++; } catch {} }
+  el.textContent = have === files.length ? "Все рассказы сохранены, работают без интернета." : `Сохранено рассказов: ${have} из ${files.length}.`;
+  const btn = $("#btn-offline-audio");
+  if (btn) btn.disabled = have === files.length;
+}
+async function downloadAudioOffline() {
+  const btn = $("#btn-offline-audio"), el = $("#offline-audio-status");
+  if (!("serviceWorker" in navigator) || location.protocol === "file:") { toast("Офлайн-режим здесь недоступен."); return; }
+  const reg = await navigator.serviceWorker.ready.catch(() => null);
+  const sw = reg && (reg.active || navigator.serviceWorker.controller);
+  if (!sw) { toast("Офлайн-кэш ещё не готов. Подождите несколько секунд и повторите."); return; }
+  btn.disabled = true;
+  const ch = new MessageChannel();
+  ch.port1.onmessage = e => {
+    if (e.data && e.data.progress) el.textContent = `Скачиваем рассказы: ${e.data.progress} из ${e.data.total}…`;
+    if (e.data && e.data.done) {
+      updateOfflineAudioStatus();
+      toast(e.data.ok ? "Рассказы сохранены для работы без интернета." : "Часть рассказов не скачалась. Проверьте сеть и нажмите ещё раз.");
+      if (!e.data.ok) btn.disabled = false;
+    }
+  };
+  sw.postMessage({ type: "precache", files: audioFiles(), progress: true }, [ch.port2]);
+}
+
 /* offline: service worker caches pages, audio and photos */
 function initOffline() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
   navigator.serviceWorker.register("sw.js").then(async reg => {
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v3") return;
+    if (lsGet("simonov-offline") === "v4") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
@@ -1018,7 +1051,7 @@ function initOffline() {
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v3"); toast("Экскурсия сохранена: рассказы и фото будут работать без интернета."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v4"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -1119,7 +1152,12 @@ async function main() {
   player.addEventListener("pause", () => { playBtn.textContent = "Слушать"; });
   player.addEventListener("ended", () => {
     playBtn.textContent = "Слушать";
-    if (state.currentId) markVisited(state.currentId);
+    // решение владельца: остановка отмечается пройденной сама по окончании рассказа, навигация переходит к следующей
+    if (state.currentId) {
+      markVisited(state.currentId);
+      const nx = state.data.points[nextUnvisitedIndex()];
+      toast(nx ? `Остановка пройдена. Дальше: ${nx.num}. ${nx.title}` : "Остановка пройдена. Это была последняя.");
+    }
   });
   player.addEventListener("loadedmetadata", () => { player.playbackRate = state.rate; });
   const markRate = () => $$("#speed button").forEach(b => b.classList.toggle("on", Number(b.dataset.rate) === state.rate));
@@ -1130,6 +1168,8 @@ async function main() {
     markRate();
   }));
   markRate();
+  $("#btn-offline-audio").addEventListener("click", downloadAudioOffline);
+  updateOfflineAudioStatus();
   initOffline();
 }
 
