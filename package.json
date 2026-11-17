@@ -1,0 +1,9 @@
+{
+  "name": "simonov-excursion",
+  "private": true,
+  "description": "Аудиоэкскурсия по Симонову монастырю (статический сайт). Зависимостей нет, тесты на встроенном node:test.",
+  "scripts": {
+    "test": "node --test tests/nav-core.test.js tests/static.test.js",
+    "check": "node --check js/app.js && node --check js/nav-core.js && node --check sw.js"
+  }
+}
