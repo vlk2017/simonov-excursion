@@ -634,7 +634,7 @@ function initOffline() {
     if (localStorage.getItem("simonov-offline") === "v3") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
-      files.add(p.audio); files.add(p.script);
+      files.add(p.script);
       p.photos.forEach(ph => { files.add(ph.src); files.add(thumbOf(ph.src)); if (ph.now) { files.add(ph.now.src); files.add(thumbOf(ph.now.src)); } });
       if (p.nowContext) files.add(p.nowContext.src);
     }
