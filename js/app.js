@@ -310,6 +310,11 @@ function openPoint(id, play) {
     $("#scene-notice").textContent = scene.notice;
     $("#scene-then").textContent = scene.then;
     $("#scene-confidence").textContent = "Надёжность и оговорки: " + scene.confidence;
+    const destination = p.lat + "," + p.lon;
+    const origin = state.pos ? "&origin=" + encodeURIComponent(state.pos.lat + "," + state.pos.lon) : "";
+    $("#scene-route").innerHTML =
+      `<a class="scene-route-link" href="https://www.google.com/maps/dir/?api=1${origin}&destination=${encodeURIComponent(destination)}&travelmode=walking" target="_blank" rel="noopener">Пешком к этой остановке ↗</a>` +
+      `<a class="scene-map-link" href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=19/${p.lat}/${p.lon}" target="_blank" rel="noopener">Показать точку на карте</a>`;
     $("#scene-sources").innerHTML = (scene.sources || []).map(s => `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(" · ");
   } else {
     sceneCard.classList.add("hidden");
