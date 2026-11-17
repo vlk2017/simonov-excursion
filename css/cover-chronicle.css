@@ -11,10 +11,11 @@
     url("../img/then/vostochnaya-1913-1930.jpg") center 30%/cover no-repeat;
 }
 #screen-cover .cover:before{
-  content:"";position:absolute;inset:15px;z-index:-1;pointer-events:none;
+  content:"";position:absolute;inset:15px;z-index:0;pointer-events:none;
   border:1px solid rgba(214,190,145,.52);outline:1px solid rgba(214,190,145,.12);outline-offset:5px;
 }
 #screen-cover .cover:after{content:none}
+#screen-cover .cover>*{position:relative;z-index:1}
 #screen-cover .cover-masthead{
   position:absolute;top:clamp(34px,6vh,66px);left:clamp(34px,8vw,112px);right:34px;
   display:flex;align-items:center;gap:13px;color:#f0dfbd;
