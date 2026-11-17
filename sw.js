@@ -1,6 +1,6 @@
 /* Simonov excursion: offline cache. Pages and data: network first. Audio and photos: cache first. */
-const CACHE = "simonov-v7";
-const CORE = ["./", "index.html", "css/style.css", "css/kremlin.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
+const CACHE = "simonov-v8";
+const CORE = ["./", "index.html", "css/style.css", "css/kremlin.css", "css/simonov-identity.css", "css/cover-chronicle.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
