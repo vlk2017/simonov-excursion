@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#541622" />
-  <title>Симонов монастырь — летопись места · аудиоэкскурсия</title>
+  <meta name="theme-color" content="#171717" />
+  <title>Симонов монастырь — историческая прогулка</title>
   <meta name="description" content="Историческая прогулка по Симонову монастырю: восемь остановок, архивные фотографии, аудиорассказы и пешеходная навигация." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/kremlin.css" />
@@ -21,53 +21,38 @@
   <div class="app">
     <section class="screen active" id="screen-cover">
       <div class="cover">
-        <div class="cover-masthead">
-          <span class="cover-emblem" aria-hidden="true">
-            <svg viewBox="0 0 96 112" role="img" aria-label="Знак Симонова монастыря: башня, крепостная стена и крест">
-              <path d="M48 5v16M40 13h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/>
-              <path d="M48 22l-5 7h10z" fill="currentColor"/>
-              <path d="M24 48V35l8-9h32l8 9v13" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M32 48V37l16-10 16 10v11" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M36 48V38h24v10" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M12 53h72v12H12zM8 65h80v8H8z" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M15 53V45h8v8m50 0V45h8v8M26 73v27m44-27v27M38 73v27m20-27v27M12 100h72" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M43 100V84a5 5 0 0 1 10 0v16" fill="none" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M48 84v-7m-4 3h8" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-          </span>
-          <span>МОСКВА · ВОСТОЧНАЯ УЛИЦА · ПАМЯТЬ МЕСТА</span>
-        </div>
-        <div class="cover-heading">
-          <div class="cover-kicker">Историческая прогулка · XIV–XXI века</div>
-          <h1 id="cover-title">Симонов<br><em>монастырь</em></h1>
-          <p class="cover-lead" id="cover-lead">Семь столетий на южном рубеже Москвы: обитель учеников Сергия Радонежского, крепость на Коломенской дороге, архитектурный ансамбль, уничтоженный в 1930-е годы, и память, которая возвращается.</p>
-        </div>
-        <section class="cover-history" aria-labelledby="cover-history-title">
-          <div class="cover-history-heading">
-            <span class="history-overline">Краткая летопись</span>
-            <h2 id="cover-history-title">Семь веков истории</h2>
-            <p>Не отдельные даты, а судьба одного места.</p>
-          </div>
-          <div class="cover-timeline">
-            <article class="history-event"><time>1363–1377</time><h3>Рождение обители</h3><p>Феодор, ученик и племянник Сергия Радонежского. Первоначальное место — Старое Симоново.</p></article>
-            <article class="history-event"><time>1379</time><h3>Новое место</h3><p>Обитель переносится на высокий берег Москвы-реки. Начинается история каменного Успенского собора.</p></article>
-            <article class="history-event"><time>1405</time><h3>Успенский собор</h3><p>Освящён главный каменный храм монастыря — один из ранних памятников московского зодчества.</p></article>
-            <article class="history-event"><time>1450–1470</time><h3>Кирпичная ограда</h3><p>Появляется первая известная в Москве каменная монастырская ограда из кирпича.</p></article>
-            <article class="history-event"><time>1591</time><h3>Южный форпост</h3><p>Укрепления выдерживают набег войск Казы-Гирея на Москву.</p></article>
-            <article class="history-event"><time>1611</time><h3>Смутное время</h3><p>Монастырь захвачен и сожжён польско-литовскими войсками; начинается восстановление.</p></article>
-            <article class="history-event"><time>1677–1685</time><h3>Новый расцвет</h3><p>Строится Новая трапезная с Тихвинским храмом — здание, сохранившееся до наших дней.</p></article>
-            <article class="history-event"><time>1835–1839</time><h3>Колокольня Тона</h3><p>Возведена знаменитая 90-метровая колокольня архитектора Константина Тона.</p></article>
-            <article class="history-event history-event-loss"><time>1918–1932</time><h3>Закрытие и утрата</h3><p>Монастырь закрывают. В 1930–1932 годах разбирают и взрывают большую часть ансамбля.</p></article>
-            <article class="history-event history-event-return"><time>1991–1994</time><h3>Возвращение жизни</h3><p>Регистрируется приходская община; комплекс передают Русской Православной Церкви.</p></article>
-          </div>
-          <p class="history-note">Датировка основания в источниках различается; здесь указан научный диапазон. Историческая шкала основана на материалах храма Тихвинской иконы Божией Матери и Музея Москвы.</p>
-          <div class="history-sources"><a href="https://tihchurch.ru/simonov-history/" target="_blank" rel="noopener">Хронология истории монастыря ↗</a><a href="https://online.mosmuseum.ru/moskva-404-1" target="_blank" rel="noopener">Музей Москвы: «Утерянные границы» ↗</a></div>
-        </section>
-        <div class="cover-foot">
+        <div class="cover-content">
+          <p class="cover-kicker">Историческая прогулка · Москва</p>
+          <h1 id="cover-title">Симонов<br>монастырь</h1>
+          <p class="cover-lead" id="cover-lead">Семь веков веры, крепости и памяти. Пройдите по местам, где история Москвы до сих пор видна в камне.</p>
           <p class="cover-meta" id="cover-place">Москва, Восточная улица, 4</p>
           <div class="cover-actions">
             <button class="btn-primary" id="btn-start">Начать прогулку</button>
-            <button class="btn-ghost" id="btn-about">Как это устроено</button>
+            <button class="btn-ghost" id="btn-about" type="button" hidden>О прогулке</button>
+          </div>
+        </div>
+        <div class="date-marquee" aria-label="Ключевые даты истории Симонова монастыря">
+          <div class="date-marquee-track">
+            <div class="date-marquee-group">
+              <span><b>1363–1377</b> основание обители</span>
+              <i aria-hidden="true">✦</i>
+              <span><b>1591</b> южный форпост Москвы</span>
+              <i aria-hidden="true">✦</i>
+              <span><b>1930–1932</b> разрушение ансамбля</span>
+              <i aria-hidden="true">✦</i>
+              <span><b>1991–1994</b> возвращение общины</span>
+              <i aria-hidden="true">✦</i>
+            </div>
+            <div class="date-marquee-group" aria-hidden="true">
+              <span><b>1363–1377</b> основание обители</span>
+              <i>✦</i>
+              <span><b>1591</b> южный форпост Москвы</span>
+              <i>✦</i>
+              <span><b>1930–1932</b> разрушение ансамбля</span>
+              <i>✦</i>
+              <span><b>1991–1994</b> возвращение общины</span>
+              <i>✦</i>
+            </div>
           </div>
         </div>
       </div>
@@ -135,10 +120,7 @@
             <button class="btn-ghost cam-compass" id="btn-compass" type="button" aria-label="Включить компас">Компас</button>
           </div>
           <div class="cam-modes hidden" id="cam-modes" role="group" aria-label="Режим накладки">
-            <button type="button" data-mode="then">Раньше</button>
-            <button type="button" data-mode="overlay" class="on">Наложить</button>
-            <button type="button" data-mode="curtain">Шторка</button>
-            <button type="button" data-mode="now">Сейчас</button>
+            <button type="button" data-mode="then">Раньше</button><button type="button" data-mode="overlay" class="on">Наложить</button><button type="button" data-mode="curtain">Шторка</button><button type="button" data-mode="now">Сейчас</button>
           </div>
           <p class="cam-msg" id="cam-msg" role="status" aria-live="polite"></p>
         </div>
@@ -146,94 +128,46 @@
           <img id="then-img" alt="Старое фото" role="button" tabindex="0" aria-label="Открыть историческую фотографию на весь экран" />
           <video id="live-video" class="hidden" playsinline webkit-playsinline muted autoplay disablepictureinpicture></video>
           <img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" />
-          <div class="hero-actions">
-            <button class="icon-btn" id="btn-full" aria-label="Открыть фото на весь экран" title="На весь экран">⤢</button>
-          </div>
+          <div class="hero-actions"><button class="icon-btn" id="btn-full" aria-label="Открыть фото на весь экран" title="На весь экран">⤢</button></div>
           <div class="hero-count" id="hero-count"></div>
           <div class="cam-curtain hidden" id="cam-curtain" role="slider" aria-label="Шторка: слева раньше, справа сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><i class="cam-curtain-line"></i><span class="cam-curtain-grip">‹ ›</span></div>
-          <div class="slider-wrap hidden" id="cam-slider">
-            <label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label>
-            <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" />
-          </div>
+          <div class="slider-wrap hidden" id="cam-slider"><label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" /></div>
         </div>
         <div class="audio-box audio-top" id="audio-box">
           <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
           <audio id="player" controls controlslist="noplaybackrate nodownload" preload="metadata" playsinline></audio>
         </div>
-        <div class="pt-nav" id="pt-nav-top" aria-label="Переход между точками">
-          <button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button>
-          <button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button>
-        </div>
+        <div class="pt-nav" id="pt-nav-top" aria-label="Переход между точками"><button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button><button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button></div>
         <div class="thumbs" id="thumbs" role="list"></div>
         <p class="photo-caption" id="photo-caption"></p>
         <div class="stand" id="stand">
-          <div class="stand-arrow" id="stand-arrow" aria-hidden="true">
-            <svg viewBox="0 0 64 64" width="56" height="56"><circle cx="32" cy="32" r="30" fill="none" stroke="#6b5a45" stroke-width="2"/><text x="32" y="12" text-anchor="middle" font-size="9" fill="#b5a68c">С</text><g id="stand-needle"><path d="M32 10 L40 36 L32 31 L24 36 Z" fill="#d4b06a"/></g></svg>
-          </div>
-          <div class="stand-text">
-            <b>Где стоял фотограф</b>
-            <p id="stand-text"></p>
-            <p class="stand-live" id="stand-live"></p>
-            <p class="stand-links" id="stand-links"></p>
-          </div>
+          <div class="stand-arrow" id="stand-arrow" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><circle cx="32" cy="32" r="30" fill="none" stroke="#6b5a45" stroke-width="2"/><text x="32" y="12" text-anchor="middle" font-size="9" fill="#b5a68c">С</text><g id="stand-needle"><path d="M32 10 L40 36 L32 31 L24 36 Z" fill="#d4b06a"/></g></svg></div>
+          <div class="stand-text"><b>Где стоял фотограф</b><p id="stand-text"></p><p class="stand-live" id="stand-live"></p><p class="stand-links" id="stand-links"></p></div>
         </div>
-        <div class="compare hidden" id="compare">
-          <div class="cmp-frame" id="cmp-frame">
-            <img id="cmp-now" alt="Сейчас" />
-            <div class="cmp-then-wrap" id="cmp-then-wrap"><img id="cmp-then" alt="Тогда" /></div>
-            <div class="cmp-handle" id="cmp-handle" role="slider" aria-label="Тогда — сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><span>‹ ›</span></div>
-            <span class="cmp-tag cmp-tag-l">Тогда</span><span class="cmp-tag cmp-tag-r">Сейчас</span>
-          </div>
-          <p class="hint" id="cmp-note"></p>
-        </div>
+        <div class="compare hidden" id="compare"><div class="cmp-frame" id="cmp-frame"><img id="cmp-now" alt="Сейчас" /><div class="cmp-then-wrap" id="cmp-then-wrap"><img id="cmp-then" alt="Тогда" /></div><div class="cmp-handle" id="cmp-handle" role="slider" aria-label="Тогда — сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><span>‹ ›</span></div><span class="cmp-tag cmp-tag-l">Тогда</span><span class="cmp-tag cmp-tag-r">Сейчас</span></div><p class="hint" id="cmp-note"></p></div>
         <div class="point-body">
-          <p class="cover-kicker" id="point-dir"></p>
-          <h2 id="point-title"></h2>
-          <p class="short" id="point-short"></p>
+          <p class="cover-kicker" id="point-dir"></p><h2 id="point-title"></h2><p class="short" id="point-short"></p>
           <section class="look-card" id="look-card" aria-label="Осмотритесь на месте">
             <div class="look-kicker">ОСМОТРИТЕСЬ НА МЕСТЕ</div>
             <div class="look-step"><span>01</span><div><b>Где остановиться</b><p id="scene-where"></p></div></div>
             <div class="look-step"><span>02</span><div><b>Куда смотреть</b><p id="scene-look"></p></div></div>
             <div class="look-step"><span>03</span><div><b>Что заметить</b><p id="scene-notice"></p></div></div>
             <div class="look-step"><span>04</span><div><b>Тогда и сейчас</b><p id="scene-then"></p></div></div>
-            <p class="look-confidence" id="scene-confidence"></p>
-            <div class="look-route" id="scene-route"></div>
-            <div class="look-sources" id="scene-sources"></div>
+            <p class="look-confidence" id="scene-confidence"></p><div class="look-route" id="scene-route"></div><div class="look-sources" id="scene-sources"></div>
           </section>
-          <section class="archival-film hidden" id="archival-film" aria-label="Кинохроника Симонова монастыря">
-            <div class="film-kicker">АРХИВНАЯ КИНОХРОНИКА</div>
-            <h3 id="film-title"></h3>
-            <p class="film-date" id="film-date"></p>
-            <p id="film-description"></p>
-            <div class="film-links" id="film-links"></div>
-            <p class="film-rights" id="film-rights"></p>
-          </section>
-          <div class="row-btns">
-            <button class="btn-primary" id="btn-here">Я на месте</button>
-          </div>
+          <section class="archival-film hidden" id="archival-film" aria-label="Кинохроника Симонова монастыря"><div class="film-kicker">АРХИВНАЯ КИНОХРОНИКА</div><h3 id="film-title"></h3><p class="film-date" id="film-date"></p><p id="film-description"></p><div class="film-links" id="film-links"></div><p class="film-rights" id="film-rights"></p></section>
+          <div class="row-btns"><button class="btn-primary" id="btn-here">Я на месте</button></div>
           <button class="btn-ghost btn-done" id="btn-done">Отметить остановку пройденной</button>
-          <details class="text-box" id="text-box">
-            <summary>Текст рассказа</summary>
-            <div id="script-text" class="script-text"></div>
-          </details>
-          <figure class="now-context hidden" id="now-context">
-            <img id="now-context-img" alt="Как это выглядит сейчас" />
-            <figcaption id="now-context-cap"></figcaption>
-          </figure>
+          <details class="text-box" id="text-box"><summary>Текст рассказа</summary><div id="script-text" class="script-text"></div></details>
+          <figure class="now-context hidden" id="now-context"><img id="now-context-img" alt="Как это выглядит сейчас" /><figcaption id="now-context-cap"></figcaption></figure>
           <div class="rights" id="photo-meta"></div>
-          <div class="pt-nav" id="pt-nav-bottom" aria-label="Переход между точками">
-          <button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button>
-          <button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button>
-        </div>
+          <div class="pt-nav" id="pt-nav-bottom" aria-label="Переход между точками"><button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button><button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button></div>
         </div>
       </div>
     </section>
 
     <section class="screen" id="screen-about">
-      <header class="topbar">
-        <button class="btn-ghost" data-back="tour" style="min-height:40px;padding:0 12px">Назад</button>
-        <h2>О прогулке</h2>
-      </header>
+      <header class="topbar"><button class="btn-ghost" data-back="tour" style="min-height:40px;padding:0 12px">Назад</button><h2>О прогулке</h2></header>
       <div class="about">
         <h2>Как устроена прогулка</h2>
         <p>Это короткая аудиоэкскурсия по Симонову монастырю. Приложение ставить не нужно: страница открывается в браузере телефона.</p>
@@ -246,34 +180,15 @@
         <h3>Официальный храм</h3>
         <p>Патриаршее подворье Симонова монастыря, храм Тихвинской иконы Божией Матери: <a href="https://tihchurch.ru/" target="_blank" rel="noopener">tihchurch.ru</a>. На сайте подворья указаны воскресные экскурсии с 12:00, экскурсовод Елена Юрьевна, телефон +7 926 113 01 72.</p>
         <h3>Источники</h3>
-        <ul>
-          <li><a href="https://tihchurch.ru/simonov-history/" target="_blank" rel="noopener">История Симонова монастыря — сайт подворья</a></li>
-          <li><a href="https://tihchurch.ru/church-history/" target="_blank" rel="noopener">История храма — сайт подворья</a></li>
-          <li><a href="https://sobory.ru/article/?object=03108" target="_blank" rel="noopener">Симонов монастырь — sobory.ru</a></li>
-          <li><a href="https://ru.wikipedia.org/wiki/Симонов_монастырь" target="_blank" rel="noopener">Симонов монастырь — Википедия</a></li>
-          <li><a href="https://um.mos.ru/houses/simonov-monastyr/" target="_blank" rel="noopener">Симонов монастырь — «Узнай Москву»</a></li>
-          <li><a href="https://ru.wikipedia.org/wiki/Храм_Рождества_Пресвятой_Богородицы_в_Старом_Симонове" target="_blank" rel="noopener">Храм в Старом Симонове — Википедия</a></li>
-          <li><a href="https://pastvu.com" target="_blank" rel="noopener">PastVu</a> — координаты и направления съёмки</li>
-          <li>Викисклад — файлы старых и современных фотографий с указанием лицензии</li>
-        </ul>
+        <ul><li><a href="https://tihchurch.ru/simonov-history/" target="_blank" rel="noopener">История Симонова монастыря — сайт подворья</a></li><li><a href="https://tihchurch.ru/church-history/" target="_blank" rel="noopener">История храма — сайт подворья</a></li><li><a href="https://sobory.ru/article/?object=03108" target="_blank" rel="noopener">Симонов монастырь — sobory.ru</a></li><li><a href="https://ru.wikipedia.org/wiki/Симонов_монастырь" target="_blank" rel="noopener">Симонов монастырь — Википедия</a></li><li><a href="https://um.mos.ru/houses/simonov-monastyr/" target="_blank" rel="noopener">Симонов монастырь — «Узнай Москву»</a></li><li><a href="https://ru.wikipedia.org/wiki/Храм_Рождества_Пресвятой_Богородицы_в_Старом_Симонове" target="_blank" rel="noopener">Храм в Старом Симонове — Википедия</a></li><li><a href="https://pastvu.com" target="_blank" rel="noopener">PastVu</a> — координаты и направления съёмки</li><li>Викисклад — файлы старых и современных фотографий с указанием лицензии</li></ul>
         <p>Полный список точек, прав на снимки и оговорок лежит в файлах <code>SOURCES.md</code> и <code>RIGHTS.md</code> рядом с этой страницей.</p>
-        <h3>Карта</h3>
-        <p>Фоновая карта — OpenStreetMap, &copy; участники OpenStreetMap.</p>
+        <h3>Карта</h3><p>Фоновая карта — OpenStreetMap, &copy; участники OpenStreetMap.</p>
       </div>
     </section>
   </div>
   <div class="toast" id="toast" role="status"></div>
-  <div class="arrive hidden" id="arrive" role="dialog" aria-live="polite">
-    <p id="arrive-text"></p>
-    <div class="arrive-btns"><button class="btn-primary" id="arrive-go">Слушать</button><button class="btn-ghost" id="arrive-no">Не сейчас</button></div>
-  </div>
-  <div class="lb hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото на весь экран">
-    <div class="lb-stage" id="lb-stage"><img id="lb-img" alt="" draggable="false" /></div>
-    <button class="lb-btn lb-close" id="lb-close" aria-label="Закрыть">✕</button>
-    <button class="lb-btn lb-prev" id="lb-prev" aria-label="Предыдущее фото">‹</button>
-    <button class="lb-btn lb-next" id="lb-next" aria-label="Следующее фото">›</button>
-    <div class="lb-cap" id="lb-cap"></div>
-  </div>
+  <div class="arrive hidden" id="arrive" role="dialog" aria-live="polite"><p id="arrive-text"></p><div class="arrive-btns"><button class="btn-primary" id="arrive-go">Слушать</button><button class="btn-ghost" id="arrive-no">Не сейчас</button></div></div>
+  <div class="lb hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото на весь экран"><div class="lb-stage" id="lb-stage"><img id="lb-img" alt="" draggable="false" /></div><button class="lb-btn lb-close" id="lb-close" aria-label="Закрыть">✕</button><button class="lb-btn lb-prev" id="lb-prev" aria-label="Предыдущее фото">‹</button><button class="lb-btn lb-next" id="lb-next" aria-label="Следующее фото">›</button><div class="lb-cap" id="lb-cap"></div></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="js/nav-core.js"></script>
   <script src="js/app.js"></script>
