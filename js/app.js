@@ -18,6 +18,9 @@ const state = {
   map: null,
   markers: {},
   youMarker: null,
+  userRoute: null,
+  accuracyCircle: null,
+  targetHalo: null,
   navIndex: 0,
   visited: {},
   heading: null,
@@ -77,37 +80,76 @@ function updateNavigator() {
   if (!state.data) return;
   const points = state.data.points;
   const done = points.filter(p => state.visited[p.id]).length;
-  const progress = $("#nav-progress");
-  if (progress) progress.textContent = `Пройдено ${done} из ${points.length}`;
+  $("#nav-progress").textContent = `Пройдено ${done} из ${points.length}`;
   const nextIndex = nextUnvisitedIndex();
   if (nextIndex < 0) {
     $("#nav-step").textContent = "✓";
     $("#nav-title").textContent = "Маршрут завершён";
-    $("#nav-distance").textContent = "Вы прошли все восемь остановок. Можно вернуться к любой точке на карте.";
+    $("#nav-distance").textContent = "Все остановки пройдены. Можно посмотреть весь маршрут на карте.";
     $("#nav-open").textContent = "Первая точка";
     $("#nav-note").textContent = "Спасибо, что прошли этот маршрут.";
-    $("#nav-route").classList.add("hidden");
-    $("#nav-next").textContent = "Начать сначала";
+    $("#nav-route").disabled = true;
+    $("#nav-external").classList.add("hidden");
     state.navIndex = 0;
+    updateRouteOnMap();
     return;
   }
   state.navIndex = nextIndex;
   const p = points[nextIndex];
-  $("#nav-route").classList.remove("hidden");
+  $("#nav-route").disabled = false;
   $("#nav-step").textContent = String(p.num).padStart(2, "0");
   $("#nav-title").textContent = p.title;
   const d = state.pos ? haversine(state.pos.lat, state.pos.lon, p.lat, p.lon) : null;
-  const gpsNote = state.pos && state.pos.acc > 35 ? " · GPS неточен, сверяйтесь с картой" : "";
+  const accuracy = state.pos && state.pos.acc ? Math.round(state.pos.acc) : null;
   $("#nav-distance").textContent = d == null
-    ? "Включите геолокацию — покажем расстояние до остановки"
-    : d <= 20 ? "Вы рядом. Остановитесь и осмотритесь." + gpsNote : "До остановки " + fmtDist(d) + " · направление " + dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon)) + gpsNote;
-  const destination = p.lat + "," + p.lon;
-  const origin = state.pos ? state.pos.lat + "," + state.pos.lon : "";
-  $("#nav-route").href = state.pos
-    ? "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(origin) + "&destination=" + encodeURIComponent(destination) + "&travelmode=walking"
-    : "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination) + "&travelmode=walking";
-  $("#nav-open").textContent = "Открыть точку " + p.num;
+    ? "Нажмите «Найти меня». Покажем ваше положение и расстояние до точки."
+    : accuracy > 35
+      ? `До точки примерно ${fmtDist(d)} по прямой. GPS неточен (±${accuracy} м).`
+      : d <= 20 ? "Вы рядом с остановкой. Найдите безопасное место и осмотритесь."
+      : `До точки ${fmtDist(d)} по прямой · направление ${dirName(bearingTo(state.pos.lat, state.pos.lon, p.lat, p.lon))}`;
+  $("#nav-open").textContent = "Рассказ об остановке";
   $("#nav-note").textContent = p.dir || "На месте откройте исторический вид и сравните его с тем, что перед вами.";
+  const origin = state.pos ? state.pos.lat + "," + state.pos.lon : "";
+  const url = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(p.lat + "," + p.lon) + "&travelmode=walking" + (origin ? "&origin=" + encodeURIComponent(origin) : "");
+  $("#nav-external").href = url;
+  $("#nav-external").classList.remove("hidden");
+  updateRouteOnMap();
+}
+function updateRouteOnMap() {
+  if (!state.map || !state.data) return;
+  const points = state.data.points;
+  const next = points[nextUnvisitedIndex()];
+  Object.entries(state.markers).forEach(([id, marker]) => {
+    const p = points.find(x => x.id === id);
+    if (!p) return;
+    const done = !!state.visited[id];
+    marker.setStyle({ color: done ? "#7d9a5a" : (next && id === next.id ? "#f3d18b" : "#b9a77e"),
+      fillColor: done ? "#506d3d" : (next && id === next.id ? "#d4a74f" : "#9a3f2c"),
+      radius: next && id === next.id ? 11 : 7, weight: next && id === next.id ? 3 : 2 });
+  });
+  if (state.targetHalo) { state.map.removeLayer(state.targetHalo); state.targetHalo = null; }
+  if (next) state.targetHalo = L.circle([next.lat,next.lon], {radius:24,color:"#e3bd76",weight:1,fillOpacity:0.06,dashArray:"4 5"}).addTo(state.map);
+  if (state.userRoute) { state.map.removeLayer(state.userRoute); state.userRoute = null; }
+  if (state.pos && next) {
+    state.userRoute = L.polyline([[state.pos.lat,state.pos.lon],[next.lat,next.lon]], {
+      color:"#f1d08c",weight:4,opacity:.95,dashArray:"8 7",lineCap:"round"
+    }).addTo(state.map);
+  }
+}
+function focusNextOnMap() {
+  if (!state.map || !state.data) return;
+  const p = state.data.points[nextUnvisitedIndex()];
+  if (!p) { fitFullRoute(); return; }
+  if (state.pos) {
+    const bounds = L.latLngBounds([[state.pos.lat,state.pos.lon],[p.lat,p.lon]]);
+    state.map.fitBounds(bounds.pad(.28), {maxZoom:18});
+  } else state.map.setView([p.lat,p.lon],18);
+}
+function fitFullRoute() {
+  if (!state.map || !state.data) return;
+  const pts = state.data.points.map(p => [p.lat,p.lon]);
+  if (state.pos) pts.push([state.pos.lat,state.pos.lon]);
+  state.map.fitBounds(L.latLngBounds(pts).pad(.18));
 }
 
 function markVisited(id) {
@@ -151,7 +193,7 @@ function initMap() {
     attribution: "&copy; OpenStreetMap"
   }).addTo(state.map);
   const routeCoords = state.data.points.map(p => [p.lat, p.lon]);
-  L.polyline(routeCoords, { color: "#b9a77e", weight: 3, opacity: .8, dashArray: "5 8" }).addTo(state.map);
+  L.polyline(routeCoords, { color: "#88785f", weight: 3, opacity: .55, dashArray: "5 8" }).addTo(state.map);
   for (const p of state.data.points) {
     const m = L.circleMarker([p.lat, p.lon], {
       radius: 8, color: "#d4b06a", weight: 2, fillColor: "#9a3f2c", fillOpacity: .9
@@ -160,6 +202,7 @@ function initMap() {
     m.on("click", () => openPoint(p.id, false));
     state.markers[p.id] = m;
   }
+  updateRouteOnMap();
   setTimeout(() => state.map.invalidateSize(), 200);
 }
 
@@ -173,6 +216,9 @@ function updateYouMarker() {
   } else {
     state.youMarker.setLatLng(latlng);
   }
+  if (state.accuracyCircle) state.map.removeLayer(state.accuracyCircle);
+  state.accuracyCircle = L.circle(latlng, { radius: Math.min(state.pos.acc || 20, 100), color:"#9ab77b", weight:1, fillColor:"#9ab77b", fillOpacity:.08 }).addTo(state.map);
+  updateRouteOnMap();
 }
 
 function setGpsPill(ok, acc) {
@@ -776,6 +822,12 @@ async function main() {
   applyHash();
 
   $("#btn-start").addEventListener("click", startTour);
+  $("#nav-route").addEventListener("click", focusNextOnMap);
+  $("#map-my-location").addEventListener("click", () => {
+    if (!state.pos) { enableGps(); toast("Ищем ваше местоположение…"); return; }
+    state.map.setView([state.pos.lat,state.pos.lon],18);
+  });
+  $("#map-fit-route").addEventListener("click", fitFullRoute);
   $("#nav-open").addEventListener("click", () => {
     const i = nextUnvisitedIndex();
     const p = i < 0 ? state.data.points[0] : state.data.points[i];
