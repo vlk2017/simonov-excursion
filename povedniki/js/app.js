@@ -544,10 +544,11 @@ function currentPhoto() { const p = currentPoint(); return p && p.photos[state.p
 
 /* list for the lightbox: all old photos, then modern ones */
 function galleryItems(p) {
-  const out = p.photos.map((ph, i) => ({ src: ph.src, remote: ph.remote, cap: `${ph.year} · ${shortAuthor(ph.author)} — ${ph.title}`, photoIdx: i }));
-  const nowCap = n => `${n.label || n.year}, ${n.year} · ${n.author}, ${n.license} — ${n.note}`;
-  p.photos.forEach(ph => { if (ph.now) out.push({ src: ph.now.src, remote: ph.now.remote, cap: nowCap(ph.now) }); });
-  if (p.heroNow) out.push({ src: p.heroNow.src, remote: p.heroNow.remote, cap: nowCap(p.heroNow) });
+  const tail = x => [x.archive, x.license].filter(Boolean).join(" · ");
+  const out = p.photos.map((ph, i) => ({ src: ph.src, remote: ph.remote, cap: `${ph.year} · ${shortAuthor(ph.author)} — ${ph.title}${tail(ph) ? ` (${tail(ph)})` : ""}`, photoIdx: i }));
+  const nowCap = n => `Сейчас, ${n.year} · ${n.author}${tail(n) ? ` (${tail(n)})` : ""} — ${n.note}`;
+  p.photos.forEach(ph => { if (ph.now && !out.some(o => o.src === ph.now.src)) out.push({ src: ph.now.src, remote: ph.now.remote, cap: nowCap(ph.now) }); });
+  if (p.heroNow && !out.some(o => o.src === p.heroNow.src)) out.push({ src: p.heroNow.src, remote: p.heroNow.remote, cap: nowCap(p.heroNow) });
   if (p.nowContext) out.push({ src: p.nowContext.src, remote: p.nowContext.remote, cap: nowCap(p.nowContext) });
   return out;
 }
@@ -727,6 +728,7 @@ function openPoint(id, play) {
   $("#btn-done").textContent = state.visited[id] ? "Остановка пройдена ✓" : "Отметить остановку пройденной";
   $("#btn-done").disabled = !!state.visited[id];
   stopCamera();
+  $("#hero").style.setProperty("--hero-ar", p.heroAspect || "");
   // блок «Историческая накладка» нужен только там, где есть пара «тогда — сейчас»; без старого снимка этого места он вводит в заблуждение
   $("#overlay-bar").classList.toggle("hidden", !p.photos.some(ph => ph.now));
   showScreen("screen-point");
@@ -801,7 +803,7 @@ function buildSlides(p) {
   const out = [];
   const heroModern = p.heroNow && !(p.photos[0] && p.photos[0].now);
   if (heroModern) out.push({ kind: "modern", photoIdx: 0 });
-  p.photos.forEach((ph, i) => { if (heroModern && ph.modern && i === 0) return; out.push({ kind: i === 0 && ph.now ? "cmp" : "old", photoIdx: i }); });
+  p.photos.forEach((ph, i) => { if (heroModern && ph.modern && i === 0) return; out.push({ kind: ph.now ? "cmp" : "old", photoIdx: i }); });
   return out;
 }
 function focalStyle(f) {
@@ -842,7 +844,7 @@ function buildCarousel(p) {
   state.slides.forEach((sl, k) => {
     const ph = p.photos[sl.photoIdx];
     const s = document.createElement("div");
-    s.className = "car-slide" + (sl.kind === "old" ? "" : " car-cmp");
+    s.className = "car-slide" + (sl.kind === "old" ? "" : " car-cmp") + (ph.wm ? " wm" : "");
     s.dataset.kind = sl.kind;
     s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "слайд"); s.setAttribute("aria-label", `${k + 1} из ${n}`);
     if (sl.kind === "old") {
@@ -853,21 +855,19 @@ function buildCarousel(p) {
     } else {
       const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
       const old = sl.kind === "cmp";
-      const leftLabel = ph.leftLabel || ph.year || "Ч/Б";
-      const rightLabel = nw.label || nw.year || "Цвет";
       s.innerHTML = `<div class="cmp-frame">
-        <img class="cmp-now" alt="${esc(rightLabel)}: ${esc(nw.note)}" draggable="false" style="${focalStyle(nw.focal)}" />
-        ${old ? `<div class="cmp-clip"><img class="cmp-old" alt="${esc(leftLabel)}: ${esc(ph.title)}" draggable="false" style="${focalStyle(ph.focal)}" /></div>
-        <span class="cmp-tag cmp-tag-l">${esc(leftLabel)}</span>
-        <div class="cmp-handle" role="slider" tabindex="0" aria-label="Шторка: слева чёрно-белое фото, справа цветное" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><b>‹ ›</b></div>` : `<span class="cmp-tag cmp-tag-l cmp-tag-warn">Нет парного снимка</span>`}
-        <span class="cmp-tag cmp-tag-r">${esc(rightLabel)}</span></div>`;
+        <img class="cmp-now" alt="Сейчас: ${esc(nw.note)}" draggable="false" style="${focalStyle(nw.focal)}" />
+        ${old ? `<div class="cmp-clip"><img class="cmp-old" alt="${esc(ph.title)}, ${esc(ph.year)}" draggable="false" style="${focalStyle(ph.focal)}" /></div>
+        <span class="cmp-tag cmp-tag-l">${esc(ph.year)}</span>
+        <div class="cmp-handle" role="slider" tabindex="0" aria-label="Шторка: слева старое фото, справа современное" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><b>‹ ›</b></div>` : `<span class="cmp-tag cmp-tag-l cmp-tag-warn">Старого снимка нет</span>`}
+        <span class="cmp-tag cmp-tag-r">${old ? esc(nw.year) : "Сейчас"}</span></div>`;
       s.querySelector(".cmp-now").addEventListener("click", () => openLightboxForCurrent(nw.src));
       if (old) { s.querySelector(".cmp-old").addEventListener("click", () => openLightboxForCurrent(ph.src)); wireCmp(s); }
     }
     track.appendChild(s);
     const d = document.createElement("button");
     d.type = "button"; d.className = "car-dot";
-    d.setAttribute("aria-label", `Фото ${k + 1} из ${n}: ${sl.kind === "modern" ? "цветное фото" : sl.kind === "cmp" ? `${ph.leftLabel || ph.year} и ${ph.now.label || ph.now.year}` : ph.year}`);
+    d.setAttribute("aria-label", `Фото ${k + 1} из ${n}: ${sl.kind === "modern" ? "сейчас" : sl.kind === "cmp" ? `${ph.year} и сейчас` : ph.year}`);
     d.addEventListener("click", () => carGo(k));
     dots.appendChild(d);
   });
@@ -883,8 +883,8 @@ function carBind(k) {
   if (sl.kind === "old") bindImg(el.querySelector("img"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
   else {
     const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
-    bindImg(el.querySelector(".cmp-now"), nw.src, nw.remote, `${nw.label || nw.year || "Цвет"}: ${nw.note}`);
-    if (sl.kind === "cmp") bindImg(el.querySelector(".cmp-old"), ph.src, ph.remote, `${ph.leftLabel || ph.year}: ${ph.title}`);
+    bindImg(el.querySelector(".cmp-now"), nw.src, nw.remote, `Сейчас: ${nw.note}`);
+    if (sl.kind === "cmp") bindImg(el.querySelector(".cmp-old"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
   }
 }
 function carShow(i) {
@@ -936,18 +936,13 @@ function selectPhoto(k) {
   bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
   if (!state.rp.on) { rpReset(); applyRpTransform(); }
   $("#hero-count").textContent = state.slides.length > 1 ? `${state.slideIdx + 1} / ${state.slides.length}` : "";
-  const sourceLink = (u, label) => u ? ` · <a href="${esc(u)}" target="_blank" rel="noopener">${esc(label || "источник")}</a>` : "";
+  const link = (u, name) => u ? ` · <a href="${esc(u)}" target="_blank" rel="noopener">источник: ${esc(name || "Викисклад")}</a>` : "";
   if (sl.kind === "modern") {
-    $("#photo-caption").innerHTML = `Сейчас · ${esc(nw.author)}<span class="cap-title">${esc(nw.note)}. ${esc(nw.year)}, ${esc(nw.license)}${sourceLink(nw.sourceUrl, nw.sourceLabel) || sourceLink(nw.commons, "источник: Викисклад")}. ${esc(p.heroNow.missingThen || "")}</span>`;
+    $("#photo-caption").innerHTML = `Сейчас · ${esc(nw.author)}<span class="cap-title">${esc(nw.note)}. ${esc(nw.year)}, ${esc(nw.license)}${link(nw.commons, nw.sourceName)}. ${esc(p.heroNow.missingThen)}</span>`;
   } else if (sl.kind === "cmp") {
-    const leftLabel = ph.leftLabel || ph.year;
-    const rightLabel = nw.label || nw.year || "Цвет";
-    const oldSource = sourceLink(ph.sourceUrl, ph.sourceLabel) || sourceLink(ph.commons, "источник: Викисклад");
-    const newSource = sourceLink(nw.sourceUrl, nw.sourceLabel);
-    $("#photo-caption").innerHTML = `${esc(leftLabel)} · ${esc(shortAuthor(ph.author))} / ${esc(rightLabel)} · ${esc(nw.author)}<span class="cap-title">${esc(ph.title)}. Шторка: слева чёрно-белый кадр (${esc(leftLabel)}), справа цветной (${esc(rightLabel)}). ${esc(nw.note)}${oldSource}${newSource}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))} и сейчас · ${esc(nw.author)}<span class="cap-title">${esc(ph.title)}. Тяните шторку: слева ${esc(ph.year)}, справа — сейчас (${esc(nw.year)}). ${esc(nw.note)} ${link(ph.commons, ph.sourceName)}${link(nw.commons, nw.sourceName)}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
   } else {
-    const source = sourceLink(ph.sourceUrl, ph.sourceLabel) || sourceLink(ph.commons, "источник: Викисклад");
-    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${source}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.archive || "")}${ph.archive ? ". " : ""}${esc(ph.license || "")}${link(ph.commons, ph.sourceName)}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
   }
 
   // where to stand
@@ -971,12 +966,13 @@ function selectPhoto(k) {
   updateStandLive();
 
   // rights
-  const nowBlock = nw ? `<p><b>Современное фото.</b> ${esc(nw.year)}. ${esc(nw.author)}. ${esc(nw.license)}. ${esc(nw.note)}${nw.commons ? ` <a href="${esc(nw.commons)}" target="_blank" rel="noopener">Карточка на Викискладе</a>` : ""}</p>` : "";
+  const nowBlock = nw ? `<p><b>Современное фото.</b> ${esc(nw.year)}. ${esc(nw.author)}. ${esc(nw.license)}. ${esc(nw.note)}${nw.archive ? ` Архив: ${esc(nw.archive)}.` : ""}${nw.commons ? ` <a href="${esc(nw.commons)}" target="_blank" rel="noopener">Карточка источника (${esc(nw.sourceName || "Викисклад")})</a>` : ""}</p>` : "";
   $("#photo-meta").innerHTML = `
     ${nowBlock}
     ${sl.kind === "modern" ? "" : `<p><b>${ph.modern ? "Современное фото." : "Старое фото."}</b> ${esc(ph.year)}. ${esc(ph.author)}. ${esc(ph.title)}.</p>
-    <p>${esc(ph.license)}. ${esc(ph.rights)}</p>
-    <p><a href="${ph.commons}" target="_blank" rel="noopener">Карточка на Викискладе</a></p>`}
+    <p>${ph.archive ? `Архив: ${esc(ph.archive)}. ` : ""}${esc(ph.license)}. ${esc(ph.rights)}</p>
+    ${ph.confidence ? `<p class="muted">Уверенность в месте: ${esc(ph.confidence)}.</p>` : ""}
+    <p><a href="${ph.commons}" target="_blank" rel="noopener">Карточка источника (${esc(ph.sourceName || "Викисклад")})</a>${ph.original && ph.original !== ph.commons ? ` · <a href="${esc(ph.original)}" target="_blank" rel="noopener">оригинал</a>` : ""}</p>`}
     ${(p.moreLinks || []).length ? `<div class="more-links"><p><b>Ещё снимки — только по ссылке.</b> Они хранятся на сайте «История России в фотографиях». Права на них у музеев, архивов и авторов, поэтому копировать их сюда мы не можем.</p><ul>${p.moreLinks.map(l => `<li><a href="${l.url}" target="_blank" rel="noopener">${esc(l.title)}</a>, ${esc(l.year)}, ${esc(l.author)} (${esc(l.source)})${l.note ? `. ${esc(l.note)}` : ""}</li>`).join("")}</ul></div>` : ""}`;
 }
 

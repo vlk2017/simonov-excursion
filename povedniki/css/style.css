@@ -414,7 +414,7 @@ button:focus-visible,a:focus-visible,input:focus-visible { outline:2px solid var
 
 /* Archival image presentation */
 .point { width:min(100%,1120px); margin:0 auto; padding-bottom:60px; }
-.hero { aspect-ratio:16/10; max-height:650px; background:#080808; }
+.hero { aspect-ratio:var(--hero-ar, 16/10); max-height:650px; background:#080808; }
 .hero img#then-img { object-fit:contain; }
 .hero-actions { top:18px; right:18px; }
 .icon-btn { border-radius:3px; background:rgba(0,0,0,.65); border:1px solid rgba(255,255,255,.2); }
@@ -476,7 +476,7 @@ audio { display:block; height:42px; filter:grayscale(1); }
   .point-card h3 { font-size:20px; }
   .point-card p { font-size:11px; }
   .dist { font-size:10px; }
-  .hero { aspect-ratio:4/3; }
+  .hero { aspect-ratio:var(--hero-ar, 4/3); }
   .point-body { padding-top:26px; }
   .point-body h2 { font-size:39px; }
   .stand { grid-template-columns:42px 1fr; gap:8px; padding:13px; }
@@ -722,12 +722,12 @@ body.rp-lock #toast { bottom:auto; top:calc(max(10px, env(safe-area-inset-top)) 
 .hero.cam-on .car, .hero.rp-full .car { display:none; }
 .car-track { position:absolute; inset:0; display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; touch-action:pan-x pan-y; -webkit-overflow-scrolling:touch; }
 .car-track::-webkit-scrollbar { display:none; }
-.car-slide { flex:0 0 100%; width:100%; height:100%; scroll-snap-align:center; scroll-snap-stop:always; background:#0d0a08; }
+.car-slide { flex:0 0 100%; width:100%; height:100%; box-sizing:border-box; padding-bottom:28px; scroll-snap-align:center; scroll-snap-stop:always; background:#0d0a08; }
 .car-slide img { position:static !important; display:block; width:100%; height:100%; object-fit:contain !important; cursor:zoom-in; -webkit-user-drag:none; user-select:none; }
 .car-arrow { position:absolute; top:50%; z-index:3; width:44px; height:44px; margin-top:-22px; border-radius:50%; border:1px solid rgba(229,202,140,.8); background:rgba(20,9,11,.72); color:#f6e7c4; font:400 30px/1 var(--font-sans); padding:0 0 4px; display:grid; place-items:center; cursor:pointer; }
 .car-arrow:disabled { opacity:.3; cursor:default; }
 .car-prev { left:12px; } .car-next { right:12px; }
-.car-dots { position:absolute; left:0; right:0; bottom:16px; z-index:3; display:flex; justify-content:center; gap:4px; pointer-events:none; }
+.car-dots { position:absolute; left:0; right:0; bottom:2px; z-index:3; display:flex; justify-content:center; gap:4px; pointer-events:none; }
 .car-dot { pointer-events:auto; width:24px; height:24px; padding:0; border:0; background:transparent; position:relative; cursor:pointer; }
 .car-dot::before { content:""; position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%; background:rgba(246,231,196,.55); box-shadow:0 0 0 1px rgba(20,9,11,.6); }
 .car-dot.on::before { background:#e4c783; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; }
@@ -741,19 +741,23 @@ body.rp-lock #toast { bottom:auto; top:calc(max(10px, env(safe-area-inset-top)) 
 
 /* ---------- Первый кадр точки: современное фото + шторка со старым (по умолчанию открыта пополам) ---------- */
 .car-slide.car-cmp { position:relative; overflow:hidden; background:#0d0a08; }
-.cmp-frame { position:absolute; inset:0; overflow:hidden; user-select:none; -webkit-user-select:none; }
+.cmp-frame { position:absolute; inset:0 0 28px 0; overflow:hidden; user-select:none; -webkit-user-select:none; }
 .car-slide.car-cmp img { position:absolute !important; inset:0; width:100%; height:100%; object-fit:cover !important; object-position:50% 50%; cursor:zoom-in; pointer-events:auto; -webkit-user-drag:none; }
-.cmp-old { filter: grayscale(1); }
 .car-slide.car-cmp .cmp-clip { position:absolute; inset:0; overflow:hidden; clip-path:inset(0 50% 0 0); -webkit-clip-path:inset(0 50% 0 0); }
 .cmp-handle { position:absolute; top:0; bottom:0; left:50%; width:56px; margin-left:-28px; z-index:4; touch-action:none; cursor:ew-resize; display:flex; justify-content:center; }
 .cmp-handle:focus-visible { outline:2px solid #e4c783; outline-offset:-4px; }
 .cmp-handle i { position:absolute; top:0; bottom:0; left:50%; width:2px; margin-left:-1px; background:#f6e7c4; box-shadow:0 0 0 1px rgba(20,9,11,.45); }
 .cmp-handle b { position:absolute; top:30%; left:50%; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; background:#f6e7c4; color:#2b1a14; border:1px solid #2b1a14; display:grid; place-items:center; font:700 15px/1 var(--font-sans, system-ui); letter-spacing:-1px; box-shadow:0 2px 10px rgba(0,0,0,.45); }
-.cmp-tag { position:absolute; bottom:40px; z-index:3; padding:3px 9px; border-radius:2px; background:rgba(20,9,11,.72); color:#f6e7c4; font:700 12px/1.3 var(--font-sans, system-ui); letter-spacing:.08em; text-transform:uppercase; pointer-events:none; }
+.cmp-tag { position:absolute; bottom:12px; z-index:3; padding:3px 9px; border-radius:2px; background:rgba(20,9,11,.72); color:#f6e7c4; font:700 12px/1.3 var(--font-sans, system-ui); letter-spacing:.08em; text-transform:uppercase; pointer-events:none; }
 .cmp-tag-l { left:12px; } .cmp-tag-r { right:12px; }
 .cmp-tag-warn { text-transform:none; letter-spacing:0; background:rgba(120,40,30,.82); }
 @media (min-width: 700px) { .cmp-handle b { top:50%; } }
 
+/* снимки с плашкой источника (PastVu): шторка показывает кадр целиком, плашка внизу не обрезается */
+.car-slide.car-cmp.wm img { object-fit:contain !important; }
+.cmp-tag-r { right:12px; }
+.car.single .car-slide { padding-bottom:0; }
+.car.single .cmp-frame { inset:0; }
 
 /* Поведники: компактная навигация между остановками на телефонах */
 @media (max-width: 520px) {

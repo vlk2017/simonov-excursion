@@ -85,38 +85,54 @@ test("у каждой точки: проверяемые источники, с�
   assert.ok(!/через дорогу/.test(crossing));
 });
 
-test("права на фото: у каждого автор, год, лицензия, карточка Викисклада; лицензия свободная", () => {
+test("права на фото: у каждого автор, год, лицензия или пометка «с указанием источника», карточка-источник и оригинал", () => {
   const free = /^(Общественное достояние|CC BY(-SA)? [\d.]+|Free Art License|CC0 1\.0)$/;
-  let n = 0;
+  const attrib = "без свободной лицензии, с указанием источника";
+  let n = 0, nAttr = 0;
   for (const p of pts) for (const ph of p.photos.concat(p.photos.filter(x => x.now).map(x => x.now), p.heroNow ? [p.heroNow] : [])) {
     n++;
     assert.ok(ph.author && ph.year && ph.license, `${p.id}: нет автора, года или лицензии`);
-    assert.match(ph.license, free, `${p.id}: лицензия «${ph.license}» не из списка свободных`);
-    assert.match(ph.commons, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    if (ph.license === attrib) {
+      nAttr++;
+      assert.match(ph.commons, /^https:\/\/(pastvu\.com|sobory\.ru|yandex\.com|berezky\.ru|moskva-volga\.ru|commons\.wikimedia\.org)\//, `${p.id}: карточка-источник`);
+      assert.ok(ph.sourceName || ph.archive, `${p.id}: не указан источник`);
+    } else {
+      assert.match(ph.license, free, `${p.id}: лицензия «${ph.license}» не из списка`);
+      assert.match(ph.commons, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    }
   }
-  assert.ok(n >= 16);
-  for (const p of pts) if (p.nowContext) {
-    assert.match(p.nowContext.license, free);
-    assert.match(p.nowContext.commons, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
-  }
-  assert.ok(pts[7].photos[0].modern, "современный снимок башни помечен как современный");
+  assert.ok(n >= 25 && nAttr >= 15, `снимков ${n}, без свободной лицензии ${nAttr}`);
+  const rights = read("RIGHTS.md");
+  assert.match(rights, /используется с указанием источника/);
+  assert.match(rights, /не убирались, не обрезались и не ретушировались/);
+  for (const f of ["data/photo-sources.json", "data/photo-audit.md", "docs/PHOTO_AUDIT.md"]) assert.ok(exists(f), f);
+  const reg = JSON.parse(read("data/photo-sources.json"));
+  assert.ok(reg.photos.length >= 30 && reg.rejected.length >= 5);
+  assert.ok(pts[7].photos[0].modern, "современный снимок храма помечен как современный");
 });
 
-test("первый кадр каждой точки: современное фото со шторкой старого, либо честная плашка без шторки", () => {
+test("снимки: каждый файл на месте, у каждого миниатюра; PastVu-снимки помечены wm (плашка не обрезается)", () => {
+  for (const p of pts) for (const ph of p.photos.concat(p.photos.filter(x => x.now).map(x => x.now), p.heroNow ? [p.heroNow] : [])) {
+    assert.ok(exists(ph.src), `${p.id}: нет файла ${ph.src}`);
+    const th = ph.src.replace("img/then/", "img/thumbs/").replace("img/now/", "img/thumbs/").replace(/\.jpg$/, ph.src.includes("img/now/") ? "-now.jpg" : ".jpg");
+    assert.ok(exists(th) || exists(ph.src.replace("img/", "img/thumbs/")), `${p.id}: нет миниатюры для ${ph.src}`);
+    if (/pastvu\.com/.test(ph.commons || "")) assert.ok(ph.wm, `${p.id}: ${ph.src} без пометки wm`);
+  }
+  assert.match(css, /\.car-slide\.car-cmp\.wm img/);
+});
+
+test("первый кадр точки: шторка тогда—сейчас, либо современное фото с плашкой; блоки накладки включены только там, где есть пара", () => {
   for (const p of pts) {
     const ph0 = p.photos[0];
-    if (ph0.now) {
-      assert.ok(!ph0.modern && !p.heroNow, p.id + ": шторка и плашка вместе");
-      assert.ok(ph0.now.src && ph0.now.year && ph0.now.author && ph0.now.license && ph0.now.note, p.id + ": у современного кадра нет подписи");
-    } else {
-      assert.ok(p.heroNow && p.heroNow.src && p.heroNow.missingThen, p.id + ": нет ни пары, ни честной плашки");
-      assert.ok(ph0.modern, p.id + ": первый кадр без шторки должен быть помечен как современный");
-      assert.match(p.heroNow.missingThen, /Старого снимка|старого снимка|нет/, p.id + ": плашка без пояснения");
+    if (p.heroNow) {
+      assert.ok(p.heroNow.src && p.heroNow.missingThen, p.id + ": у плашки нет пояснения");
+      assert.match(p.heroNow.missingThen, /Старого снимка|старого снимка|нет|не нашли|Архивных|архивных/, p.id + ": плашка без пояснения");
     }
     for (const f of [ph0.focal, ph0.now && ph0.now.focal, p.heroNow && p.heroNow.focal].filter(Boolean)) {
       assert.ok(f.x >= 0 && f.x <= 100 && f.y >= 0 && f.y <= 100 && f.z >= 1 && f.z <= 3, p.id + ": focal вне допустимого");
     }
     assert.ok(!p.photos.some(x => x.align), p.id + ": остался устаревший align");
+    assert.ok(p.photos.length >= 2 || p.heroNow, p.id + ": мало снимков");
   }
   assert.ok(!html.includes('id="compare"'), "старый блок #compare убран, шторка внутри карусели");
   for (const re of [/cmp-handle/, /touch-action:\s*none/]) assert.match(css, re);
@@ -132,13 +148,18 @@ test("видео: нет встроенных превью и нет выдум�
   assert.ok(exists("docs/PHOTO_AUDIT.md"));
 });
 
-test("пары «тогда — сейчас»: свободных старых снимков этих мест нет, везде честная плашка; общий старый снимок канала только в карусели без шторки", () => {
-  const pairs = pts.filter(p => p.photos[0].now);
-  assert.equal(pairs.length, 0, "шторка без старого снимка этого места недопустима");
-  assert.equal(pts.filter(p => p.heroNow).length, 8);
-  const olds = pts.flatMap(p => p.photos.filter(x => !x.modern));
-  assert.ok(olds.length <= 1);
-  olds.forEach(o => assert.match(o.stand, /Это не Поведники/, "старый снимок другого места подписан честно"));
+test("пары «тогда — сейчас»: шторка только там, где есть сопоставимый современный вид; снимки других мест подписаны как контекст", () => {
+  const withNow = pts.flatMap(p => p.photos.filter(x => x.now).map(x => [p.id, x]));
+  const ids = withNow.map(x => x[0]).sort();
+  assert.deepEqual(ids, ["chasovnya", "chiverevo", "chiverevo"], "пары: две в Чиверёве и одна у часовни");
+  for (const [id, ph] of withNow) {
+    assert.ok(ph.now.src && ph.now.author && ph.now.year && ph.now.license, id + ": подпись современного кадра");
+    assert.ok(!ph.modern, id + ": кадр с шторкой не может быть «современным»");
+  }
+  const ctx = pts.flatMap(p => p.photos.filter(x => x.kind === "context").map(x => [p.id, x]));
+  assert.ok(ctx.length >= 2);
+  ctx.forEach(([id, x]) => assert.match(x.stand + " " + x.title, /Не Поведники|не Поведники|не из Поведников|не относится|общий|Общий|контекст|другой|олень|Олень|канал|не школа|на снимке нет|Соседн/i, id + ": контекстный снимок без оговорки"));
+  assert.ok(pts.find(p => p.id === "chasovnya").photos[0].viewpoint || /ракурс/i.test(pts.find(p => p.id === "chasovnya").photos[0].stand + pts.find(p => p.id === "chasovnya").photos[0].now.note), "у пары часовни сказано про разные ракурсы");
 });
 
 test("точки не ближе 26 м друг к другу (радиус 22 м)", () => {
@@ -215,5 +236,5 @@ test("кнопка «Как устроена прогулка» без конф�
   assert.match(app, /\$\("#btn-about-2"\)\.addEventListener\("click"/);
   assert.match(app, /\$\("#overlay-bar"\)\.classList\.toggle\("hidden", !p\.photos\.some\(ph => ph\.now\)\)/);
   assert.ok(!/20–35 метрах/.test(html), "в подсказке остались расстояния Крутиц");
-  assert.match(sw, /povedniki-v2/);
+  assert.match(sw, /povedniki-v3/);
 });

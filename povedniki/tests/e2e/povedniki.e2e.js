@@ -114,10 +114,10 @@ async function open(browser, { geo, offline, strip } = {}) {
     ok("«Предыдущая»: снова точка 1, остановка осталась отмеченной", s.label === "Точка 1 из 8" && s.visited === 1);
     // карусель точки 1
     const car = await page.evaluate(() => ({ slides: document.querySelectorAll("#car-track > *").length, dots: document.querySelectorAll("#car-dots > *").length, single: document.querySelector("#car").classList.contains("single"), kind: document.querySelector(".car-slide").dataset.kind, pct: document.querySelector(".car-slide").dataset.pct, oldCompare: !!document.querySelector("#compare") }));
-    ok("Карусель точки 1: один слайд, современное фото с плашкой «Старого снимка нет», без шторки", car.slides === 1 && car.single && car.kind === "modern" && !car.oldCompare, JSON.stringify(car));
+    ok("Карусель точки 1: четыре кадра (три архивных PastVu и вид сверху), первый — архивный, без шторки", car.slides === 4 && car.dots === 4 && !car.single && car.kind === "old" && !car.oldCompare, JSON.stringify(car));
     // блок «Историческая накладка» без старого снимка этого места скрыт на всех точках
     const ob = await page.evaluate(() => state.data.points.map(p => { openPoint(p.id, false); const e = document.querySelector("#overlay-bar"); return getComputedStyle(e).display; }));
-    ok("Блок «Историческая накладка» скрыт на всех 8 точках (пар «тогда — сейчас» нет)", ob.length === 8 && ob.every(d => d === "none"), ob.join(","));
+    ok("Блок «Историческая накладка» виден только на точках с парой «тогда — сейчас» (6 и 7)", ob.length === 8 && ob.every((d, i) => (i === 5 || i === 6) ? d !== "none" : d === "none"), ob.join(","));
     await page.evaluate(() => { stopNarrationNow(); openPoint("ostanovka", false); });
     ok("Нет ошибок страницы после обхода точек", errors.length === 0, errors.join("|"));
     await ctx.close();
@@ -144,7 +144,7 @@ async function open(browser, { geo, offline, strip } = {}) {
       const d = await page.evaluate(() => { const g = s => document.querySelector(s); return { label: g("#point-num-label").textContent, title: g("#point-title").textContent, text: g("#script-text").textContent.length, scene: g("#scene-where").textContent.length,
         meta: g("#photo-meta").innerText, imgOk: !!document.querySelector("#car-track img") && document.querySelector("#car-track img").complete && document.querySelector("#car-track img").naturalWidth > 100, sw: document.documentElement.scrollWidth, src: g("#scene-sources").querySelectorAll("a").length,
         film: getComputedStyle(g("#archival-film")).display !== "none" }; });
-      ok(`Точка ${n}: «${d.title}» — текст, «где встать», источники, права, фото, без горизонтального скролла`, d.label === `Точка ${n} из 8` && d.text > 800 && d.scene > 40 && d.src >= 2 && /Викисклад/.test(d.meta) && /(Общественное достояние|CC BY|Free Art)/.test(d.meta) && d.imgOk && d.sw <= 391, JSON.stringify({ t: d.text, s: d.scene, src: d.src, img: d.imgOk, sw: d.sw }));
+      ok(`Точка ${n}: «${d.title}» — текст, «где встать», источники, права, фото, без горизонтального скролла`, d.label === `Точка ${n} из 8` && d.text > 800 && d.scene > 40 && d.src >= 2 && /(Викисклад|PastVu|Яндекс|Sobory)/.test(d.meta) && /(Общественное достояние|CC BY|Free Art|с указанием источника)/.test(d.meta) && d.imgOk && d.sw <= 391, JSON.stringify({ t: d.text, s: d.scene, src: d.src, img: d.imgOk, sw: d.sw }));
       if (n === 8) ok("Точка 8: современное фото помечено «Современное фото»", /Современное фото/.test(d.meta), d.meta.slice(0, 80));
       if (n < 8) await tap(page, "#pt-nav-top .js-next");
     }
@@ -160,8 +160,8 @@ async function open(browser, { geo, offline, strip } = {}) {
     await page.evaluate(() => caches.open("simonov-v13").then(c => c.put("/marker", new Response("x"))));   // «кэш Симонова» не должен пропасть
     await page.reload({ waitUntil: "networkidle2" });
     await sleep(3000);   // предзагрузка текстов и фото
-    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("povedniki-v2")).keys()).length }));
-    ok("Свой service worker со scope /povedniki/ и кэш povedniki-v2; кэш Симонова не удалён", c.keys.includes("povedniki-v2") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/povedniki\/$/.test(s)), JSON.stringify(c).slice(0, 300));
+    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("povedniki-v3")).keys()).length }));
+    ok("Свой service worker со scope /povedniki/ и кэш povedniki-v3; кэш Симонова не удалён", c.keys.includes("povedniki-v3") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/povedniki\/$/.test(s)), JSON.stringify(c).slice(0, 300));
     ok("Ключи localStorage с префиксом povedniki-", c.ls.every(k => k.startsWith("povedniki-")), c.ls.join(","));
     ok("Предзагружены тексты, озвучка и фото (≥ 30 файлов)", c.ordSize >= 30, "файлов в кэше: " + c.ordSize);
     await page.setOfflineMode(true);
@@ -199,9 +199,9 @@ async function open(browser, { geo, offline, strip } = {}) {
     for (const id of ids) {
       await page.evaluate(id => openPoint(id, false), id);
       await sleep(700);
-      const r = await page.evaluate(() => { const sl = document.querySelector(".car-slide"), p = currentPoint(); return { kind: sl.dataset.kind, nowOk: !!sl.querySelector(".cmp-now") && sl.querySelector(".cmp-now").naturalWidth > 0, warn: !!sl.querySelector(".cmp-tag-warn"), cap: document.querySelector("#photo-caption").innerText, hasNow: !!(p.photos[0].now || p.heroNow) }; });
-      const modern = true;
-      ok(`Точка ${id}: первый кадр = ${modern ? "только современное фото с плашкой «Старого снимка нет»" : "пара с шторкой"}`, r.nowOk && r.hasNow && (modern ? r.kind === "modern" && r.warn && /Старого снимка/.test(r.cap) : r.kind === "cmp" && !r.warn), JSON.stringify(r).slice(0, 220));
+      const r = await page.evaluate(() => { const sl = document.querySelector(".car-slide"), p = currentPoint(); return { kind: sl.dataset.kind, nowOk: !!sl.querySelector(".cmp-now") && sl.querySelector(".cmp-now").naturalWidth > 0, warn: !!sl.querySelector(".cmp-tag-warn"), cap: document.querySelector("#photo-caption").innerText, hasNow: !!(p.photos[0].now || p.heroNow), imgOk: !!sl.querySelector("img") && sl.querySelector("img").naturalWidth > 0 }; });
+      const exp = { ostanovka: "old", shkola: "modern", "dom-kultury": "modern", pansionaty: "old", bereg: "old", chiverevo: "cmp", chasovnya: "cmp", hram: "modern" }[id];
+      ok(`Точка ${id}: первый кадр = ${exp === "cmp" ? "пара с шторкой" : exp === "modern" ? "современное фото с плашкой «Старого снимка нет»" : "архивный снимок с указанием источника"}`, r.kind === exp && /(источник|Викисклад)/.test(r.cap) && (exp === "old" ? r.imgOk : r.nowOk) && (exp === "modern" ? r.warn : !r.warn), JSON.stringify(r).slice(0, 260));
     }
     ok("Нет ошибок страницы (8 точек, первый кадр)", errors.length === 0, errors.join("|"));
     await ctx.close();
