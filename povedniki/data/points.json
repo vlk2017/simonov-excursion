@@ -39,7 +39,7 @@
       "ttsScript": "tts/01-ostanovka.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Mytishchinsky%20District%2C%20Moscow%20Oblast%2C%20Russia%20-%20panoramio%20(33).jpg",
+          "src": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Mytishchinsky_District%2C_Moscow_Oblast%2C_Russia_-_panoramio_%2833%29.jpg",
           "title": "Берег Клязьминского водохранилища в Мытищинском округе, 2014",
           "year": "2014",
           "author": "Алексей Дегтярев",
@@ -85,7 +85,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Mytishchinsky%20District%2C%20Moscow%20Oblast%2C%20Russia%20-%20panoramio%20(33).jpg",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Mytishchinsky_District%2C_Moscow_Oblast%2C_Russia_-_panoramio_%2833%29.jpg",
         "remote": null,
         "year": "2014",
         "author": "Алексей Дегтярев",
@@ -120,7 +120,7 @@
       "ttsScript": "tts/02-shkola.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F%20%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D1%81%20%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
+          "src": "https://upload.wikimedia.org/wikipedia/commons/e/e7/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F_%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D1%81_%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
           "title": "Церковь Троицы Живоначальной в Троицком, 2011",
           "year": "2011",
           "author": "Kotjara kamenskaja",
@@ -162,7 +162,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F%20%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D1%81%20%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/e/e7/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F_%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D1%81_%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
         "remote": null,
         "year": "2011",
         "author": "Kotjara kamenskaja",
@@ -197,7 +197,7 @@
       "ttsScript": "tts/03-dom-kultury.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2002.jpg",
+          "src": "https://upload.wikimedia.org/wikipedia/commons/2/24/20220813_Klyazma_reservoir_sunset_02.jpg",
           "title": "Клязьминское водохранилище, вечерний вид, 2022",
           "year": "2022",
           "author": "Sergey A. Demidov",
@@ -239,7 +239,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2002.jpg",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/2/24/20220813_Klyazma_reservoir_sunset_02.jpg",
         "remote": null,
         "year": "2022",
         "author": "Sergey A. Demidov",
@@ -274,7 +274,7 @@
       "ttsScript": "tts/04-pansionaty.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2003.jpg",
+          "src": "https://upload.wikimedia.org/wikipedia/commons/7/77/20220813_Klyazma_reservoir_sunset_03.jpg",
           "title": "Клязьминское водохранилище, вечерний вид, 2022",
           "year": "2022",
           "author": "Sergey A. Demidov",
@@ -320,7 +320,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2003.jpg",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/7/77/20220813_Klyazma_reservoir_sunset_03.jpg",
         "remote": null,
         "year": "2022",
         "author": "Sergey A. Demidov",
@@ -355,7 +355,7 @@
       "ttsScript": "tts/05-bereg.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2001.jpg",
+          "src": "https://upload.wikimedia.org/wikipedia/commons/e/ef/20220813_Klyazma_reservoir_sunset_01.jpg",
           "title": "Клязьминское водохранилище на закате, 2022",
           "year": "2022",
           "author": "Sergey A. Demidov",
@@ -422,7 +422,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2001.jpg",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/e/ef/20220813_Klyazma_reservoir_sunset_01.jpg",
         "remote": null,
         "year": "2022",
         "author": "Sergey A. Demidov",
@@ -457,7 +457,7 @@
       "ttsScript": "tts/06-chiverevo.txt",
       "photos": [
         {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F%20%D0%B2%20%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
+          "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F_%D0%B2_%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg/960px-%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F_%D0%B2_%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
           "title": "Часовня в деревне Чиверёво",
           "year": "не указан",
           "author": "см. страницу файла Wikimedia Commons",
@@ -517,7 +517,7 @@
         ]
       },
       "heroNow": {
-        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F%20%D0%B2%20%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F_%D0%B2_%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg/960px-%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F_%D0%B2_%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
         "remote": null,
         "year": "не указан",
         "author": "см. страницу файла Wikimedia Commons",
