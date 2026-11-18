@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#171717" />
+  <title>Храм исповедников в Поведниках — аудиопрогулка</title>
+  <meta name="description" content="Аудиопрогулка по посёлку Поведники (Мытищи): история места, соседние сёла и новый храм Новомучеников и исповедников. Восемь остановок, фотографии, рассказы и пешеходная навигация." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/kremlin.css" />
+  <link rel="stylesheet" href="css/identity.css" />
+  <link rel="stylesheet" href="css/cover-chronicle.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="data:," />
+</head>
+<body>
+  <div class="app">
+    <section class="screen active" id="screen-cover">
+      <div class="cover">
+        <div class="cover-content">
+          <p class="cover-kicker">Аудиопрогулка · Мытищи</p>
+          <h1 id="cover-title">Храм исповедников в Поведниках</h1>
+          <p class="cover-lead" id="cover-lead">История посёлка на берегу Клязьминского водохранилища: название, пансионаты, соседние сёла и канал. А в конце новый храм Новомучеников и исповедников. Восемь остановок.</p>
+          <p class="cover-meta" id="cover-place">Мытищи, посёлок Поведники, Соборная площадь, 1</p>
+          <div class="cover-actions">
+            <button class="btn-primary" id="btn-start">Начать прогулку</button>
+            <button class="btn-ghost" id="btn-about" type="button" hidden>О прогулке</button>
+          </div>
+        </div>
+        <div class="date-marquee" aria-label="Ключевые даты истории Поведников">
+          <div class="date-marquee-track"><div class="date-marquee-group"><span><b>1653</b> в Троицком построена церковь</span><i aria-hidden="true">✦</i><span><b>1923</b> первый дом деревни</span><i aria-hidden="true">✦</i><span><b>1932</b> начало канала Москва — Волга</span><i aria-hidden="true">✦</i><span><b>1961</b> зона отдыха пансионатов</span><i aria-hidden="true">✦</i><span><b>1995</b> посёлок получил название</span><i aria-hidden="true">✦</i><span><b>2003</b> закладка камня храма</span><i aria-hidden="true">✦</i><span><b>2007</b> образован приход</span><i aria-hidden="true">✦</i><span><b>2013</b> начало стройки храма</span><i aria-hidden="true">✦</i></div><div class="date-marquee-group" aria-hidden="true"><span><b>1653</b> в Троицком построена церковь</span><i aria-hidden="true">✦</i><span><b>1923</b> первый дом деревни</span><i aria-hidden="true">✦</i><span><b>1932</b> начало канала Москва — Волга</span><i aria-hidden="true">✦</i><span><b>1961</b> зона отдыха пансионатов</span><i aria-hidden="true">✦</i><span><b>1995</b> посёлок получил название</span><i aria-hidden="true">✦</i><span><b>2003</b> закладка камня храма</span><i aria-hidden="true">✦</i><span><b>2007</b> образован приход</span><i aria-hidden="true">✦</i><span><b>2013</b> начало стройки храма</span><i aria-hidden="true">✦</i></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-tour">
+      <header class="topbar">
+        <h2>Маршрут</h2>
+        <div class="gps-pill off" id="gps-pill">Место не найдено</div>
+        <button class="btn-ghost" id="btn-gps" style="min-height:40px;padding:0 10px;font-size:13px">Найти меня</button>
+      </header>
+      <div class="map-wrap">
+        <div id="map" class="map" role="application" aria-label="Интерактивная карта экскурсии"></div>
+        <div class="map-controls">
+          <button class="map-control" id="map-my-location" type="button" aria-label="Показать моё положение">◎ Моё место</button>
+          <button class="map-control" id="map-fit-route" type="button">Весь маршрут</button>
+        </div>
+      </div>
+      <section class="navigator" id="navigator" aria-live="polite">
+        <div class="nav-eyebrow">ВАШ СЛЕДУЮЩИЙ ШАГ</div>
+        <div class="nav-main"><div class="nav-step" id="nav-step">01</div>
+          <div class="nav-copy"><h3 id="nav-title">Первая остановка</h3><p id="nav-distance">Включите геолокацию, чтобы увидеть расстояние</p></div>
+        </div>
+        <div class="navigation-hud hidden" id="navigation-hud">
+          <div class="nav-arrow-wrap"><div class="nav-arrow" id="nav-arrow" aria-hidden="true">↑</div></div>
+          <div class="nav-turn-copy"><span id="nav-turn-distance">—</span><strong id="nav-turn-title">Следующий поворот</strong><small id="nav-route-remaining">До остановки —</small></div>
+          <div class="nav-hud-status">
+            <small id="nav-gps" class="nav-gps" data-level="unknown">GPS: точность неизвестна</small>
+            <small id="nav-arrow-note" class="nav-arrow-note"></small>
+            <button class="btn-ghost nav-compass" id="nav-compass" type="button">Включить компас</button>
+          </div>
+          <button class="btn-primary nav-arrived hidden" id="nav-arrived" type="button" disabled>Я на месте</button>
+        </div>
+        <div class="nav-actions">
+          <button class="btn-primary nav-route" id="nav-route" type="button">Проложить пеший путь</button>
+          <button class="btn-ghost" id="nav-open">Открыть остановку</button>
+          <button class="btn-ghost" id="nav-next">Следующая точка →</button>
+        </div>
+        <p class="nav-note" id="nav-note">Подсказка, где безопасно остановиться и осмотреться.</p>
+        <div class="route-guidance" id="route-guidance" aria-live="polite"></div>
+        <p class="nav-progress" id="nav-progress">Пройдено 0 из 8</p><p class="nav-external"><a id="nav-external" href="#" target="_blank" rel="noopener">Открыть пеший маршрут во внешних картах ↗</a></p>
+      </section>
+      <div class="list">
+        <p class="hint">Восемь точек у храма и рядом. Они стоят близко, в 20–35 метрах друг от друга. Когда вы подойдёте примерно на 20 метров, телефон предложит включить рассказ. Сам он без вашего нажатия не заиграет. Если место не нашлось, откройте точку и нажмите «Я на месте».</p>
+        <label class="switch"><input type="checkbox" id="opt-arrive" checked /> Подсказывать у точек</label>
+        <div class="offline-audio">
+          <button class="btn-ghost" id="btn-offline-audio" type="button">Скачать рассказы для офлайна (~19 МБ)</button>
+          <p class="hint" id="offline-audio-status" aria-live="polite"></p>
+        </div>
+        <p class="hint hidden" id="offline-audio-none">Озвучка рассказов: HeyGen, голос Григорий. Для воспроизведения требуется интернет.</p>
+        <div id="list"></div>
+        <button class="btn-ghost" data-back="tour" id="btn-about-2" onclick="document.getElementById('btn-about').click()">Как устроена прогулка</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-point">
+      <header class="topbar">
+        <button class="btn-ghost" id="btn-back-point" style="min-height:40px;padding:0 12px">Назад</button>
+        <h2 id="point-num-label">Точка</h2>
+      </header>
+      <div class="point">
+        <div class="overlay-bar" id="overlay-bar">
+          <div class="overlay-kicker">ИСТОРИЧЕСКАЯ НАКЛАДКА</div>
+          <div class="overlay-actions">
+            <button class="btn-primary cam-main" id="btn-camera" type="button">Совместить с камерой</button>
+            <button class="btn-ghost cam-compass" id="btn-compass" type="button" aria-label="Включить компас">Компас</button>
+          </div>
+          <div class="cam-modes hidden" id="cam-modes" role="group" aria-label="Режим накладки">
+            <button type="button" data-mode="then">Раньше</button><button type="button" data-mode="overlay" class="on">Наложить</button><button type="button" data-mode="curtain">Шторка</button><button type="button" data-mode="now">Сейчас</button>
+            <button type="button" data-mode="rephoto" class="cam-rephoto">Рефотосъёмка: совместить и снять</button>
+          </div>
+          <p class="cam-msg" id="cam-msg" role="status" aria-live="polite"></p>
+          <button type="button" class="btn-ghost cam-nocam hidden" id="btn-rp-nocam">Сравнить без камеры: тогда и сейчас</button>
+        </div>
+        <div class="hero" id="hero">
+          <img id="then-img" alt="Старое фото" role="button" tabindex="0" aria-label="Открыть историческую фотографию на весь экран" />
+          <video id="live-video" class="hidden" playsinline webkit-playsinline muted autoplay disablepictureinpicture></video>
+          <img id="rp-now-img" class="rp-now-img hidden" alt="Сейчас" crossorigin="anonymous" />
+          <div class="overlay-wrap" id="overlay-wrap"><img id="overlay-img" class="overlay-img hidden" alt="Наложение старого фото" crossorigin="anonymous" /></div>
+          <div class="car" id="car" role="region" aria-roledescription="карусель" aria-label="Архивные фотографии" tabindex="0">
+            <div class="car-track" id="car-track"></div>
+            <button type="button" class="car-arrow car-prev" id="car-prev" aria-label="Предыдущее фото">‹</button>
+            <button type="button" class="car-arrow car-next" id="car-next" aria-label="Следующее фото">›</button>
+            <div class="car-dots" id="car-dots" role="group" aria-label="Выбор фото"></div>
+          </div>
+          <div class="hero-actions"><button class="icon-btn" id="btn-full" aria-label="Открыть фото на весь экран" title="На весь экран">⤢</button></div>
+          <div class="hero-count" id="hero-count"></div>
+          <div class="rp-ui hidden" id="rp-ui">
+            <div class="rp-hint" id="rp-hint" role="status" aria-live="polite"></div>
+            <span class="rp-label rp-label-l hidden" id="rp-label-l"></span>
+            <span class="rp-label rp-label-r hidden" id="rp-label-r">Сейчас</span>
+            <div class="rp-bar" id="rp-bar">
+              <button type="button" class="rp-btn rp-primary" id="rp-done">Совмещено ✓</button>
+              <button type="button" class="rp-btn rp-primary hidden" id="rp-shot">Снимок</button>
+              <button type="button" class="rp-btn hidden" id="rp-back">Совместить заново</button>
+              <button type="button" class="rp-btn" id="rp-reset">Сбросить</button>
+              <button type="button" class="rp-btn" id="rp-exit">Выйти</button>
+            </div>
+          </div>
+          <div class="cam-curtain hidden" id="cam-curtain" role="slider" aria-label="Шторка: слева раньше, справа сейчас" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><i class="cam-curtain-line"></i><span class="cam-curtain-grip">‹ ›</span></div>
+          <div class="slider-wrap hidden" id="cam-slider"><label><span>Тогда</span><span id="opacity-val">55%</span><span>Камера</span></label><input id="opacity" type="range" min="0" max="1" step="0.01" value="0.55" /></div>
+        </div>
+        <div class="audio-box audio-top" id="audio-box">
+          <div class="approach neutral" id="approach" role="status" aria-live="polite">
+            <span class="approach-arrow hidden" id="approach-arrow" aria-hidden="true">↑</span>
+            <div class="approach-copy"><b id="approach-title">Подойдите к точке и начните рассказ</b><small id="approach-sub"></small></div>
+            <button type="button" class="approach-path hidden" id="btn-approach-path">Показать путь</button>
+          </div>
+          <button class="btn-primary audio-start" id="btn-play" type="button">Начать рассказ</button>
+          <p class="hint tts-note hidden" id="tts-note" role="note"><b>Голос Григорий.</b> Рассказ озвучен в HeyGen. Для воспроизведения требуется интернет.</p>
+          <audio id="player" controls controlslist="noplaybackrate nodownload" preload="metadata" playsinline></audio>
+        </div>
+        <div class="pt-nav" id="pt-nav-top" aria-label="Переход между точками"><button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button><button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button></div>
+        <p class="photo-caption" id="photo-caption"></p>
+        <div class="stand" id="stand">
+          <div class="stand-arrow" id="stand-arrow" aria-hidden="true"><svg viewBox="0 0 64 64" width="56" height="56"><circle cx="32" cy="32" r="30" fill="none" stroke="#6b5a45" stroke-width="2"/><text x="32" y="12" text-anchor="middle" font-size="9" fill="#b5a68c">С</text><g id="stand-needle"><path d="M32 10 L40 36 L32 31 L24 36 Z" fill="#d4b06a"/></g></svg></div>
+          <div class="stand-text"><b>Где стоял фотограф</b><p id="stand-text"></p><p class="stand-live" id="stand-live"></p><p class="stand-links" id="stand-links"></p></div>
+        </div>
+        <div class="point-body">
+          <p class="cover-kicker" id="point-dir"></p><h2 id="point-title"></h2><p class="short" id="point-short"></p>
+          <section class="look-card" id="look-card" aria-label="Осмотритесь на месте">
+            <div class="look-kicker">ОСМОТРИТЕСЬ НА МЕСТЕ</div>
+            <div class="look-step"><span>01</span><div><b>Где остановиться</b><p id="scene-where"></p></div></div>
+            <div class="look-step"><span>02</span><div><b>Куда смотреть</b><p id="scene-look"></p></div></div>
+            <div class="look-step"><span>03</span><div><b>Что заметить</b><p id="scene-notice"></p></div></div>
+            <div class="look-step"><span>04</span><div><b>Тогда и сейчас</b><p id="scene-then"></p></div></div>
+            <p class="look-confidence" id="scene-confidence"></p><div class="look-route" id="scene-route"></div><div class="look-sources" id="scene-sources"></div>
+          </section>
+          <section class="archival-film hidden" id="archival-film" aria-label="Кинохроника"><div class="film-kicker">АРХИВНАЯ КИНОХРОНИКА</div><h3 id="film-title"></h3><p class="film-date" id="film-date"></p><p id="film-description"></p><div class="film-links" id="film-links"></div><p class="film-rights" id="film-rights"></p></section>
+          <div class="row-btns"><button class="btn-primary" id="btn-here">Я на месте</button></div>
+          <button class="btn-ghost btn-done" id="btn-done">Отметить остановку пройденной</button>
+          <details class="text-box" id="text-box"><summary>Текст рассказа</summary><div id="script-text" class="script-text"></div></details>
+          <figure class="now-context hidden" id="now-context"><img id="now-context-img" alt="Как это выглядит сейчас" /><figcaption id="now-context-cap"></figcaption></figure>
+          <div class="rights" id="photo-meta"></div>
+          <div class="pt-nav" id="pt-nav-bottom" aria-label="Переход между точками"><button type="button" class="js-prev pt-prev"><b>← Предыдущая</b><small></small></button><button type="button" class="js-next pt-next"><b>Следующая точка →</b><small></small></button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-about">
+      <header class="topbar"><button class="btn-ghost" data-back="tour" style="min-height:40px;padding:0 12px">Назад</button><h2>О прогулке</h2></header>
+      <div class="about">
+        <h2>Как устроена прогулка</h2>
+        <p>Это короткая аудиоэкскурсия по посёлку Поведники в городском округе Мытищи. Приложение ставить не нужно: страница открывается в браузере телефона.</p>
+        <p>Восемь остановок: остановка и название посёлка, школа и соседнее Троицкое, Дом культуры, пансионаты, берег водохранилища и канал, Чиверёво, церковь-часовня и новый храм Новомучеников и исповедников. На каждой звучит рассказ на две-три минуты, а текст можно читать с экрана. Нажмите на снимок — он откроется на весь экран, его можно увеличить двумя пальцами и листать.</p>
+        <p>Первый кадр каждой точки — современное фото. Старых свободных снимков именно этих мест мы не нашли, поэтому на всех остановках стоит плашка «Старого снимка нет». Фото соседних мест (Троицкое, Чиверёво, пансионат) подписаны честно: это не Поведники.</p>
+        <p>Если телефон найдёт ваше место, у точки он предложит включить рассказ. Сам звук без вашего нажатия не включится. После первого открытия текст и фото сохраняются в телефоне и работают без интернета (кроме карты). Рассказы озвучены голосом Grigory в HeyGen Voice; копии записей лежат на сайте для работы без сети.</p>
+        <p>Факты в рассказе взяты только из открытых источников. Если даты в них расходятся, это сказано прямо. Ничего не выдумано.</p>
+        <h3>Фотографии</h3>
+        <p>Снимки взяты с Викисклада, где они помечены как свободные. Автор, год и лицензия каждого снимка указаны под фото. Часть снимков сделана в соседних местах, у пансионата и аллеи подпись на Викискладе только «Мытищинский район»: мы указываем это в подписи. Городской GPS легко ошибается на несколько метров, а точки у храма стоят близко друг к другу.</p>
+        <h3>Сайт прихода</h3>
+        <p>Храм Новомучеников и исповедников Церкви Русской: <a href="https://ispovedniki.ru/" target="_blank" rel="noopener">ispovedniki.ru</a>. Расписание служб и новости смотрите там, они могут меняться. Храм действующий: внутри ведите себя тихо.</p>
+        <h3>Безопасность</h3>
+        <p>Улицу переходите только по пешеходному переходу. На территорию пансионатов и частные участки не заходите: смотрите с улицы. У воды держитесь подальше от кромки. В храме ведите себя тихо: это действующая церковь.</p>
+        <h3>Видео</h3>
+        <p>Видео на сайте нет: архивной кинохроники Поведников, которую можно законно показывать, мы не нашли. Подробности: файл <code>docs/VIDEO.md</code>.</p>
+        <h3>Источники</h3>
+        <ul><li><a href="https://ispovedniki.ru/povedniki" target="_blank" rel="noopener">История поселка — ispovedniki.ru</a></li><li><a href="https://ispovedniki.ru/history" target="_blank" rel="noopener">История храма — ispovedniki.ru</a></li><li><a href="https://ru.wikipedia.org/wiki/Поведники" target="_blank" rel="noopener">Поведники — Википедия</a></li><li><a href="https://eparhsp.ru/portfolio/hram-novomuchenikov-i-ispovednikov-rossijskih-povedniki/" target="_blank" rel="noopener">Храм в Поведниках — Сергиево-Посадская епархия</a></li><li><a href="https://regions.ru/mytischi/vstrecha/v-poselke-povedniki-zavershilos-stroitelstvo-pravoslavnogo-hrama" target="_blank" rel="noopener">Завершение строительства храма — Regions.ru</a></li><li><a href="https://ru.wikipedia.org/wiki/Дмитлаг" target="_blank" rel="noopener">Дмитлаг — Википедия</a></li></ul>
+        <p>Полный список источников и прав на снимки лежит в файлах <code>SOURCES.md</code> и <code>RIGHTS.md</code> в папке этой экскурсии.</p>
+        <p><a href="../">Ещё экскурсия: Симонов монастырь</a> · <a href="../ordynka/">Храм на Ордынке</a> · <a href="../krutitsy/">Крутицкое подворье</a></p>
+        <h3>Карта</h3><p>Фоновая карта — OpenStreetMap, &copy; участники OpenStreetMap.</p>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="arrive hidden" id="arrive" role="dialog" aria-live="polite"><p id="arrive-text"></p><div class="arrive-btns"><button class="btn-primary" id="arrive-go">Слушать</button><button class="btn-ghost" id="arrive-no">Не сейчас</button></div></div>
+  <div class="lb hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото на весь экран"><div class="lb-stage" id="lb-stage"><img id="lb-img" alt="" draggable="false" /></div><button class="lb-btn lb-close" id="lb-close" aria-label="Закрыть">✕</button><button class="lb-btn lb-prev" id="lb-prev" aria-label="Предыдущее фото">‹</button><button class="lb-btn lb-next" id="lb-next" aria-label="Следующее фото">›</button><div class="lb-cap" id="lb-cap"></div></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/nav-core.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById("btn-about-2")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById("screen-about").classList.add("active");
+    });
+  </script>
+</body>
+</html>

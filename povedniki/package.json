@@ -1,0 +1,9 @@
+{
+  "name": "povedniki-excursion",
+  "private": true,
+  "description": "Аудиоэкскурсия по посёлку Поведники и храму Новомучеников и исповедников (статический сайт, подпапка /povedniki/). Зависимостей нет.",
+  "scripts": {
+    "test": "node --test tests/nav-core.test.js tests/static.test.js",
+    "check": "node --check js/app.js && node --check js/nav-core.js && node --check sw.js"
+  }
+}
