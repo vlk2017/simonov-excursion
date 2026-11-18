@@ -279,6 +279,14 @@
       "ttsScript": "tts/04-pansionaty.txt",
       "photos": [
         {
+          "src": "img/now/aerial-2024.jpg",
+          "title": "Поведники и зона пансионатов с воздуха",
+          "year": "2024",
+          "author": "Архив экскурсии",
+          "license": "Снимок в проекте",
+          "remote": null
+        },
+        {
           "src": "https://pastvu.com/_p/a/2/8/i/28i8fhmuy1vb96o7yu.jpg",
           "title": "Пансионат «Берёзки» на Клязьминском водохранилище, общий вид",
           "year": "1967",
@@ -287,14 +295,6 @@
           "remote": null,
           "sourceUrl": "https://pastvu.com/p/2241631",
           "sourceLabel": "Архив PastVu"
-        },
-        {
-          "src": "img/now/aerial-2024.jpg",
-          "title": "Поведники и зона пансионатов с воздуха",
-          "year": "2024",
-          "author": "Архив экскурсии",
-          "license": "Снимок в проекте",
-          "remote": null
         },
         {
           "src": "https://berezky.ru/images/slider_2.jpg",
