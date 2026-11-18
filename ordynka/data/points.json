@@ -1,6 +1,6 @@
 {
-  "title": "Скорбященский храм на Ордынке",
-  "subtitle": "Восемь остановок у храма и рядом. На каждой рассказ на две-три минуты, старые снимки и подсказка, где стоял фотограф.",
+  "title": "Храм Преображения Господня на Ордынке",
+  "subtitle": "Восемь остановок у храма, известного как Скорбященский. Главный престол посвящён Преображению Господню, а название связано с приделом и чудотворной иконой «Всех скорбящих Радость».",
   "place": "Москва, Большая Ордынка, 20",
   "officialSite": "https://ordynka.com/",
   "officialExcursion": "На сайте храма есть раздел «Экскурсии»: https://ordynka.com/ekskursii/ (встреча в музее храма, анонсы в разделе «Предстоящие события»).",
@@ -12,8 +12,12 @@
   "mapZoom": 18,
   "coordsPolicy": "Координаты точек — только узлы OpenStreetMap (поле coordSource). Ничего не выдумано.",
   "voice": {
-    "status": "temporary",
-    "note": "Временный голос: озвучка браузера (русский). Когда появятся mp3 диктора, положите их в audio/ и пропишите audioLocal."
+    "status": "heygen",
+    "provider": "HeyGen",
+    "voiceName": "Grigory - Warm & Expressive",
+    "voiceId": "d7c91f5e68db45c180f555f5e3b8552f",
+    "language": "ru",
+    "note": "Все восемь рассказов озвучены голосом Grigory в HeyGen Voice."
   },
   "points": [
     {
@@ -30,7 +34,7 @@
         "how": "Узел OSM: калитка церковной ограды (barrier=gate, foot=yes)."
       },
       "dir": "Станьте у ворот церковной ограды лицом к храму",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=1249cc69026f4e08a210ccf3b6907b0b.mp3",
       "audioLocal": null,
       "script": "scripts/01-vorota.txt",
       "ttsScript": "tts/01-vorota.txt",
@@ -130,7 +134,7 @@
         "how": "Узел OSM: тротуар Большой Ордынки (footway=sidewalk) напротив ротонды."
       },
       "dir": "Станьте на тротуаре напротив ротонды и смотрите на купол",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=99496a573ad547058ac85c1caae7fd0c.mp3",
       "audioLocal": null,
       "script": "scripts/02-rotonda.txt",
       "ttsScript": "tts/02-rotonda.txt",
@@ -233,7 +237,7 @@
         "how": "Узел OSM: восточный тротуар Большой Ордынки у проезда во двор усадьбы."
       },
       "dir": "Станьте на восточном тротуаре, спиной к церкви, и смотрите вглубь двора",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=29e686c9481a4360a5b416a64890aa35.mp3",
       "audioLocal": null,
       "script": "scripts/03-usadba-dolgova.txt",
       "ttsScript": "tts/03-usadba-dolgova.txt",
@@ -308,7 +312,7 @@
         "how": "Узел OSM: дорожка вдоль ограды церкви (highway=service) у южной стены трапезной."
       },
       "dir": "Зайдите в калитку и встаньте на дорожке у южной стены трапезной",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=7a29364a27d141f5879d7dfac998bf4b.mp3",
       "audioLocal": null,
       "script": "scripts/04-trapeznaya.txt",
       "ttsScript": "tts/04-trapeznaya.txt",
@@ -404,7 +408,7 @@
         "how": "Узел OSM: дорожка вдоль ограды церкви (highway=service) у колокольни; здание колокольни — way 1279607429 (man_made=tower)."
       },
       "dir": "Встаньте на дорожке у западной части ограды и смотрите вверх на башню",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=d50a0b322f2944bd83dfef9487ce70b7.mp3",
       "audioLocal": null,
       "script": "scripts/05-kolokolnya.txt",
       "ttsScript": "tts/05-kolokolnya.txt",
@@ -484,7 +488,7 @@
         "how": "Узел OSM: дорожка вдоль ограды церкви (highway=service) у северной стены."
       },
       "dir": "Встаньте у северной стены храма, на дорожке",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=a8a1403d07d74840b806d9ac3d2abed7.mp3",
       "audioLocal": null,
       "script": "scripts/06-ikona.txt",
       "ttsScript": "tts/06-ikona.txt",
@@ -568,7 +572,7 @@
         "how": "Узел OSM: пешеходная дорожка (highway=footway) южнее церкви, ведущая к Ордынскому тупику."
       },
       "dir": "Отойдите на дорожку к югу и смотрите на храм издали",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=3c9d0562be1a45838df23d14ee369fbe.mp3",
       "audioLocal": null,
       "script": "scripts/07-xx-vek.txt",
       "ttsScript": "tts/07-xx-vek.txt",
@@ -679,7 +683,7 @@
         "how": "Узел OSM: восточный тротуар Большой Ордынки у дома 17; рядом узел памятника «А. А. Ахматовой» 4754436187."
       },
       "dir": "Станьте на восточном тротуаре севернее церкви, лицом к дому",
-      "audio": null,
+      "audio": "https://resource2.heygen.ai/text_to_speech/33376cd15c024b2496bbab4a2d4f1ddd/d7c91f5e68db45c180f555f5e3b8552f/id=09ab6e33e008480f8dfc729039d4d4b7.mp3",
       "audioLocal": null,
       "script": "scripts/08-akhmatova.txt",
       "ttsScript": "tts/08-akhmatova.txt",
