@@ -743,6 +743,7 @@ body.rp-lock #toast { bottom:auto; top:calc(max(10px, env(safe-area-inset-top)) 
 .car-slide.car-cmp { position:relative; overflow:hidden; background:#0d0a08; }
 .cmp-frame { position:absolute; inset:0; overflow:hidden; user-select:none; -webkit-user-select:none; }
 .car-slide.car-cmp img { position:absolute !important; inset:0; width:100%; height:100%; object-fit:cover !important; object-position:50% 50%; cursor:zoom-in; pointer-events:auto; -webkit-user-drag:none; }
+.cmp-old { filter: grayscale(1); }
 .car-slide.car-cmp .cmp-clip { position:absolute; inset:0; overflow:hidden; clip-path:inset(0 50% 0 0); -webkit-clip-path:inset(0 50% 0 0); }
 .cmp-handle { position:absolute; top:0; bottom:0; left:50%; width:56px; margin-left:-28px; z-index:4; touch-action:none; cursor:ew-resize; display:flex; justify-content:center; }
 .cmp-handle:focus-visible { outline:2px solid #e4c783; outline-offset:-4px; }
