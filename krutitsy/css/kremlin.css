@@ -1,0 +1,189 @@
+/* KREMLIN EDITION — Simonov Monastery audio walk */
+:root {
+  --bg:#241015;
+  --bg-2:#35131b;
+  --surface:#f4efe4;
+  --surface-2:#e9dfcd;
+  --paper:#f6f0e5;
+  --paper-dim:#e8ddc9;
+  --ink:#24171a;
+  --muted:#796c60;
+  --gold:#c7a15c;
+  --gold-2:#e5ca8c;
+  --brick:#7c1f2b;
+  --brick-soft:#a43b43;
+  --ok:#58745b;
+  --danger:#a43b43;
+  --shadow:0 18px 48px rgba(36,16,21,.16);
+  --radius:8px;
+}
+body { background:#eee7d9; color:var(--ink); }
+.app { background:#eee7d9; }
+.screen { background:#eee7d9; color:var(--ink); }
+.screen.active { animation:kremlin-enter .32s ease both; }
+@keyframes kremlin-enter { from{opacity:.65;transform:translateY(5px)} to{opacity:1;transform:none} }
+
+/* Cover: deep Kremlin red, carved-stone frame, restrained gilding */
+#screen-cover { background:#4d111c; }
+#screen-cover .cover {
+  background:
+    linear-gradient(90deg,rgba(42,8,16,.92) 0%,rgba(70,15,27,.78) 48%,rgba(55,12,22,.34) 100%),
+    linear-gradient(0deg,rgba(34,8,15,.92),transparent 60%),
+    url("../img/then/loc-photochrom-vorota.jpg") center 42%/cover no-repeat;
+  color:#f7f0e4;
+  padding-top:clamp(90px,14vh,150px);
+}
+#screen-cover .cover::before {
+  inset:14px; border:1px solid rgba(218,184,116,.7);
+  outline:1px solid rgba(218,184,116,.18); outline-offset:5px;
+  background:linear-gradient(135deg,rgba(111,24,37,.16),transparent 55%,rgba(17,5,9,.24));
+  backdrop-filter:none;
+}
+#screen-cover .cover::after {
+  content:"МОСКВА  ·  КРУТИЦКОЕ ПОДВОРЬЕ  ·  ИСТОРИЧЕСКАЯ ПРОГУЛКА";
+  top:clamp(34px,6vw,68px); left:clamp(32px,9vw,120px);
+  color:#e5ca8c; font-size:10px; letter-spacing:.2em;
+}
+#screen-cover .cover-kicker {
+  color:#e5ca8c; font-size:11px; letter-spacing:.25em;
+  text-transform:uppercase; margin-bottom:22px;
+}
+#screen-cover .cover-kicker::before {
+  content:"✦"; display:block; color:#d3b16e; font-size:22px;
+  margin-bottom:15px; letter-spacing:0;
+}
+#screen-cover .cover h1 {
+  max-width:780px; color:#fff8ed; font-family:var(--font-serif);
+  font-size:clamp(68px,12vw,142px); line-height:.82;
+  letter-spacing:-.035em; text-shadow:0 4px 28px rgba(0,0,0,.3);
+}
+#screen-cover .cover-lead {
+  max-width:560px; color:rgba(250,242,228,.88);
+  font-size:clamp(14px,1.4vw,17px); line-height:1.8;
+}
+#screen-cover .cover-meta { color:#e5ca8c; letter-spacing:.12em; font-size:11px; text-transform:uppercase; }
+#screen-cover .btn-primary,.btn-primary {
+  background:linear-gradient(135deg,#d6b66f,#b68a43); color:#29171a;
+  border:1px solid #e5ca8c; border-radius:5px;
+  box-shadow:0 7px 22px rgba(22,8,11,.16); font-weight:800;
+}
+#screen-cover .btn-primary:hover,.btn-primary:hover { background:#e5ca8c; transform:translateY(-1px); }
+#screen-cover .btn-ghost {
+  background:rgba(45,10,18,.25); border:1px solid rgba(229,202,140,.58);
+  color:#f7f0e4; border-radius:5px;
+}
+#screen-cover .btn-ghost:hover { background:rgba(255,255,255,.12); }
+
+/* Top bars and route screen */
+.topbar {
+  background:#641b28; color:#fff4e5; border:0;
+  border-bottom:3px solid #c7a15c; box-shadow:0 4px 16px rgba(36,16,21,.12);
+  min-height:68px;
+}
+.topbar h2 { color:#fff4e5; font-family:var(--font-serif); font-size:30px; letter-spacing:.01em; }
+.topbar .btn-ghost { color:#fff4e5; border-color:rgba(229,202,140,.58); background:transparent; }
+.gps-pill { border-radius:3px; font-size:10px; }
+.gps-pill.on { background:#e0eadc; color:#34513b; }
+.gps-pill.off { background:#f0dfd8; color:#7c1f2b; }
+#screen-tour { background:#eee7d9; }
+.map-wrap { border:8px solid #e3d7c3; box-shadow:0 5px 18px rgba(54,30,25,.12); }
+.map { filter:sepia(.12) saturate(.78) contrast(1.02); }
+.leaflet-container { background:#e8dfd0; }
+.leaflet-control-zoom a { color:#641b28!important; }
+.list { width:min(100%,920px); padding:24px clamp(16px,4vw,38px) 70px; }
+.list > .hint:first-child {
+  background:#e4d8c4; color:#55483f; border-left:3px solid #b58b49;
+  padding:14px 16px; border-radius:0 5px 5px 0; line-height:1.7;
+}
+.hint { color:#6c5d51; }
+.hint a { color:#7c1f2b; }
+.switch { color:#5c4b42; }
+.point-card {
+  background:#f8f4eb; border:1px solid #d9cbb5; border-left:4px solid #9b303b;
+  border-radius:5px; box-shadow:0 3px 12px rgba(55,34,27,.06);
+  color:#2d2020; padding:15px 17px;
+}
+.point-card:hover { background:#fffaf1; border-color:#c7a15c; transform:translateY(-2px); }
+.point-card.near { border-left-color:#bd914d; background:#f3ead8; }
+.point-num { background:#6d1b29; color:#f2d89f; border:1px solid #c7a15c; }
+.point-card h3 { color:#4e1721; font-family:var(--font-serif); font-size:24px; }
+.point-card p { color:#75665a; }
+.dist { color:#896b3e; }
+
+/* Point page: archival object on warm museum paper */
+#screen-point { background:#eee7d9; }
+#screen-point .point { background:#eee7d9; }
+#screen-point .hero { border:8px solid #e1d4bf; box-shadow:0 10px 28px rgba(47,27,23,.14); }
+#screen-point .hero::after { color:#f3e6c9; }
+#screen-point .icon-btn { background:rgba(91,20,31,.9); color:#f6e7c4; border:1px solid #c7a15c; }
+#screen-point .point-body { color:#302326; }
+#screen-point .point-body .cover-kicker { color:#8c672f; }
+#screen-point .point-body h2 { color:#5e1a27; font-family:var(--font-serif); font-size:clamp(42px,6vw,64px); line-height:.98; }
+#screen-point .point-body .short { color:#65564c; font-size:16px; line-height:1.8; }
+#screen-point .photo-caption { color:#76675b; }
+#screen-point .thumb { border:2px solid #d7c7ad; }
+#screen-point .thumb.on { border-color:#9b303b; box-shadow:0 0 0 2px #c7a15c; }
+#screen-point .stand,#screen-point .audio-box,#screen-point .text-box,#screen-point .rights,
+#screen-point .look-card,#screen-point .archival-film,#screen-point .compare {
+  background:#f8f4eb; border:1px solid #d8c9b2; border-radius:5px;
+  box-shadow:0 4px 16px rgba(55,34,27,.055); color:#342628;
+}
+#screen-point .stand b,#screen-point .look-card b { color:#5e1a27; }
+#screen-point .stand p,#screen-point .look-card p { color:#6b5b50; }
+#screen-point .stand-arrow svg circle { stroke:#b18a4d; }
+#screen-point .stand-arrow svg text { fill:#896b3e; }
+#screen-point .stand-arrow svg path { fill:#9b303b; }
+#screen-point .look-kicker,#screen-point .film-kicker { color:#8b642e; letter-spacing:.18em; }
+#screen-point .look-step > span { color:#a47b3f; }
+#screen-point .look-step { border-bottom:1px solid #e5dac8; }
+#screen-point .archival-film { border-top:3px solid #8c2734; }
+#screen-point .archival-film h3 { color:#5e1a27; font-family:var(--font-serif); }
+#screen-point .film-date { color:#8b642e; }
+#screen-point .film-rights { color:#76675b; }
+#screen-point .rights,#screen-point .text-box summary { color:#65564c; }
+#screen-point .text-box summary { background:#e9dfcd; }
+#screen-point .script-text { color:#44383a; }
+#screen-point .script-text p { line-height:1.85; }
+#screen-point .row-btns .btn-ghost,#screen-point .btn-done {
+  color:#6b1b29; border:1px solid #b9935a; background:#f8f4eb; border-radius:5px;
+}
+#screen-point .row-btns .btn-ghost:hover,#screen-point .btn-done:hover { background:#efe3cd; }
+#screen-point .now-context figcaption { color:#6b5b50; }
+
+/* About: readable editorial / museum catalogue */
+#screen-about { background:#f2ecdf; }
+#screen-about .about { width:min(100%,900px); padding:clamp(28px,5vw,60px) clamp(20px,5vw,60px) 90px; }
+#screen-about .about h2 { color:#5e1a27; font-family:var(--font-serif); font-size:clamp(44px,7vw,72px); margin-bottom:24px; }
+#screen-about .about h3 { color:#8b642e; font-family:var(--font-serif); font-size:30px; margin:34px 0 10px; }
+#screen-about .about p,#screen-about .about li { color:#51443d; font-size:15px; line-height:1.9; }
+#screen-about .about ul { padding-left:22px; }
+#screen-about .about a { color:#7c1f2b; text-decoration-color:#c7a15c; }
+#screen-about .about code { background:#e6dccb; color:#5e1a27; padding:2px 5px; border-radius:3px; }
+
+/* Dialogs, lightbox and controls */
+.arrive { background:#f8f4eb; border:1px solid #c7a15c; color:#302326; border-radius:6px; box-shadow:0 16px 50px rgba(36,16,21,.25); }
+.arrive p { color:#302326; }
+.toast { background:#5e1a27; border:1px solid #c7a15c; color:#fff4e5; border-radius:4px; }
+.lb { background:rgba(24,8,13,.97); }
+.lb-btn { background:rgba(101,27,40,.94); border:1px solid #c7a15c; color:#f7e9c9; }
+.lb-cap { color:#f1e4ce; }
+a { text-decoration-color:rgba(157,111,53,.55); }
+button:focus-visible,a:focus-visible,input:focus-visible { outline:3px solid #c7a15c; outline-offset:3px; }
+
+@media (max-width:700px) {
+  #screen-cover .cover { padding:100px 24px max(34px,env(safe-area-inset-bottom)); background-position:56% center; }
+  #screen-cover .cover::before { inset:10px; }
+  #screen-cover .cover::after { top:28px; left:26px; right:26px; font-size:8px; line-height:1.6; }
+  #screen-cover .cover h1 { font-size:clamp(58px,15vw,88px); max-width:5.8em; }
+  #screen-cover .cover-lead { max-width:30em; }
+  #screen-tour .topbar { padding:10px 14px; gap:8px; }
+  #screen-tour .topbar h2 { font-size:25px; }
+  #screen-tour .map-wrap { border-width:5px; }
+  #screen-point .point-body { padding:26px 18px 60px; }
+  #screen-point .point-body h2 { font-size:42px; }
+  #screen-about .about { padding:30px 22px 70px; }
+  #screen-about .about p,#screen-about .about li { font-size:14px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .screen.active { animation:none; }
+}

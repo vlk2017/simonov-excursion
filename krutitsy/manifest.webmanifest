@@ -1,0 +1,9 @@
+{
+  "name": "Крутицкое подворье — аудиоэкскурсия",
+  "short_name": "Крутицы",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#16110d",
+  "theme_color": "#16110d",
+  "lang": "ru"
+}
