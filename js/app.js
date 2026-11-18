@@ -10,6 +10,8 @@ const state = {
   camMode: "overlay",
   curtain: 50,
   photoIdx: 0,
+  slideIdx: 0,
+  slides: [],
   cmp: 50,
   rate: 1,
   arriveOn: true,
@@ -543,8 +545,10 @@ function currentPhoto() { const p = currentPoint(); return p && p.photos[state.p
 /* list for the lightbox: all old photos, then modern ones */
 function galleryItems(p) {
   const out = p.photos.map((ph, i) => ({ src: ph.src, remote: ph.remote, cap: `${ph.year} · ${shortAuthor(ph.author)} — ${ph.title}`, photoIdx: i }));
-  p.photos.forEach(ph => { if (ph.now) out.push({ src: ph.now.src, remote: ph.now.remote, cap: `Сейчас, ${ph.now.year} · ${ph.now.author}, ${ph.now.license} — ${ph.now.note}` }); });
-  if (p.nowContext) out.push({ src: p.nowContext.src, remote: p.nowContext.remote, cap: `Сейчас, ${p.nowContext.year} · ${p.nowContext.author}, ${p.nowContext.license} — ${p.nowContext.note}` });
+  const nowCap = n => `Сейчас, ${n.year} · ${n.author}, ${n.license} — ${n.note}`;
+  p.photos.forEach(ph => { if (ph.now) out.push({ src: ph.now.src, remote: ph.now.remote, cap: nowCap(ph.now) }); });
+  if (p.heroNow) out.push({ src: p.heroNow.src, remote: p.heroNow.remote, cap: nowCap(p.heroNow) });
+  if (p.nowContext) out.push({ src: p.nowContext.src, remote: p.nowContext.remote, cap: nowCap(p.nowContext) });
   return out;
 }
 
@@ -689,21 +693,76 @@ function openPoint(id, play) {
 }
 
 /* ---------- Карусель архивных фото в рамке сверху (при включённой камере скрыта: там живая накладка) ---------- */
+/* Первый кадр точки: современное фото + шторка со старым (открыта пополам). Дальше — архивные снимки. */
+function buildSlides(p) {
+  const out = [];
+  if (p.heroNow && !(p.photos[0] && p.photos[0].now)) out.push({ kind: "modern", photoIdx: 0 });
+  p.photos.forEach((ph, i) => out.push({ kind: i === 0 && ph.now ? "cmp" : "old", photoIdx: i }));
+  return out;
+}
+function focalStyle(f) {
+  f = f || {};
+  const x = Number.isFinite(f.x) ? f.x : 50, y = Number.isFinite(f.y) ? f.y : 50, z = Number.isFinite(f.z) ? f.z : 1;
+  return `object-position:${x}% ${y}%;` + (z !== 1 ? `transform:scale(${z});transform-origin:${x}% ${y}%;` : "");
+}
+const CMP_MIN = 4, CMP_MAX = 96;
+function setCmpOn(slide, pct) {
+  pct = Math.max(CMP_MIN, Math.min(CMP_MAX, pct));
+  state.cmp = pct;
+  const clip = slide.querySelector(".cmp-clip"), h = slide.querySelector(".cmp-handle");
+  clip.style.clipPath = clip.style.webkitClipPath = `inset(0 ${100 - pct}% 0 0)`;
+  h.style.left = pct + "%";
+  h.setAttribute("aria-valuenow", String(Math.round(pct)));
+  slide.dataset.pct = String(Math.round(pct));
+}
+function wireCmp(slide) {
+  const frame = slide.querySelector(".cmp-frame"), h = slide.querySelector(".cmp-handle");
+  let drag = false;
+  const move = e => { const r = frame.getBoundingClientRect(); setCmpOn(slide, (e.clientX - r.left) / r.width * 100); };
+  h.addEventListener("pointerdown", e => { drag = true; try { h.setPointerCapture(e.pointerId); } catch {} e.preventDefault(); e.stopPropagation(); move(e); });
+  h.addEventListener("pointermove", e => { if (drag) move(e); });
+  const end = () => { drag = false; };
+  h.addEventListener("pointerup", end);
+  h.addEventListener("pointercancel", end);
+  h.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); setCmpOn(slide, (Number(slide.dataset.pct) || 50) - 5); }
+    if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); setCmpOn(slide, (Number(slide.dataset.pct) || 50) + 5); }
+  });
+  setCmpOn(slide, 50);
+}
 function buildCarousel(p) {
   const track = $("#car-track"), dots = $("#car-dots");
   track.innerHTML = ""; dots.innerHTML = "";
-  const n = p.photos.length;
-  p.photos.forEach((ph, i) => {
+  state.slides = buildSlides(p);
+  const n = state.slides.length;
+  state.slides.forEach((sl, k) => {
+    const ph = p.photos[sl.photoIdx];
     const s = document.createElement("div");
-    s.className = "car-slide";
-    s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "слайд"); s.setAttribute("aria-label", `${i + 1} из ${n}`);
-    const img = document.createElement("img");
-    img.alt = `${ph.title}, ${ph.year}`; img.draggable = false; img.dataset.i = String(i);
-    img.addEventListener("click", () => openLightboxForCurrent(ph.src));
-    s.appendChild(img); track.appendChild(s);
+    s.className = "car-slide" + (sl.kind === "old" ? "" : " car-cmp");
+    s.dataset.kind = sl.kind;
+    s.setAttribute("role", "group"); s.setAttribute("aria-roledescription", "слайд"); s.setAttribute("aria-label", `${k + 1} из ${n}`);
+    if (sl.kind === "old") {
+      const img = document.createElement("img");
+      img.alt = `${ph.title}, ${ph.year}`; img.draggable = false; img.dataset.i = String(k);
+      img.addEventListener("click", () => openLightboxForCurrent(ph.src));
+      s.appendChild(img);
+    } else {
+      const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
+      const old = sl.kind === "cmp";
+      s.innerHTML = `<div class="cmp-frame">
+        <img class="cmp-now" alt="Сейчас: ${esc(nw.note)}" draggable="false" style="${focalStyle(nw.focal)}" />
+        ${old ? `<div class="cmp-clip"><img class="cmp-old" alt="${esc(ph.title)}, ${esc(ph.year)}" draggable="false" style="${focalStyle(ph.focal)}" /></div>
+        <span class="cmp-tag cmp-tag-l">${esc(ph.year)}</span>
+        <div class="cmp-handle" role="slider" tabindex="0" aria-label="Шторка: слева старое фото, справа современное" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><b>‹ ›</b></div>` : `<span class="cmp-tag cmp-tag-l cmp-tag-warn">Старого снимка нет</span>`}
+        <span class="cmp-tag cmp-tag-r">Сейчас</span></div>`;
+      s.querySelector(".cmp-now").addEventListener("click", () => openLightboxForCurrent(nw.src));
+      if (old) { s.querySelector(".cmp-old").addEventListener("click", () => openLightboxForCurrent(ph.src)); wireCmp(s); }
+    }
+    track.appendChild(s);
     const d = document.createElement("button");
-    d.type = "button"; d.className = "car-dot"; d.setAttribute("aria-label", `Фото ${i + 1} из ${n}: ${ph.year}`);
-    d.addEventListener("click", () => carGo(i));
+    d.type = "button"; d.className = "car-dot";
+    d.setAttribute("aria-label", `Фото ${k + 1} из ${n}: ${sl.kind === "modern" ? "сейчас" : sl.kind === "cmp" ? `${ph.year} и сейчас` : ph.year}`);
+    d.addEventListener("click", () => carGo(k));
     dots.appendChild(d);
   });
   $("#car").classList.toggle("single", n < 2);   // одно фото: ни стрелок, ни точек
@@ -711,14 +770,20 @@ function buildCarousel(p) {
 }
 function carBind(k) {
   const p = currentPoint(); if (!p) return;
-  const img = $$("#car-track .car-slide img")[k];
-  if (!img || img.dataset.bound || !p.photos[k]) return;
-  img.dataset.bound = "1";
-  bindImg(img, p.photos[k].src, p.photos[k].remote, `${p.photos[k].title}, ${p.photos[k].year}`);
+  const sl = state.slides[k], el = $$("#car-track .car-slide")[k];
+  if (!sl || !el || el.dataset.bound) return;
+  el.dataset.bound = "1";
+  const ph = p.photos[sl.photoIdx];
+  if (sl.kind === "old") bindImg(el.querySelector("img"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
+  else {
+    const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
+    bindImg(el.querySelector(".cmp-now"), nw.src, nw.remote, `Сейчас: ${nw.note}`);
+    if (sl.kind === "cmp") bindImg(el.querySelector(".cmp-old"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
+  }
 }
 function carShow(i) {
   const p = currentPoint(); if (!p) return;
-  const n = p.photos.length;
+  const n = state.slides.length;
   [i - 1, i, i + 1].forEach(k => { if (k >= 0 && k < n) carBind(k); });
   $$("#car-dots .car-dot").forEach((d, k) => { d.classList.toggle("on", k === i); if (k === i) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current"); });
   $("#car-prev").disabled = i <= 0;
@@ -728,8 +793,8 @@ function carShow(i) {
 }
 function carGo(i) {
   const p = currentPoint(); if (!p) return;
-  i = Math.max(0, Math.min(p.photos.length - 1, i));
-  if (i !== state.photoIdx) selectPhoto(i);
+  i = Math.max(0, Math.min(state.slides.length - 1, i));
+  if (i !== state.slideIdx) selectPhoto(i);
   else carShow(i);
 }
 function initCarousel() {
@@ -738,29 +803,41 @@ function initCarousel() {
   const settle = () => {
     const w = track.clientWidth; if (!w) return;
     const i = Math.round(track.scrollLeft / w), p = currentPoint();
-    if (p && i >= 0 && i < p.photos.length && i !== state.photoIdx) selectPhoto(i);
+    if (p && i >= 0 && i < state.slides.length && i !== state.slideIdx) selectPhoto(i);
   };
   track.addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(settle, 90); }, { passive: true });
-  $("#car-prev").addEventListener("click", () => carGo((state.photoIdx || 0) - 1));
-  $("#car-next").addEventListener("click", () => carGo((state.photoIdx || 0) + 1));
+  $("#car-prev").addEventListener("click", () => carGo((state.slideIdx || 0) - 1));
+  $("#car-next").addEventListener("click", () => carGo((state.slideIdx || 0) + 1));
   $("#car").addEventListener("keydown", e => {
-    if (e.key === "ArrowLeft") { e.preventDefault(); carGo((state.photoIdx || 0) - 1); }
-    if (e.key === "ArrowRight") { e.preventDefault(); carGo((state.photoIdx || 0) + 1); }
+    if (e.target && e.target.classList && e.target.classList.contains("cmp-handle")) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); carGo((state.slideIdx || 0) - 1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); carGo((state.slideIdx || 0) + 1); }
   });
-  window.addEventListener("resize", () => { const i = state.photoIdx || 0, w = track.clientWidth; if (w) track.scrollTo({ left: i * w, behavior: "instant" }); });
+  window.addEventListener("resize", () => { const i = state.slideIdx || 0, w = track.clientWidth; if (w) track.scrollTo({ left: i * w, behavior: "instant" }); });
 }
 
-function selectPhoto(i) {
+function selectPhoto(k) {
   const p = currentPoint();
   if (!p) return;
-  state.photoIdx = i;
+  const sl = state.slides[k] || state.slides[0] || { kind: "old", photoIdx: 0 };
+  state.slideIdx = state.slides[k] ? k : 0;
+  state.photoIdx = sl.photoIdx;
+  const i = sl.photoIdx;
   const ph = p.photos[i];
-  carShow(i);
+  const nw = sl.kind === "cmp" ? ph.now : sl.kind === "modern" ? p.heroNow : null;
+  carShow(state.slideIdx);
   bindImg($("#then-img"), ph.src, ph.remote, ph.title);
   bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
   if (!state.rp.on) { rpReset(); applyRpTransform(); }
-  $("#hero-count").textContent = p.photos.length > 1 ? `${i + 1} / ${p.photos.length}` : "";
-  $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${ph.commons ? ` · <a href="${esc(ph.commons)}" target="_blank" rel="noopener">источник: Викисклад</a>` : ""}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+  $("#hero-count").textContent = state.slides.length > 1 ? `${state.slideIdx + 1} / ${state.slides.length}` : "";
+  const link = u => u ? ` · <a href="${esc(u)}" target="_blank" rel="noopener">источник: Викисклад</a>` : "";
+  if (sl.kind === "modern") {
+    $("#photo-caption").innerHTML = `Сейчас · ${esc(nw.author)}<span class="cap-title">${esc(nw.note)}. ${esc(nw.year)}, ${esc(nw.license)}${link(nw.commons)}. ${esc(p.heroNow.missingThen)}</span>`;
+  } else if (sl.kind === "cmp") {
+    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))} и сейчас · ${esc(nw.author)}<span class="cap-title">${esc(ph.title)}. Тяните шторку: слева ${esc(ph.year)}, справа — сейчас (${esc(nw.year)}). ${esc(nw.note)} Нажмите на фото, чтобы открыть на весь экран.</span>`;
+  } else {
+    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${ph.commons ? ` · <a href="${esc(ph.commons)}" target="_blank" rel="noopener">источник: Викисклад</a>` : ""}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+  }
 
   // where to stand
   const vp = ph.viewpoint;
@@ -782,72 +859,14 @@ function selectPhoto(i) {
   $("#stand-links").innerHTML = links.join(" · ");
   updateStandLive();
 
-  // then / now pair
-  const cmp = $("#compare");
-  if (ph.now) {
-    cmp.classList.remove("hidden");
-    bindImg($("#cmp-now"), ph.now.src, ph.now.remote, "Сейчас");
-    bindImg($("#cmp-then"), ph.src, ph.remote, "Тогда");
-    $("#cmp-note").innerHTML = `Тяните ползунок: слева ${esc(ph.year)}, справа ${esc(ph.now.year)} (${esc(ph.now.author)}, ${esc(ph.now.license)}, <a href="${ph.now.commons}" target="_blank" rel="noopener">Викисклад</a>). ` +
-      esc((ph.now.align && ph.now.align.note) || "");
-    setCmp(50);
-    requestAnimationFrame(layoutCmp);
-  } else {
-    cmp.classList.add("hidden");
-  }
-
   // rights
+  const nowBlock = nw ? `<p><b>Современное фото.</b> ${esc(nw.year)}. ${esc(nw.author)}. ${esc(nw.license)}. ${esc(nw.note)}${nw.commons ? ` <a href="${esc(nw.commons)}" target="_blank" rel="noopener">Карточка на Викискладе</a>` : ""}</p>` : "";
   $("#photo-meta").innerHTML = `
-    <p><b>Старое фото.</b> ${esc(ph.year)}. ${esc(ph.author)}. ${esc(ph.title)}.</p>
+    ${nowBlock}
+    ${sl.kind === "modern" ? "" : `<p><b>Старое фото.</b> ${esc(ph.year)}. ${esc(ph.author)}. ${esc(ph.title)}.</p>
     <p>${esc(ph.license)}. ${esc(ph.rights)}</p>
-    <p><a href="${ph.commons}" target="_blank" rel="noopener">Карточка на Викискладе</a></p>
-    ${p.photos.some(x => x.now) ? "" : `<p>Современного снимка с той же точки на Викискладе не нашлось. Пары «тогда — сейчас» для этой точки нет — честно.</p>`}
+    <p><a href="${ph.commons}" target="_blank" rel="noopener">Карточка на Викискладе</a></p>`}
     ${(p.moreLinks || []).length ? `<div class="more-links"><p><b>Ещё снимки — только по ссылке.</b> Они хранятся на сайте «История России в фотографиях». Права на них у музеев, архивов и авторов, поэтому копировать их сюда мы не можем.</p><ul>${p.moreLinks.map(l => `<li><a href="${l.url}" target="_blank" rel="noopener">${esc(l.title)}</a>, ${esc(l.year)}, ${esc(l.author)} (${esc(l.source)})${l.note ? `. ${esc(l.note)}` : ""}</li>`).join("")}</ul></div>` : ""}`;
-}
-
-function layoutCmp() {
-  const ph = currentPhoto();
-  if (!ph || !ph.now) return;
-  const frame = $("#cmp-frame"), nowImg = $("#cmp-now"), thenImg = $("#cmp-then");
-  const set = () => {
-    const W = frame.clientWidth;
-    if (nowImg.naturalWidth) frame.style.aspectRatio = `${nowImg.naturalWidth} / ${nowImg.naturalHeight}`;
-    const a = ph.now.align || { w: 1, x: 0, y: 0 };
-    thenImg.style.width = (a.w * W) + "px";
-    thenImg.style.left = (a.x * W) + "px";
-    thenImg.style.top = (a.y * W) + "px";
-  };
-  if (nowImg.complete) set(); else nowImg.onload = set;
-  set();
-}
-
-function setCmp(pct) {
-  pct = Math.max(0, Math.min(100, pct));
-  state.cmp = pct;
-  $("#cmp-then-wrap").style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
-  $("#cmp-then-wrap").style.webkitClipPath = `inset(0 ${100 - pct}% 0 0)`;
-  const h = $("#cmp-handle");
-  h.style.left = pct + "%";
-  h.setAttribute("aria-valuenow", Math.round(pct));
-}
-
-function initCompare() {
-  const frame = $("#cmp-frame");
-  let drag = false;
-  const move = e => {
-    const r = frame.getBoundingClientRect();
-    setCmp((e.clientX - r.left) / r.width * 100);
-  };
-  frame.addEventListener("pointerdown", e => { drag = true; frame.setPointerCapture(e.pointerId); move(e); });
-  frame.addEventListener("pointermove", e => { if (drag) move(e); });
-  const end = () => { drag = false; };
-  frame.addEventListener("pointerup", end);
-  frame.addEventListener("pointercancel", end);
-  $("#cmp-handle").addEventListener("keydown", e => {
-    if (e.key === "ArrowLeft") setCmp(state.cmp - 5);
-    if (e.key === "ArrowRight") setCmp(state.cmp + 5);
-  });
-  window.addEventListener("resize", layoutCmp);
 }
 
 /* live hint: how far and which way to step to reach the photographer's spot */
@@ -1603,16 +1622,17 @@ function initOffline() {
   navigator.serviceWorker.register("sw.js").then(async reg => {
     reg.update().catch(() => {});
     await navigator.serviceWorker.ready;
-    if (lsGet("simonov-offline") === "v13") return;
+    if (lsGet("simonov-offline") === "v14") return;
     const files = new Set(["data/points.json"]);
     for (const p of state.data.points) {
       files.add(p.script);
       p.photos.forEach(ph => { files.add(ph.src); files.add(thumbOf(ph.src)); if (ph.now) { files.add(ph.now.src); files.add(thumbOf(ph.now.src)); } });
-      if (p.nowContext) files.add(p.nowContext.src);
+      if (p.nowContext) { files.add(p.nowContext.src); files.add(thumbOf(p.nowContext.src)); }
+      if (p.heroNow) { files.add(p.heroNow.src); files.add(thumbOf(p.heroNow.src)); }
     }
     const ch = new MessageChannel();
     ch.port1.onmessage = e => {
-      if (e.data && e.data.ok) { lsSet("simonov-offline", "v13"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
+      if (e.data && e.data.ok) { lsSet("simonov-offline", "v14"); toast("Тексты и фото сохранены для работы без интернета. Рассказы можно скачать кнопкой на экране маршрута."); }
     };
     (reg.active || navigator.serviceWorker.controller)?.postMessage({ type: "precache", files: [...files] }, [ch.port2]);
   }).catch(e => console.warn("sw", e));
@@ -1627,7 +1647,6 @@ async function main() {
   // The cover title and editorial introduction are intentionally composed in index.html.
   // Keep them static so the historical opening layout is not flattened by data binding.
   $("#cover-place").textContent = state.data.place;
-  initCompare();
   initLightbox();
   initCamControls();
   renderList();
@@ -1698,7 +1717,6 @@ async function main() {
   $("#then-img").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightboxForCurrent(currentPhoto().src); } });
   $("#btn-full").addEventListener("click", () => openLightboxForCurrent(currentPhoto().src));
   $("#now-context-img").addEventListener("click", () => { const p = currentPoint(); openLightboxForCurrent(p.nowContext.src); });
-  $("#cmp-frame").addEventListener("dblclick", () => { const ph = currentPhoto(); openLightboxForCurrent(state.cmp > 50 ? ph.src : ph.now.src); });
   $("#opacity").addEventListener("input", (e) => {
     state.opacity = Number(e.target.value);
     if (state.camMode === "overlay") $("#overlay-img").style.opacity = state.opacity;

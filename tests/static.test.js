@@ -105,12 +105,12 @@ test("старые локальные audio/*.mp3 не удалены", () => {
     assert.ok(fs.existsSync(path.join(root, `audio/${f}.mp3`)), f);
 });
 
-test("sw.js: версия кэша v13, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
+test("sw.js: версия кэша v14, прогресс предзагрузки поддержан; app.js предзагружает аудио по кнопке", () => {
   const sw = read("sw.js");
-  assert.match(sw, /const CACHE = "simonov-v13"/);
+  assert.match(sw, /const CACHE = "simonov-v14"/);
   assert.match(sw, /progress/);
   assert.match(app, /downloadAudioOffline/);
-  assert.match(app, /"simonov-offline"\) === "v13"/);
+  assert.match(app, /"simonov-offline"\) === "v14"/);
   assert.match(sw, /controllerchange|skipWaiting/);
   assert.match(app, /controllerchange/);
   assert.ok(html.includes('id="btn-offline-audio"') && html.includes('id="offline-audio-status"'));
@@ -128,7 +128,8 @@ test("карточка остановки: сверху накладка (кам
   const pos = id => { const i = html.indexOf(`id="${id}"`); assert.ok(i > 0, id); return i; };
   assert.ok(pos("overlay-bar") < pos("btn-camera") && pos("btn-camera") < pos("hero"), "кнопка камеры выше hero");
   assert.ok(pos("btn-compass") < pos("hero"), "компас выше hero");
-  assert.ok(pos("hero") < pos("audio-box") && pos("audio-box") < pos("photo-caption") && pos("photo-caption") < pos("stand") && pos("stand") < pos("compare"));
+  assert.ok(pos("hero") < pos("audio-box") && pos("audio-box") < pos("photo-caption") && pos("photo-caption") < pos("stand") && pos("stand") < html.indexOf(`class="point-body"`));
+  assert.ok(!html.includes('id="compare"'), "старый блок «ползунок под фото» убран: шторка теперь в первом кадре карусели");
   assert.equal(html.split('id="btn-camera"').length - 1, 1);
   assert.equal(html.split('id="btn-compass"').length - 1, 1);
   const row = html.slice(html.indexOf('class="row-btns"'), html.indexOf('id="btn-done"'));
@@ -199,4 +200,47 @@ test("карусель архивных фото: scroll-snap, стрелки, �
   assert.match(app, /function buildCarousel/);
   assert.match(app, /classList\.toggle\("single", n < 2\)/);
   assert.match(app, /openLightboxForCurrent\(ph\.src\)/, "тап по слайду открывает фото на весь экран");
+});
+
+test("первый кадр точки: современное фото + шторка со старым, открытая пополам; без камеры; шторка тянется пальцем", () => {
+  assert.match(app, /function buildSlides/);
+  assert.match(app, /kind: i === 0 && ph\.now \? "cmp" : "old"/, "первый слайд — пара «тогда/сейчас»");
+  assert.match(app, /setCmpOn\(s, 50\)|setCmpOn\(slide, 50\)/, "по умолчанию шторка открыта на 50%");
+  assert.match(app, /touch|pointerdown/);
+  assert.match(app, /class="cmp-handle" role="slider"/);
+  assert.match(app, /cmp-tag cmp-tag-r">Сейчас/, "подпись «Сейчас»");
+  assert.match(app, /cmp-tag cmp-tag-l">\$\{esc\(ph\.year\)\}/, "подпись с годом старого фото");
+  const css = read("css/style.css");
+  assert.match(css, /\.cmp-handle \{[^}]*touch-action:none/, "ручка шторки не отдаёт жест карусели");
+  assert.match(css, /clip-path:inset\(0 50% 0 0\)/);
+});
+
+test("данные: у каждой точки есть современный кадр; пары и источники с автором, годом, лицензией и ссылкой; файлы на месте", () => {
+  const fs = require("node:fs");
+  const data = JSON.parse(read("data/points.json"));
+  assert.equal(data.points.length, 8);
+  for (const p of data.points) {
+    const hero = p.photos[0] && p.photos[0].now ? p.photos[0].now : p.heroNow;
+    assert.ok(hero, `${p.id}: нет современного кадра`);
+    for (const k of ["src", "author", "year", "license", "commons", "note"]) assert.ok(hero[k], `${p.id}: у современного фото нет ${k}`);
+    assert.match(hero.license, /CC BY|CC0|Public domain|общественное/i, `${p.id}: лицензия`);
+    assert.ok(fs.existsSync(hero.src), `${p.id}: нет файла ${hero.src}`);
+    if (!p.photos[0].now) assert.ok(p.heroNow.missingThen, `${p.id}: нет честной пометки, что старого снимка нет`);
+    for (const ph of p.photos) {
+      for (const k of ["title", "year", "author", "license", "rights", "commons"]) assert.ok(ph[k], `${p.id}: у старого фото нет ${k}`);
+      if (!/^https?:/.test(ph.src)) assert.ok(fs.existsSync(ph.src), `${p.id}: нет файла ${ph.src}`);
+    }
+  }
+  const rights = read("RIGHTS.md");
+  for (const f of ["zil-facade-lawn-2023", "zil-bay-2023", "zil-park-2023", "vostochnaya-wall-2010", "solevaya-street-2008", "bakarev-1805-east"]) assert.ok(rights.includes(f), `RIGHTS.md: ${f}`);
+});
+
+test("аудит фото: снимки Старого Симонова не в первом кадре, ворота — не у Дуло, сад — не у Кузнечной", () => {
+  const data = JSON.parse(read("data/points.json"));
+  const by = id => data.points.find(p => p.id === id);
+  assert.ok(!/staroe-simonovo/.test(by("osnovanie").photos[0].src), "первый кадр точки 1 — монастырь, а не храм в Старом Симонове");
+  assert.ok(by("osnovanie").photos.slice(-2).every(p => /staroe-simonovo/.test(p.src)), "храм в конце карусели с пометкой «в 400 м отсюда»");
+  assert.ok(!by("dulo").photos.some(p => /ostroumov-1893-0[78]|nisevin|Nisevin|%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD/i.test(p.src)), "западные ворота — не на точке Дуло");
+  assert.ok(!by("kuznechnaya-stena").photos.some(p => /03a-sad/.test(p.src)), "сад — не на точке Кузнечной");
+  assert.ok(!by("tikhvin").photos.some(p => /view-from-belltower/.test(p.src)), "вид с колокольни — не на точке трапезной");
 });

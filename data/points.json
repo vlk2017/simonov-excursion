@@ -45,12 +45,70 @@
           "rights": "Анонимная работа, опубликованная более 70 лет назад; на Викискладе — общественное достояние.",
           "commons": "https://commons.wikimedia.org/wiki/File:Vostochnaya_Street_%281913-1930%29.jpg",
           "stand": "Точка съёмки не найдена: по кадру — Восточная улица у монастыря. Сопоставьте сами по линии стены.",
+          "viewpoint": null,
+          "now": {
+            "src": "img/now/vostochnaya-wall-2010.jpg",
+            "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/Simonov%20Monastery%20Moscow14%20%281%20of%201%29.jpg?width=1600",
+            "year": "2010",
+            "author": "Flying Russian",
+            "license": "CC BY-SA 3.0",
+            "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery_Moscow14_(1_of_1).jpg",
+            "note": "Восточная улица вдоль монастырской стены сейчас: стена и деревья на месте, застройка другая.",
+            "quality": "приблизительная",
+            "focal": {
+              "x": 50,
+              "y": 60,
+              "z": 1
+            }
+          },
+          "focal": {
+            "x": 50,
+            "y": 70,
+            "z": 1
+          }
+        },
+        {
+          "src": "img/then/bakarev-1805-east.jpg",
+          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0.%20%D0%92%D0%B8%D0%B4%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F%20%D1%81%20%D0%B2%D0%BE%D1%81%D1%82.%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%8B.%201800%D0%B5%D0%B3%D0%B3.%20%D0%91%D0%B0%D0%BA%D0%B0%D1%80%D0%B5%D0%B2%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
+          "title": "Вид Симонова монастыря с восточной стороны",
+          "year": "начало XIX века",
+          "author": "А. Бакарев",
+          "license": "Общественное достояние",
+          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
+          "commons": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F_%D1%81_%D0%B2%D0%BE%D1%81%D1%82.%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%8B._1800%D0%B5%D0%B3%D0%B3._%D0%91%D0%B0%D0%BA%D0%B0%D1%80%D0%B5%D0%B2_%D0%93%D0%98%D0%9C_e1.jpg",
+          "stand": "Исторический вид с восточной стороны; точка съёмки приблизительная.",
+          "viewpoint": null,
+          "archiveNote": "Акварель с восточной стороны монастыря из собрания Государственного исторического музея."
+        },
+        {
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Russia.%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%20%D0%B2%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.%201832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
+          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/Russia.%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%20%D0%B2%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.%201832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
+          "title": "Симонов монастырь: общий вид с запада, от реки",
+          "year": "1832",
+          "author": "А. Д. Салтыков",
+          "license": "Общественное достояние",
+          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5._1832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94_%D0%93%D0%98%D0%9C_e1.jpg",
+          "stand": "Исторический вид с запада, от реки; точка съёмки приблизительная.",
+          "viewpoint": null,
+          "archiveNote": "Литография по рисунку 1832 года, общий вид монастырского ансамбля."
+        },
+        {
+          "src": "img/then/view-from-belltower-1895.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/b/be/Simonov_monastery_04.jpg",
+          "title": "Вид с колокольни на южную часть монастыря и Москву-реку",
+          "year": "около 1895",
+          "author": "неизвестен",
+          "license": "Общественное достояние",
+          "rights": "Анонимная работа, опубликованная более 70 лет назад; на Викискладе — общественное достояние.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_monastery_04.jpg",
+          "stand": "Снято сверху, с колокольни Тона. Этой точки больше нет.",
           "viewpoint": null
         },
         {
           "src": "img/then/ostroumov-1893-staroe-simonovo.jpg",
           "remote": "https://upload.wikimedia.org/wikipedia/commons/c/c4/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%86%D0%B5%D1%80%D0%BA%D0%B2%D0%B8_%D0%A0%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D0%B0_%D0%91%D0%BE%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B8%D1%86%D1%8B_%D0%BD%D0%B0_%D1%81%D1%82%D0%B0%D1%80%D0%BE%D0%BC_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B5.1893_16.jpg",
-          "title": "Церковь Рождества Богородицы в Старом Симонове",
+          "title": "Церковь Рождества Богородицы в Старом Симонове (в 400 м отсюда)",
           "year": "1893",
           "author": "П. Остроумов",
           "license": "Общественное достояние",
@@ -68,7 +126,7 @@
         {
           "src": "img/then/naidenov-1883-staroe-simonovo.jpg",
           "remote": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Rozhdestva_in_Old_Simonov-2.jpg",
-          "title": "Церковь Рождества Богородицы в Старом Симонове",
+          "title": "Церковь Рождества Богородицы в Старом Симонове (в 400 м отсюда)",
           "year": "1883",
           "author": "Н. А. Найдёнов (1834–1905)",
           "license": "Общественное достояние",
@@ -82,32 +140,6 @@
             "accuracy": "здание",
             "source": null
           }
-        },
-        {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0.%20%D0%92%D0%B8%D0%B4%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F%20%D1%81%20%D0%B2%D0%BE%D1%81%D1%82.%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%8B.%201800%D0%B5%D0%B3%D0%B3.%20%D0%91%D0%B0%D0%BA%D0%B0%D1%80%D0%B5%D0%B2%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0.%20%D0%92%D0%B8%D0%B4%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F%20%D1%81%20%D0%B2%D0%BE%D1%81%D1%82.%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%8B.%201800%D0%B5%D0%B3%D0%B3.%20%D0%91%D0%B0%D0%BA%D0%B0%D1%80%D0%B5%D0%B2%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "title": "Вид Симонова монастыря с восточной стороны",
-          "year": "начало XIX века",
-          "author": "А. Бакарев",
-          "license": "Общественное достояние",
-          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
-          "commons": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F_%D1%81_%D0%B2%D0%BE%D1%81%D1%82.%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D1%8B._1800%D0%B5%D0%B3%D0%B3._%D0%91%D0%B0%D0%BA%D0%B0%D1%80%D0%B5%D0%B2_%D0%93%D0%98%D0%9C_e1.jpg",
-          "stand": "Исторический вид с восточной стороны; точка съёмки приблизительная.",
-          "viewpoint": null,
-          "archiveNote": "Акварель с восточной стороны монастыря из собрания Государственного исторического музея."
-        },
-        {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Russia.%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%20%D0%B2%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.%201832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/Russia.%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%20%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%20%D0%B2%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.%201832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "title": "Симонов монастырь: общий вид с севера",
-          "year": "1832",
-          "author": "А. Д. Салтыков",
-          "license": "Общественное достояние",
-          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5._1832%D0%B3.%D1%80%D0%B8%D1%81.%D0%A1%D0%B0%D0%BB%D1%82%D1%8B%D0%BA%D0%BE%D0%B2%D0%90%D0%94_%D0%93%D0%98%D0%9C_e1.jpg",
-          "stand": "Исторический вид с северной стороны; точка съёмки приблизительная.",
-          "viewpoint": null,
-          "archiveNote": "Литография по рисунку 1832 года, общий вид монастырского ансамбля."
         }
       ],
       "moreLinks": [
@@ -180,7 +212,27 @@
             "accuracy": "PastVu",
             "source": "https://pastvu.com/p/237488"
           },
-          "pastvu": "https://pastvu.com/p/237488"
+          "pastvu": "https://pastvu.com/p/237488",
+          "now": {
+            "src": "img/now/zil-facade-lawn-2023.jpg",
+            "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/412A5943.jpg?width=1600",
+            "year": "2023",
+            "author": "Olya Hamitova",
+            "license": "CC BY-SA 4.0",
+            "commons": "https://commons.wikimedia.org/wiki/File:412A5943.jpg",
+            "note": "На месте колокольни и собора сегодня стоит Дворец культуры ЗИЛ (1937). Сами постройки снесены в 1930 году; кадр не повторяет ракурс, а показывает, что здесь теперь.",
+            "quality": "приблизительная",
+            "focal": {
+              "x": 50,
+              "y": 60,
+              "z": 1
+            }
+          },
+          "focal": {
+            "x": 50,
+            "y": 50,
+            "z": 1
+          }
         },
         {
           "src": "img/then/barshchevsky-1889-north.jpg",
@@ -329,7 +381,27 @@
             "accuracy": "PastVu",
             "source": "https://pastvu.com/p/12654"
           },
-          "pastvu": "https://pastvu.com/p/12654"
+          "pastvu": "https://pastvu.com/p/12654",
+          "now": {
+            "src": "img/now/zil-bay-2023.jpg",
+            "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/412A5932.jpg?width=1600",
+            "year": "2023",
+            "author": "Olya Hamitova",
+            "license": "CC BY-SA 4.0",
+            "commons": "https://commons.wikimedia.org/wiki/File:412A5932.jpg",
+            "note": "Успенский собор снесён в 1930 году; сейчас на его месте Дворец культуры ЗИЛ. Кадр показывает, что здесь теперь, а не тот же ракурс.",
+            "quality": "приблизительная",
+            "focal": {
+              "x": 50,
+              "y": 50,
+              "z": 1
+            }
+          },
+          "focal": {
+            "x": 50,
+            "y": 60,
+            "z": 1
+          }
         },
         {
           "src": "img/then/ostroumov-1893-05.jpg",
@@ -493,14 +565,18 @@
             "author": "Butsenin",
             "license": "CC BY-SA 4.0",
             "year": "2017",
-            "note": "Тот же северный фасад, снят с похожей точки (север–северо-запад). Совпадает по ракурсу, но не по миллиметрам.",
-            "align": {
-              "w": 1,
-              "x": -0.18,
-              "y": 0,
-              "quality": "приблизительная",
-              "note": "Ракурс совпадает лишь приблизительно: современный кадр снят левее и под углом. Совмещено по башенке над крыльцом."
+            "note": "Ракурс совпадает лишь приблизительно: современный кадр снят левее и под углом. Совмещено по башенке над крыльцом.",
+            "quality": "приблизительная",
+            "focal": {
+              "x": 30,
+              "y": 50,
+              "z": 1
             }
+          },
+          "focal": {
+            "x": 50,
+            "y": 50,
+            "z": 1
           }
         },
         {
@@ -525,18 +601,6 @@
           "rights": "Карл Рабус умер в 1857 году: общественное достояние.",
           "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%A2%D0%B5%D0%BF%D0%BB%D1%8B%D0%B9_%D1%81%D0%BE%D0%B1%D0%BE%D1%80_%28%D1%82%D1%80%D0%B0%D0%BF%D0%B5%D0%B7%D0%BD%D0%B0%D1%8F%29._%D0%A0%D0%B0%D0%B1%D1%83%D1%81_1843%D0%B3_v2_p716631.jpg",
           "stand": "Гравюра, ракурс условный.",
-          "viewpoint": null
-        },
-        {
-          "src": "img/then/view-from-belltower-1895.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/b/be/Simonov_monastery_04.jpg",
-          "title": "Вид с колокольни на трапезную и Москву-реку",
-          "year": "около 1895",
-          "author": "неизвестен",
-          "license": "Общественное достояние",
-          "rights": "Анонимная работа, опубликованная более 70 лет назад; на Викискладе — общественное достояние.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_monastery_04.jpg",
-          "stand": "Снято сверху, с колокольни Тона. Этой точки больше нет.",
           "viewpoint": null
         },
         {
@@ -612,31 +676,27 @@
             "bearing": null,
             "accuracy": "Викисклад",
             "source": null
+          },
+          "now": {
+            "src": "img/now/solevaya-street-2008.jpg",
+            "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/Simonov%20-%20Solevaya%2002.jpg?width=1600",
+            "year": "2008",
+            "author": "NVO",
+            "license": "CC BY-SA 3.0",
+            "commons": "https://commons.wikimedia.org/wiki/File:Simonov_-_Solevaya_02.jpg",
+            "note": "Солевая башня сейчас, со стороны улицы. Ракурс близкий, не точный.",
+            "quality": "близкая",
+            "focal": {
+              "x": 50,
+              "y": 20,
+              "z": 1
+            }
+          },
+          "focal": {
+            "x": 50,
+            "y": 83,
+            "z": 1
           }
-        },
-        {
-          "src": "img/then/gubarev-1926-sw.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/e/ee/5665674_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
-          "title": "Вид с юго-запада на монастырь",
-          "year": "1926",
-          "author": "А. А. Губарев (1862–1939)",
-          "license": "Общественное достояние",
-          "rights": "Автор умер в 1939 году: в России общественное достояние с 1 января 2010 года.",
-          "commons": "https://commons.wikimedia.org/wiki/File:5665674_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
-          "stand": "Общий вид издалека, от реки. Точной точки нет.",
-          "viewpoint": null
-        },
-        {
-          "src": "img/then/river-view-1890s.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/2/25/Russia._%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%BA%D0%BE%D0%BD.XIX%D0%B2_v1_001_e1r.jpg",
-          "title": "Монастырь с реки",
-          "year": "1894–1900",
-          "author": "неизвестен",
-          "license": "Общественное достояние",
-          "rights": "Анонимная работа, опубликованная более 70 лет назад; на Викискладе — общественное достояние.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%BA%D0%BE%D0%BD.XIX%D0%B2_v1_001_e1r.jpg",
-          "stand": "Вид от Москвы-реки, точка не найдена.",
-          "viewpoint": null
         }
       ],
       "nowContext": {
@@ -702,40 +762,21 @@
       "summary": "Кузнечная башня пятиугольная, как бастион. Шатёр надстроили в конце XVII века. Прясло к Дуло дошло почти целым. За стеной стоит «Сушило» Парфёна Петрова, около 1680 года.",
       "photos": [
         {
-          "src": "img/then/ostroumov-1893-03a-sad.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Simonov_Monastery-3a.jpg",
-          "title": "Монастырский сад у южной стены",
-          "year": "1893",
-          "author": "П. Остроумов",
+          "src": "img/then/river-view-1890s.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/2/25/Russia._%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%BA%D0%BE%D0%BD.XIX%D0%B2_v1_001_e1r.jpg",
+          "title": "Общий вид южной стороны с реки (башни и стена — мелко)",
+          "year": "1894–1900",
+          "author": "неизвестен",
           "license": "Общественное достояние",
-          "rights": "Альбом видов Симонова монастыря, 1893 год. На Викискладе — общественное достояние. Год смерти фотографа не найден; для коммерческого использования статус стоит перепроверить.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-3a.jpg",
-          "stand": "Встаньте внутри ограды у башни Дуло, рядом с Сушилом, и смотрите на северо-восток. Колокольни и собора в кадре больше нет.",
-          "viewpoint": {
-            "lat": 55.713595,
-            "lon": 37.654746,
-            "bearing": 45,
-            "accuracy": "PastVu",
-            "source": "https://pastvu.com/p/12650"
-          },
-          "pastvu": "https://pastvu.com/p/12650"
-        },
-        {
-          "src": "img/then/gubarev-1926-sw-2.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/e/e5/5665675_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
-          "title": "Вид с юго-запада, второй кадр",
-          "year": "1926",
-          "author": "А. А. Губарев (1862–1939)",
-          "license": "Общественное достояние",
-          "rights": "Автор умер в 1939 году: в России общественное достояние с 1 января 2010 года.",
-          "commons": "https://commons.wikimedia.org/wiki/File:5665675_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
-          "stand": "Общий вид от реки, точной точки нет.",
+          "rights": "Анонимная работа, опубликованная более 70 лет назад; на Викискладе — общественное достояние.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%BA%D0%BE%D0%BD.XIX%D0%B2_v1_001_e1r.jpg",
+          "stand": "Вид от Москвы-реки, точка не найдена.",
           "viewpoint": null
         },
         {
           "src": "img/then/gubarev-1912-river.jpg",
           "remote": "https://upload.wikimedia.org/wikipedia/commons/1/12/3089301_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%92%D0%B8%D0%B4_%D0%BE%D1%82_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D1%8B-%D1%80%D0%B5%D0%BA%D0%B8%2C_1912.jpg",
-          "title": "Вид от Москвы-реки",
+          "title": "Вид от Москвы-реки (общий план, башни различимы лишь силуэтом)",
           "year": "1912",
           "author": "А. А. Губарев (1862–1939)",
           "license": "Общественное достояние",
@@ -743,17 +784,32 @@
           "commons": "https://commons.wikimedia.org/wiki/File:3089301_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C._%D0%92%D0%B8%D0%B4_%D0%BE%D1%82_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D1%8B-%D1%80%D0%B5%D0%BA%D0%B8%2C_1912.jpg",
           "stand": "Общий вид от реки, точной точки нет.",
           "viewpoint": null
+        },
+        {
+          "src": "img/then/gubarev-1926-sw.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/e/ee/5665674_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
+          "title": "Вид с юго-запада на монастырь (общий план)",
+          "year": "1926",
+          "author": "А. А. Губарев (1862–1939)",
+          "license": "Общественное достояние",
+          "rights": "Автор умер в 1939 году: в России общественное достояние с 1 января 2010 года.",
+          "commons": "https://commons.wikimedia.org/wiki/File:5665674_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
+          "stand": "Общий вид издалека, от реки. Точной точки нет.",
+          "viewpoint": null
+        },
+        {
+          "src": "img/then/gubarev-1926-sw-2.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/e/e5/5665675_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
+          "title": "Вид с юго-запада, второй кадр (общий план)",
+          "year": "1926",
+          "author": "А. А. Губарев (1862–1939)",
+          "license": "Общественное достояние",
+          "rights": "Автор умер в 1939 году: в России общественное достояние с 1 января 2010 года.",
+          "commons": "https://commons.wikimedia.org/wiki/File:5665675_%D0%90.%D0%90._%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B8%D0%B4_%D1%81_%D1%8E%D0%B3%D0%BE-%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4%D0%B0_%D0%BD%D0%B0_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C%2C_1926.jpg",
+          "stand": "Общий вид от реки, точной точки нет.",
+          "viewpoint": null
         }
       ],
-      "nowContext": {
-        "src": "img/now/kuznechnaya-sw-2023.jpg",
-        "remote": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Moscow_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD._%D0%9A%D1%83%D0%B7%D0%BD%D0%B5%D1%87%D0%BD%D0%B0%D1%8F_%D0%B1%D0%B0%D1%88%D0%BD%D1%8F_IMG_3242.3_e1.jpg",
-        "commons": "https://commons.wikimedia.org/wiki/File:Moscow_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD._%D0%9A%D1%83%D0%B7%D0%BD%D0%B5%D1%87%D0%BD%D0%B0%D1%8F_%D0%B1%D0%B0%D1%88%D0%BD%D1%8F_IMG_3242.3_e1.jpg",
-        "author": "T3ru",
-        "license": "CC BY-SA 4.0",
-        "year": "2023",
-        "note": "Кузнечная башня с юго-запада сейчас. Исторического кадра с этой точки со свободной лицензией нет."
-      },
       "moreLinks": [],
       "scene": {
         "where": "Остановитесь на открытом участке вдоль южной стены, не прислоняясь к кладке и не заходя на закрытую территорию.",
@@ -771,6 +827,21 @@
             "url": "https://www.mos.ru/upload/documents/files/7996/AKTGIKEVostochnaya-RTP1406pdf1406.pdf"
           }
         ]
+      },
+      "heroNow": {
+        "src": "img/now/kuznechnaya-sw-2023.jpg",
+        "remote": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Moscow_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD._%D0%9A%D1%83%D0%B7%D0%BD%D0%B5%D1%87%D0%BD%D0%B0%D1%8F_%D0%B1%D0%B0%D1%88%D0%BD%D1%8F_IMG_3242.3_e1.jpg",
+        "commons": "https://commons.wikimedia.org/wiki/File:Moscow_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2_%D0%BC%D0%BE%D0%BD._%D0%9A%D1%83%D0%B7%D0%BD%D0%B5%D1%87%D0%BD%D0%B0%D1%8F_%D0%B1%D0%B0%D1%88%D0%BD%D1%8F_IMG_3242.3_e1.jpg",
+        "author": "T3ru",
+        "license": "CC BY-SA 4.0",
+        "year": "2023",
+        "note": "Кузнечная башня с юго-запада сейчас",
+        "missingThen": "Старого снимка именно этой башни со свободной лицензией не нашлось. Ниже — общие виды южной стороны монастыря.",
+        "focal": {
+          "x": 50,
+          "y": 8,
+          "z": 1
+        }
       }
     },
     {
@@ -822,14 +893,18 @@
             "author": "T3ru",
             "license": "CC BY-SA 4.0",
             "year": "2023",
-            "note": "Современный снимок с юга, почти тот же ракурс: башня видна целиком, слева прясло стены.",
-            "align": {
-              "w": 1.545,
-              "x": -0.267,
-              "y": -0.1,
-              "quality": "близкая",
-              "note": "Та же точка зрения — с юга, по оси башни. Современный кадр снят ближе и ниже, поэтому совмещены верх фонарика и низ стены, а сама башня на нём выглядит шире."
+            "note": "Та же точка зрения — с юга, по оси башни. Современный кадр снят ближе и ниже, поэтому совмещены верх фонарика и низ стены, а сама башня на нём выглядит шире.",
+            "quality": "близкая",
+            "focal": {
+              "x": 50,
+              "y": 10,
+              "z": 1
             }
+          },
+          "focal": {
+            "x": 50,
+            "y": 25,
+            "z": 1
           }
         },
         {
@@ -852,55 +927,23 @@
           "pastvu": "https://pastvu.com/p/12646"
         },
         {
-          "src": "img/then/ostroumov-1893-08.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/8/81/Simonov_Monastery-8.jpg",
-          "title": "Западные ворота со Спасской надвратной церковью",
+          "src": "img/then/ostroumov-1893-03a-sad.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Simonov_Monastery-3a.jpg",
+          "title": "Сад монастыря: вид от башни Дуло на северо-восток (колокольня и собор)",
           "year": "1893",
           "author": "П. Остроумов",
           "license": "Общественное достояние",
           "rights": "Альбом видов Симонова монастыря, 1893 год. На Викискладе — общественное достояние. Год смерти фотографа не найден; для коммерческого использования статус стоит перепроверить.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-8.jpg",
-          "stand": "Ворота стояли в западной стене, примерно в 90 м к северу от Дуло. Их снесли в 1930 году.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-3a.jpg",
+          "stand": "Встаньте внутри ограды у башни Дуло и смотрите на северо-восток. Колокольни и собора в кадре больше нет.",
           "viewpoint": {
-            "lat": 55.714215,
-            "lon": 37.654441,
+            "lat": 55.713595,
+            "lon": 37.654746,
             "bearing": 45,
             "accuracy": "PastVu",
-            "source": "https://pastvu.com/p/12643"
+            "source": "https://pastvu.com/p/12650"
           },
-          "pastvu": "https://pastvu.com/p/12643"
-        },
-        {
-          "src": "img/then/ostroumov-1893-07.jpg",
-          "remote": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Simonov_Monastery-7.jpg",
-          "title": "Западные ворота изнутри двора",
-          "year": "1893",
-          "author": "П. Остроумов",
-          "license": "Общественное достояние",
-          "rights": "Альбом видов Симонова монастыря, 1893 год. На Викискладе — общественное достояние. Год смерти фотографа не найден; для коммерческого использования статус стоит перепроверить.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-7.jpg",
-          "stand": "Вид из двора на северо-запад, на снесённые ворота.",
-          "viewpoint": {
-            "lat": 55.714097,
-            "lon": 37.655862,
-            "bearing": 315,
-            "accuracy": "PastVu",
-            "source": "https://pastvu.com/p/12644"
-          },
-          "pastvu": "https://pastvu.com/p/12644"
-        },
-        {
-          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C.%20%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D0%A1%D0%BF%D0%B0%D1%81%D0%B0%20%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE%20%D0%B2%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC%20%D0%BC%D0%BE%D0%BD.%201850-%D1%85%D0%B3%D0%B3%20%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C.%20%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D0%A1%D0%BF%D0%B0%D1%81%D0%B0%20%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE%20%D0%B2%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC%20%D0%BC%D0%BE%D0%BD.%201850-%D1%85%D0%B3%D0%B3%20%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
-          "title": "Церковь Спаса Нерукотворного у западных ворот",
-          "year": "1850-е",
-          "author": "Нисевин",
-          "license": "Общественное достояние",
-          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
-          "commons": "https://commons.wikimedia.org/wiki/File:%D0%9C._%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%A1%D0%BF%D0%B0%D1%81%D0%B0_%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B2_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC_%D0%BC%D0%BE%D0%BD._1850-%D1%85%D0%B3%D0%B3_%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD_%D0%93%D0%98%D0%9C_e1.jpg",
-          "stand": "Историческое изображение храма над западными воротами; точка съёмки условная.",
-          "viewpoint": null,
-          "archiveNote": "Рисунок 1850-х годов, вид изнутри монастыря на запад."
+          "pastvu": "https://pastvu.com/p/12650"
         }
       ],
       "moreLinks": [
@@ -991,7 +1034,27 @@
             "accuracy": "PastVu",
             "source": "https://pastvu.com/p/62122"
           },
-          "pastvu": "https://pastvu.com/p/62122"
+          "pastvu": "https://pastvu.com/p/62122",
+          "now": {
+            "src": "img/now/zil-park-2023.jpg",
+            "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/412A5950.jpg?width=1600",
+            "year": "2023",
+            "author": "Olya Hamitova",
+            "license": "CC BY-SA 4.0",
+            "commons": "https://commons.wikimedia.org/wiki/File:412A5950.jpg",
+            "note": "Тайницкой башни нет с 1930 года. На месте северной стороны сегодня Дворец культуры ЗИЛ. Кадр показывает, что здесь теперь, а не тот же ракурс.",
+            "quality": "приблизительная",
+            "focal": {
+              "x": 50,
+              "y": 70,
+              "z": 1
+            }
+          },
+          "focal": {
+            "x": 50,
+            "y": 30,
+            "z": 1
+          }
         },
         {
           "src": "img/then/ostroumov-1893-01a.jpg",
@@ -1042,6 +1105,57 @@
           "commons": "https://commons.wikimedia.org/wiki/File:Russia._%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%92%D0%B5%D1%80%D1%85%D0%BD%D1%8F%D1%8F_%D1%87%D0%B0%D1%81%D1%82%D1%8C_%D0%A1%D1%82%D0%BE%D1%80%D0%BE%D0%B6%D0%B5%D0%B2%D0%BE%D0%B9_%D0%B1%D0%B0%D1%88%D0%BD%D0%B8_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0_%D0%BC%D0%BE%D0%BD._%D0%91%D0%B0%D1%80%D1%89-2118~1889_0.jpg",
           "stand": "Снято сверху, вероятно с колокольни. Башни нет, точку не восстановить.",
           "viewpoint": null
+        },
+        {
+          "src": "img/then/ostroumov-1893-08.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/8/81/Simonov_Monastery-8.jpg",
+          "title": "Западные ворота со Спасской надвратной церковью",
+          "year": "1893",
+          "author": "П. Остроумов",
+          "license": "Общественное достояние",
+          "rights": "Альбом видов Симонова монастыря, 1893 год. На Викискладе — общественное достояние. Год смерти фотографа не найден; для коммерческого использования статус стоит перепроверить.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-8.jpg",
+          "stand": "Ворота стояли в западной стене, примерно в 90 м к северу от Дуло. Их снесли в 1930 году.",
+          "viewpoint": {
+            "lat": 55.714215,
+            "lon": 37.654441,
+            "bearing": 45,
+            "accuracy": "PastVu",
+            "source": "https://pastvu.com/p/12643"
+          },
+          "pastvu": "https://pastvu.com/p/12643"
+        },
+        {
+          "src": "img/then/ostroumov-1893-07.jpg",
+          "remote": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Simonov_Monastery-7.jpg",
+          "title": "Западные ворота изнутри двора",
+          "year": "1893",
+          "author": "П. Остроумов",
+          "license": "Общественное достояние",
+          "rights": "Альбом видов Симонова монастыря, 1893 год. На Викискладе — общественное достояние. Год смерти фотографа не найден; для коммерческого использования статус стоит перепроверить.",
+          "commons": "https://commons.wikimedia.org/wiki/File:Simonov_Monastery-7.jpg",
+          "stand": "Вид из двора на северо-запад, на снесённые ворота.",
+          "viewpoint": {
+            "lat": 55.714097,
+            "lon": 37.655862,
+            "bearing": 315,
+            "accuracy": "PastVu",
+            "source": "https://pastvu.com/p/12644"
+          },
+          "pastvu": "https://pastvu.com/p/12644"
+        },
+        {
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C.%20%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D0%A1%D0%BF%D0%B0%D1%81%D0%B0%20%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE%20%D0%B2%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC%20%D0%BC%D0%BE%D0%BD.%201850-%D1%85%D0%B3%D0%B3%20%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
+          "remote": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%9C.%20%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D0%A1%D0%BF%D0%B0%D1%81%D0%B0%20%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE%20%D0%B2%20%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC%20%D0%BC%D0%BE%D0%BD.%201850-%D1%85%D0%B3%D0%B3%20%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD%20%D0%93%D0%98%D0%9C%20e1.jpg?width=2400",
+          "title": "Церковь Спаса Нерукотворного у западных ворот",
+          "year": "1850-е",
+          "author": "Нисевин",
+          "license": "Общественное достояние",
+          "rights": "Историческое произведение XIX века; на Викискладе опубликовано как общественное достояние.",
+          "commons": "https://commons.wikimedia.org/wiki/File:%D0%9C._%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%A1%D0%BF%D0%B0%D1%81%D0%B0_%D0%9D%D0%B5%D1%80%D1%83%D0%BA%D0%BE%D1%82%D0%B2%D0%BE%D1%80%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B2_%D0%A1%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%B2%D0%BE%D0%BC_%D0%BC%D0%BE%D0%BD._1850-%D1%85%D0%B3%D0%B3_%D0%9D%D0%B8%D1%81%D0%B5%D0%B2%D0%B8%D0%BD_%D0%93%D0%98%D0%9C_e1.jpg",
+          "stand": "Историческое изображение храма над западными воротами; точка съёмки условная.",
+          "viewpoint": null,
+          "archiveNote": "Рисунок 1850-х годов, вид изнутри монастыря на запад."
         }
       ],
       "moreLinks": [
