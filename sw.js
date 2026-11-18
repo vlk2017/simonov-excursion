@@ -6,7 +6,7 @@ self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith("simonov-") && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
 self.addEventListener("message", e => {
@@ -44,6 +44,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
+  if (/\/ordynka\//.test(url.pathname)) return;   // экскурсия на Ордынке — свой service worker и свой кэш
   const isAudio = /\.mp3$/.test(url.pathname);
   const media = /\/(audio|img)\//.test(url.pathname) || /\/scripts\/.*\.txt$/.test(url.pathname);
   if (isAudio) {

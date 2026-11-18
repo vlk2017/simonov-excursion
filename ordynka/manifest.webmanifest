@@ -1,0 +1,9 @@
+{
+  "name": "Скорбященский храм на Ордынке — аудиоэкскурсия",
+  "short_name": "Ордынка",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#16110d",
+  "theme_color": "#16110d",
+  "lang": "ru"
+}

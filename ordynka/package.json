@@ -1,0 +1,10 @@
+{
+  "name": "ordynka-excursion",
+  "private": true,
+  "description": "Аудиоэкскурсия у храма «Всех скорбящих Радость» на Большой Ордынке (статический сайт, подпапка /ordynka/). Зависимостей нет.",
+  "scripts": {
+    "test": "node --test tests/nav-core.test.js tests/static.test.js",
+    "check": "node --check js/app.js && node --check js/nav-core.js && node --check sw.js",
+    "build": "sh tools/build.sh"
+  }
+}
