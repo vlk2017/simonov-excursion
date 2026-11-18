@@ -853,19 +853,21 @@ function buildCarousel(p) {
     } else {
       const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
       const old = sl.kind === "cmp";
+      const leftLabel = ph.leftLabel || ph.year || "Ч/Б";
+      const rightLabel = nw.label || nw.year || "Цвет";
       s.innerHTML = `<div class="cmp-frame">
-        <img class="cmp-now" alt="Сейчас: ${esc(nw.note)}" draggable="false" style="${focalStyle(nw.focal)}" />
-        ${old ? `<div class="cmp-clip"><img class="cmp-old" alt="${esc(ph.title)}, ${esc(ph.year)}" draggable="false" style="${focalStyle(ph.focal)}" /></div>
-        <span class="cmp-tag cmp-tag-l">${esc(ph.year)}</span>
-        <div class="cmp-handle" role="slider" tabindex="0" aria-label="Шторка: слева старое фото, справа современное" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><b>‹ ›</b></div>` : `<span class="cmp-tag cmp-tag-l cmp-tag-warn">Старого снимка нет</span>`}
-        <span class="cmp-tag cmp-tag-r">Сейчас</span></div>`;
+        <img class="cmp-now" alt="${esc(rightLabel)}: ${esc(nw.note)}" draggable="false" style="${focalStyle(nw.focal)}" />
+        ${old ? `<div class="cmp-clip"><img class="cmp-old" alt="${esc(leftLabel)}: ${esc(ph.title)}" draggable="false" style="${focalStyle(ph.focal)}" /></div>
+        <span class="cmp-tag cmp-tag-l">${esc(leftLabel)}</span>
+        <div class="cmp-handle" role="slider" tabindex="0" aria-label="Шторка: слева чёрно-белое фото, справа цветное" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i><b>‹ ›</b></div>` : `<span class="cmp-tag cmp-tag-l cmp-tag-warn">Нет парного снимка</span>`}
+        <span class="cmp-tag cmp-tag-r">${esc(rightLabel)}</span></div>`;
       s.querySelector(".cmp-now").addEventListener("click", () => openLightboxForCurrent(nw.src));
       if (old) { s.querySelector(".cmp-old").addEventListener("click", () => openLightboxForCurrent(ph.src)); wireCmp(s); }
     }
     track.appendChild(s);
     const d = document.createElement("button");
     d.type = "button"; d.className = "car-dot";
-    d.setAttribute("aria-label", `Фото ${k + 1} из ${n}: ${sl.kind === "modern" ? "сейчас" : sl.kind === "cmp" ? `${ph.year} и сейчас` : ph.year}`);
+    d.setAttribute("aria-label", `Фото ${k + 1} из ${n}: ${sl.kind === "modern" ? "цветное фото" : sl.kind === "cmp" ? `${ph.leftLabel || ph.year} и ${ph.now.label || ph.now.year}` : ph.year}`);
     d.addEventListener("click", () => carGo(k));
     dots.appendChild(d);
   });
@@ -934,13 +936,18 @@ function selectPhoto(k) {
   bindImg($("#overlay-img"), ph.src, ph.remote, ph.title);
   if (!state.rp.on) { rpReset(); applyRpTransform(); }
   $("#hero-count").textContent = state.slides.length > 1 ? `${state.slideIdx + 1} / ${state.slides.length}` : "";
-  const link = u => u ? ` · <a href="${esc(u)}" target="_blank" rel="noopener">источник: Викисклад</a>` : "";
+  const sourceLink = (u, label) => u ? ` · <a href="${esc(u)}" target="_blank" rel="noopener">${esc(label || "источник")}</a>` : "";
   if (sl.kind === "modern") {
-    $("#photo-caption").innerHTML = `Сейчас · ${esc(nw.author)}<span class="cap-title">${esc(nw.note)}. ${esc(nw.year)}, ${esc(nw.license)}${link(nw.commons)}. ${esc(p.heroNow.missingThen)}</span>`;
+    $("#photo-caption").innerHTML = `Сейчас · ${esc(nw.author)}<span class="cap-title">${esc(nw.note)}. ${esc(nw.year)}, ${esc(nw.license)}${sourceLink(nw.sourceUrl, nw.sourceLabel) || sourceLink(nw.commons, "источник: Викисклад")}. ${esc(p.heroNow.missingThen || "")}</span>`;
   } else if (sl.kind === "cmp") {
-    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))} и сейчас · ${esc(nw.author)}<span class="cap-title">${esc(ph.title)}. Тяните шторку: слева ${esc(ph.year)}, справа — сейчас (${esc(nw.year)}). ${esc(nw.note)} Нажмите на фото, чтобы открыть на весь экран.</span>`;
+    const leftLabel = ph.leftLabel || ph.year;
+    const rightLabel = nw.label || nw.year || "Цвет";
+    const oldSource = sourceLink(ph.sourceUrl, ph.sourceLabel) || sourceLink(ph.commons, "источник: Викисклад");
+    const newSource = sourceLink(nw.sourceUrl, nw.sourceLabel);
+    $("#photo-caption").innerHTML = `${esc(leftLabel)} · ${esc(shortAuthor(ph.author))} / ${esc(rightLabel)} · ${esc(nw.author)}<span class="cap-title">${esc(ph.title)}. Шторка: слева чёрно-белый кадр (${esc(leftLabel)}), справа цветной (${esc(rightLabel)}). ${esc(nw.note)}${oldSource}${newSource}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
   } else {
-    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${ph.commons ? ` · <a href="${esc(ph.commons)}" target="_blank" rel="noopener">источник: Викисклад</a>` : ""}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
+    const source = sourceLink(ph.sourceUrl, ph.sourceLabel) || sourceLink(ph.commons, "источник: Викисклад");
+    $("#photo-caption").innerHTML = `${esc(ph.year)} · ${esc(shortAuthor(ph.author))}<span class="cap-title">${esc(ph.title)}. ${esc(ph.license || "")}${source}. Нажмите на фото, чтобы открыть на весь экран.</span>`;
   }
 
   // where to stand
