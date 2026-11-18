@@ -6,18 +6,14 @@
 
 | Файл | Что | Год | Автор | Лицензия | Страница на Викискладе | Где используется |
 |---|---|---|---|---|---|---|
-| `img/now/aerial-2024.jpg` | Поведники с воздуха, 2024 год | 2024 | Mike1979 Russia | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg) | точки 1 |
+| `img/now/aerial-2024.jpg` | Поведники с воздуха, 2024 год | 2024 | Mike1979 Russia | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg) | точки 1, 3, 4, 5 |
 | `img/now/troitskoe-canal-2013.jpg` | Троицкое: церковь Живоначальной Троицы, 2013 год | 2013 | Kotjara kamenskaja | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Троицкое_с_канала.jpg) | точки 2 |
-| `img/now/troitskoe-2011.jpg` | Троицкое с водохранилища, 2011 год | 2011 | Kotjara kamenskaja | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Троицкая_церковь_с_КиМа.jpg) | точки 2 |
-| `img/now/klyazma-pansionat-2014.jpg` | Пансионат «Клязьма» по координатам снимка, 2014 год | 2014 | Алексей Дегтярев | CC BY 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Mytishchinsky_District,_Moscow_Oblast,_Russia_-_panoramio_(19).jpg) | точки 3 |
-| `img/now/alley-2014.jpg` | Аллея в пансионате, 2014 год | 2014 | Алексей Дегтярев | CC BY 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Mytishchinsky_District,_Moscow_Oblast,_Russia_-_panoramio_(15).jpg) | точки 4 |
-| `img/now/reservoir-2014.jpg` | Клязьминское водохранилище, 2014 год | 2014 | Алексей Дегтярев | CC BY 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Mytishchinsky_District,_Moscow_Oblast,_Russia_-_panoramio_(17).jpg) | точки 5 |
 | `img/then/canal-1932-37-prisoners.jpg` | Заключённые на строительстве канала Москва — Волга, 1932–1937 | 1932–1937 | автор не указан (на Викискладе: Unknown author) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Kanal_Moskva_Volga_Gulag.jpg) | точки 5 |
 | `img/now/chiverevo-2017.jpg` | Часовня Смоленской иконы в Чиверёве, 2017 год | 2017 | Viola Luchansky | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Часовня_Смоленской_иконы_Божией_Матери_в_Чиверево.jpg) | точки 6 |
 | `img/now/chiverevo-2013.jpg` | Часовня в Чиверёве, 2013 год | 2013 | Buba67 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Часовня_в_Чиверево.jpg) | точки 6 |
 | `img/now/church-2021.jpg` | Церковь-часовня у нового храма, 2021 год | 2021 | Троице-Сергиева Лавра | CC BY-SA 2.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Церковь_Новомучеников_и_исповедников_Российских_в_Поведниках.jpg) | точки 7, 8 |
 
-Всего файлов: 10.
+Всего файлов: 6.
 
 ## Текст
 

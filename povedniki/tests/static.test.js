@@ -208,3 +208,12 @@ test("в экскурсии не осталось следов Ордынки", 
   for (const [name, s] of [["index.html", html], ["app.js", app], ["sw.js", sw], ["points.json", JSON.stringify(data)], ["style.css", css]])
     assert.ok(!/ордын|ordynka|скорбя|скорбящ/i.test(s.replace(/href="\.\.\/ordynka\/">Храм на Ордынке/, "")), name);
 });
+
+test("кнопка «Как устроена прогулка» без конфликта data-back/onclick; блок накладки скрывается без пар; подсказка про расстояния верна", () => {
+  const m = html.match(/<button[^>]*id="btn-about-2"[^>]*>/);
+  assert.ok(m && !/data-back|onclick/.test(m[0]), "btn-about-2 не должен одновременно вести назад и на «О прогулке»");
+  assert.match(app, /\$\("#btn-about-2"\)\.addEventListener\("click"/);
+  assert.match(app, /\$\("#overlay-bar"\)\.classList\.toggle\("hidden", !p\.photos\.some\(ph => ph\.now\)\)/);
+  assert.ok(!/20–35 метрах/.test(html), "в подсказке остались расстояния Крутиц");
+  assert.match(sw, /povedniki-v2/);
+});

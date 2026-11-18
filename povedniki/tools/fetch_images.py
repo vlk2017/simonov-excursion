@@ -12,11 +12,7 @@ PHOTOS = {
   "then/canal-1932-37-prisoners.jpg": "File:Kanal Moskva Volga Gulag.jpg",
   "now/aerial-2024.jpg": "File:Povedniki 2024-09-21 3857.jpg",
   "now/church-2021.jpg": "File:Церковь Новомучеников и исповедников Российских в Поведниках.jpg",
-  "now/klyazma-pansionat-2014.jpg": "File:Mytishchinsky District, Moscow Oblast, Russia - panoramio (19).jpg",
-  "now/alley-2014.jpg": "File:Mytishchinsky District, Moscow Oblast, Russia - panoramio (15).jpg",
-  "now/reservoir-2014.jpg": "File:Mytishchinsky District, Moscow Oblast, Russia - panoramio (17).jpg",
   "now/troitskoe-canal-2013.jpg": "File:Троицкое с канала.jpg",
-  "now/troitskoe-2011.jpg": "File:Троицкая церковь с КиМа.jpg",
   "now/chiverevo-2013.jpg": "File:Часовня в Чиверево.jpg",
   "now/chiverevo-2017.jpg": "File:Часовня Смоленской иконы Божией Матери в Чиверево.jpg",
 }

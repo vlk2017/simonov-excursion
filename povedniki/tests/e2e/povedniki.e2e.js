@@ -115,20 +115,11 @@ async function open(browser, { geo, offline, strip } = {}) {
     // карусель точки 1
     const car = await page.evaluate(() => ({ slides: document.querySelectorAll("#car-track > *").length, dots: document.querySelectorAll("#car-dots > *").length, single: document.querySelector("#car").classList.contains("single"), kind: document.querySelector(".car-slide").dataset.kind, pct: document.querySelector(".car-slide").dataset.pct, oldCompare: !!document.querySelector("#compare") }));
     ok("Карусель точки 1: один слайд, современное фото с плашкой «Старого снимка нет», без шторки", car.slides === 1 && car.single && car.kind === "modern" && !car.oldCompare, JSON.stringify(car));
-    // камера
-    await tap(page, "#btn-camera");
-    await page.waitForFunction(() => state.cameraOn, { timeout: 10000 }).catch(() => {});
-    s = await info(page);
-    ok("Камера включается (фейковая), режимы доступны", s.camera && await page.evaluate(() => document.querySelectorAll("#cam-modes button").length >= 4));
-    for (const m of ["overlay", "curtain", "now", "then"]) { await page.evaluate(m => document.querySelector(`#cam-modes [data-mode=${m}]`).click(), m); await sleep(150); }
-    ok("Режимы камеры переключаются без ошибок", errors.length === 0, errors.join("|"));
-    await page.evaluate(() => document.querySelector("#cam-modes [data-mode=rephoto]").click());
-    await sleep(600);
-    const rp = await page.evaluate(() => ({ on: !!(state.rephoto && state.rephoto.on) || document.body.classList.contains("rp-lock") }));
-    ok("Рефотосъёмка запускается", rp.on, JSON.stringify(rp));
-    await page.evaluate(() => document.querySelector("#rp-exit").click());
-    await sleep(400);
-    ok("Выход из рефото, ошибок нет", errors.length === 0, errors.join("|"));
+    // блок «Историческая накладка» без старого снимка этого места скрыт на всех точках
+    const ob = await page.evaluate(() => state.data.points.map(p => { openPoint(p.id, false); const e = document.querySelector("#overlay-bar"); return getComputedStyle(e).display; }));
+    ok("Блок «Историческая накладка» скрыт на всех 8 точках (пар «тогда — сейчас» нет)", ob.length === 8 && ob.every(d => d === "none"), ob.join(","));
+    await page.evaluate(() => { stopNarrationNow(); openPoint("ostanovka", false); });
+    ok("Нет ошибок страницы после обхода точек", errors.length === 0, errors.join("|"));
     await ctx.close();
   }
 
@@ -169,8 +160,8 @@ async function open(browser, { geo, offline, strip } = {}) {
     await page.evaluate(() => caches.open("simonov-v13").then(c => c.put("/marker", new Response("x"))));   // «кэш Симонова» не должен пропасть
     await page.reload({ waitUntil: "networkidle2" });
     await sleep(3000);   // предзагрузка текстов и фото
-    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("povedniki-v1")).keys()).length }));
-    ok("Свой service worker со scope /povedniki/ и кэш povedniki-v1; кэш Симонова не удалён", c.keys.includes("povedniki-v1") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/povedniki\/$/.test(s)), JSON.stringify(c).slice(0, 300));
+    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("povedniki-v2")).keys()).length }));
+    ok("Свой service worker со scope /povedniki/ и кэш povedniki-v2; кэш Симонова не удалён", c.keys.includes("povedniki-v2") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/povedniki\/$/.test(s)), JSON.stringify(c).slice(0, 300));
     ok("Ключи localStorage с префиксом povedniki-", c.ls.every(k => k.startsWith("povedniki-")), c.ls.join(","));
     ok("Предзагружены тексты, озвучка и фото (≥ 30 файлов)", c.ordSize >= 30, "файлов в кэше: " + c.ordSize);
     await page.setOfflineMode(true);

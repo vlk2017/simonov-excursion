@@ -727,6 +727,8 @@ function openPoint(id, play) {
   $("#btn-done").textContent = state.visited[id] ? "Остановка пройдена ✓" : "Отметить остановку пройденной";
   $("#btn-done").disabled = !!state.visited[id];
   stopCamera();
+  // блок «Историческая накладка» нужен только там, где есть пара «тогда — сейчас»; без старого снимка этого места он вводит в заблуждение
+  $("#overlay-bar").classList.toggle("hidden", !p.photos.some(ph => ph.now));
   showScreen("screen-point");
   window.scrollTo(0, 0);
   $("#point-title").textContent = p.title;
@@ -1673,7 +1675,7 @@ function applyHash() {
 }
 
 
-/* Рассказы (~19 МБ) не качаются сами: слушанный рассказ кэшируется service worker'ом при первом проигрывании,
+/* Рассказы (~14 МБ) не качаются сами: слушанный рассказ кэшируется service worker'ом при первом проигрывании,
    остальные скачиваются кнопкой «Скачать рассказы для офлайна». */
 function audioFiles() { return state.data.points.map(p => p.audioLocal || p.audio).filter(a => a && !/^https?:/.test(a)); }
 async function updateOfflineAudioStatus() {
@@ -1803,6 +1805,7 @@ async function main() {
     $("#btn-done").disabled = true;
   });
   $("#btn-about").addEventListener("click", () => showScreen("screen-about"));
+  $("#btn-about-2").addEventListener("click", () => { showScreen("screen-about"); window.scrollTo(0, 0); });
   $$("[data-back=tour]").forEach(b => b.addEventListener("click", () => {
     showScreen("screen-tour");
     setTimeout(() => state.map && state.map.invalidateSize(), 200);
