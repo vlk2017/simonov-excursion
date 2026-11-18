@@ -1,5 +1,5 @@
 /* Krutitsy excursion (подпапка /krutitsy/, свой service worker и свой кэш): offline cache. Pages and data: network first. Audio and photos: cache first. */
-const CACHE = "krutitsy-v1";
+const CACHE = "krutitsy-v2";
 const CORE = ["./", "index.html", "css/style.css", "css/kremlin.css", "css/identity.css", "css/cover-chronicle.css", "js/app.js", "js/nav-core.js", "data/points.json", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {

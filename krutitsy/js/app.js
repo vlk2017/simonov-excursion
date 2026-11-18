@@ -650,7 +650,7 @@ function pl() { return narr.tts ? ttsp : $("#player"); }
 function narrationSources(p) {
   const ext = p.audio && /^https?:/.test(p.audio) ? p.audio : null;
   const loc = p.audioLocal || (p.audio && !ext ? p.audio : null);
-  const list = navigator.onLine === false ? [loc, ext] : [ext, loc];
+  const list = [loc, ext];   // свой файл с сайта надёжнее на iPhone; HeyGen — запасной
   return list.filter(Boolean).filter((u, i, a) => a.indexOf(u) === i);
 }
 function loadNarration(p) {

@@ -169,8 +169,8 @@ async function open(browser, { geo, offline, strip } = {}) {
     await page.evaluate(() => caches.open("simonov-v13").then(c => c.put("/marker", new Response("x"))));   // «кэш Симонова» не должен пропасть
     await page.reload({ waitUntil: "networkidle2" });
     await sleep(3000);   // предзагрузка текстов и фото
-    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("krutitsy-v1")).keys()).length }));
-    ok("Свой service worker со scope /krutitsy/ и кэш krutitsy-v1; кэш Симонова не удалён", c.keys.includes("krutitsy-v1") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/krutitsy\/$/.test(s)), JSON.stringify(c).slice(0, 300));
+    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("krutitsy-v2")).keys()).length }));
+    ok("Свой service worker со scope /krutitsy/ и кэш krutitsy-v2; кэш Симонова не удалён", c.keys.includes("krutitsy-v2") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/krutitsy\/$/.test(s)), JSON.stringify(c).slice(0, 300));
     ok("Ключи localStorage с префиксом krutitsy-", c.ls.every(k => k.startsWith("krutitsy-")), c.ls.join(","));
     ok("Предзагружены тексты, озвучка и фото (≥ 40 файлов)", c.ordSize >= 40, "файлов в кэше: " + c.ordSize);
     await page.setOfflineMode(true);
