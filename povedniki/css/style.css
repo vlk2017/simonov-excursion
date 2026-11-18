@@ -752,3 +752,35 @@ body.rp-lock #toast { bottom:auto; top:calc(max(10px, env(safe-area-inset-top)) 
 .cmp-tag-l { left:12px; } .cmp-tag-r { right:12px; }
 .cmp-tag-warn { text-transform:none; letter-spacing:0; background:rgba(120,40,30,.82); }
 @media (min-width: 700px) { .cmp-handle b { top:50%; } }
+
+
+/* Поведники: компактная навигация между остановками на телефонах */
+@media (max-width: 520px) {
+  #screen-point .pt-nav {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
+    min-width: 0;
+  }
+  #screen-point .pt-nav button {
+    min-width: 0;
+    width: 100%;
+    min-height: 50px;
+    padding: 7px 5px;
+    overflow: hidden;
+  }
+  #screen-point .pt-nav button b {
+    font-size: 13px;
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  #screen-point .pt-nav button small {
+    display: none;
+  }
+  #screen-point .point-body .pt-nav {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
