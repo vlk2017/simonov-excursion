@@ -1287,7 +1287,7 @@ function gotoNeighbor(step) {
   }
   state.navPref = pts[j].id;
   updateNavigator();
-  openPoint(pts[j].id, false);   // звук сам не включается: «Начать рассказ»
+  openPoint(pts[j].id, true);    // переход по нажатию «Следующая точка»: запускаем рассказ в том же user gesture
   window.scrollTo({ top: 0, behavior: "instant" });   // сверху карточки сразу, без плавной прокрутки с конца страницы
 }
 
