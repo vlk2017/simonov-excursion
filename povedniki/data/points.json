@@ -180,6 +180,28 @@
       "ttsScript": "tts/03-dom-kultury.txt",
       "photos": [
         {
+          "src": "https://avatars.mds.yandex.net/get-altay/5449087/2a0000017d3243738cca4425c7189b0ed9fd/XXL_height",
+          "title": "Дом культуры «Поведники», фотография из карточки учреждения",
+          "year": "без даты",
+          "author": "Автор фотографии в Яндекс Картах",
+          "license": "Источник: карточка ДК в Яндекс Картах",
+          "remote": null,
+          "leftLabel": "Ч/Б",
+          "sourceUrl": "https://yandex.com/maps/org/dom_kultury_povedniki/60027433995/",
+          "sourceLabel": "Яндекс Карты",
+          "now": {
+            "src": "https://avatars.mds.yandex.net/get-altay/5482460/2a0000017d324373c1f911c342dbf0a34654/XXL_height",
+            "note": "Дом культуры «Поведники», второй снимок здания из той же карточки",
+            "year": "без даты",
+            "author": "Автор фотографии в Яндекс Картах",
+            "license": "Источник: карточка ДК в Яндекс Картах",
+            "remote": null,
+            "label": "Цвет",
+            "sourceUrl": "https://yandex.com/maps/org/dom_kultury_povedniki/60027433995/",
+            "sourceLabel": "Яндекс Карты"
+          }
+        },
+        {
           "src": "https://pastvu.com/_p/d/q/b/2/qb2j1t9r6yrerxsyon.jpg",
           "title": "Зона отдыха Клязьминского водохранилища",
           "year": "1965–1966",
@@ -188,26 +210,15 @@
           "remote": null,
           "sourceUrl": "https://pastvu.com/p/508127",
           "sourceLabel": "Архив PastVu",
-          "note": "Архивный общий вид зоны отдыха; это не фотография самого Дома культуры.",
-          "now": {
-            "src": "img/now/aerial-2024.jpg",
-            "note": "Поведники с воздуха, жилые дома и лес вокруг посёлка",
-            "year": "2024",
-            "author": "Архив экскурсии",
-            "license": "Снимок в проекте",
-            "remote": null,
-            "label": "2024"
-          }
+          "note": "Архивный общий вид зоны отдыха; точная привязка к месту Дома культуры не подтверждена."
         },
         {
-          "src": "https://avatars.mds.yandex.net/get-altay/5449087/2a0000017d3243738cca4425c7189b0ed9fd/XXL_height",
-          "title": "Дом культуры «Поведники», фотография из карточки учреждения",
-          "year": "без даты",
-          "author": "Автор фотографии в Яндекс Картах",
-          "license": "Источник: карточка ДК в Яндекс Картах",
-          "remote": null,
-          "sourceUrl": "https://yandex.com/maps/org/dom_kultury_povedniki/60027433995/",
-          "sourceLabel": "Яндекс Карты"
+          "src": "img/now/aerial-2024.jpg",
+          "title": "Поведники с воздуха: жилые дома и лес вокруг посёлка",
+          "year": "2024",
+          "author": "Архив экскурсии",
+          "license": "Снимок в проекте",
+          "remote": null
         }
       ],
       "summary": "В 1961 году решили устроить зону отдыха для сотрудников государственных органов СССР. Первым построили пансионат «Клязьма», в 1964 году приехали первые жильцы. Дом культуры «Подснежник» открыли в феврале 1979 года.",
@@ -343,10 +354,8 @@
           "title": "Заключённые на строительстве канала Москва — Волга",
           "year": "1932–1937",
           "author": "Автор не установлен",
-          "license": "Архивный снимок; место съёмки не установлено",
-          "remote": null,
-          "sourceUrl": "https://commons.wikimedia.org/wiki/File:Canal_Moscow_Volga_prisoners_1930s.jpg",
-          "sourceLabel": "Архивное фото"
+          "license": "Архивный снимок из прежней подборки; точный первоисточник не подтверждён",
+          "remote": null
         },
         {
           "src": "https://moskva-volga.ru/gallery/_data/i/upload/2011/12/24/20111224210128-4fff054c-me.jpg",
