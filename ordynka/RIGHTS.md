@@ -6,26 +6,40 @@
 
 | Файл | Что | Год | Автор | Лицензия | Страница на Викискладе | Где используется |
 |---|---|---|---|---|---|---|
-| `img/then/gubarev-1913-ordynka.jpg` | Большая Ордынка. Церковь «Всех Скорбящих Радость» | 1913 | А. А. Губарев (из собрания Государственного исторического музея) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:3096034_А.А._Губарев_-_Большая_Ордынка._Церковь_«Всех_Скорбящих_Радость»,_1913.jpg) | точки 1, 2, 7 |
-| `img/now/ordynka-street-2014.jpg` | Вид с Большой Ордынки на колокольню и ротонду. Ракурс похожий, но не совпадает точно. | 2014 | Ludvig14 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_ChurchTheotokos_Joy_in_Sorrow1.jpg) | точки 1 |
-| `img/then/naidenov-1883-ordynka.jpg` | Церковь «Всех скорбящих Радость» с юго-востока | 1883 | автор не указан (из альбома Н. А. Найдёнова) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Church_of_the_Theotokos_Joy_of_All_Who_Sorrow_in_Ordynka_00.JPG) | точки 1, 2, 4, 5, 6, 7 |
-| `img/now/fence-2016.jpg` | Ограда у церкви на Большой Ордынке | 2016 | Ludvig14 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Ordynka20Fence_2180.jpg) | точки 1 |
-| `img/now/rotunda-se-2015.jpg` | Похожий юго-восточный ракурс: колокольня слева, портик и ротонда. Кадр 2015 года выровнен по вертикали, точка съёмки приблизительная. | 2015 | Svetlov Artem | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Bolshaya_Ordynka_20_s_10_20150904_147_ShiftN.jpg) | точки 2 |
-| `img/then/bove-1832-facade.jpg` | Храм «Всех скорбящих Радость». Авторский чертёж О. Бове: фасад | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_facade,_Bove_1832.jpg) | точки 2 |
-| `img/then/dolgov-estate-1900-1917.jpg` | Усадьба Долгова — Жемочкина | 1900–1917 | автор не указан | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Ordynka_21,_1900-1917.jpg) | точки 3 |
-| `img/now/dolgov-house-2015.jpg` | Главный дом усадьбы со стороны двора. Ракурс отличается от старого снимка. | 2015 | Svetlov Artem | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Bolshaya_Ordynka_21-16_s9_20150904_139_stitch.jpg) | точки 3 |
-| `img/now/trapeznaya-se-2010.jpg` | Похожий ракурс на портик трапезной. Точка съёмки приблизительная. | 2010 | Lodo27 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Church_of_the_Theotokos_Joy_of_All_Who_Sorrow_in_Ordynka_03.jpg) | точки 4 |
-| `img/then/bove-1832-side-facade.jpg` | Храм «Всех скорбящих Радость». Чертёж О. Бове: боковой фасад | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_side_facade,_Bove_1832.jpg) | точки 4, 5 |
-| `img/now/trapeznaya-portico-2016.jpg` | Южный портик трапезной и ротонда | 2016 | Mike1979 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_Church_Ordynka_Bol_20_str_10_2016-04-19_2636.jpg) | точки 4 |
-| `img/now/belltower-2019.jpg` | Колокольня Баженова | 2019 | Aniacra | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Москва_-_Ц._Всех_Скорбящих_Радости,_колокольня.jpg) | точки 5 |
-| `img/then/bove-1832-section.jpg` | Храм «Всех скорбящих Радость». Чертёж О. Бове: разрез ротонды | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_section,_Bove_1832.jpg) | точки 6 |
-| `img/now/interior-2018.jpg` | Интерьер ротонды: колонны и иконостас | 2018 | A.Savin | Free Art License | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Ordynka_JoyOfAllWhoSorrow_asv2018-08_img1.jpg) | точки 6 |
-| `img/now/south-garden-2014.jpg` | Вид храма с юга. Ракурс похожий, но не совпадает точно. | 2014 | Ludvig14 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_ChurchTheotokos_Joy_in_Sorrow2.jpg) | точки 7 |
-| `img/now/akhmatova-house-2023.jpg` | Дом, где жила Анна Ахматова, на Большой Ордынке | 2023 | Никонико962 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Дом,_где_жила_А.А._Ахматова_на_Большой_Ордынке_2023_01.jpg) | точки 8 |
+| `img/then/gubarev-1913-ordynka.jpg` | Большая Ордынка. Церковь «Всех Скорбящих Радость» | 1913 | А. А. Губарев (из собрания Государственного исторического музея) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:3096034_А.А._Губарев_-_Большая_Ордынка._Церковь_«Всех_Скорбящих_Радость»,_1913.jpg) | точка 1 (карусель); точка 5 (первый кадр, под шторкой); точка 7 (первый кадр, под шторкой) |
+| `img/now/ordynka-street-2014.jpg` | Вид с Большой Ордынки на колокольню и ротонду. Ракурс похожий, но не совпадает точно. | 2014 | Ludvig14 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_ChurchTheotokos_Joy_in_Sorrow1.jpg) | точка 1 (первый кадр, современное фото) |
+| `img/then/naidenov-1883-ordynka.jpg` | Церковь «Всех скорбящих Радость» с юго-востока | 1883 | автор не указан (из альбома Н. А. Найдёнова) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Church_of_the_Theotokos_Joy_of_All_Who_Sorrow_in_Ordynka_00.JPG) | точка 1 (первый кадр, под шторкой); точка 2 (первый кадр, под шторкой); точка 4 (первый кадр, под шторкой); точка 5 (карусель); точка 7 (карусель) |
+| `img/now/fence-2016.jpg` | Ограда у церкви на Большой Ордынке | 2016 | Ludvig14 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Ordynka20Fence_2180.jpg) | точка 1 (дополнительный современный кадр) |
+| `img/now/rotunda-se-2015.jpg` | Похожий юго-восточный ракурс: колокольня слева, портик и ротонда. Кадр 2015 года выровнен по вертикали, точка съёмки приблизительная. | 2015 | Svetlov Artem | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Bolshaya_Ordynka_20_s_10_20150904_147_ShiftN.jpg) | точка 2 (первый кадр, современное фото) |
+| `img/then/bove-1832-facade.jpg` | Храм «Всех скорбящих Радость». Авторский чертёж О. Бове: фасад | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_facade,_Bove_1832.jpg) | точка 2 (карусель) |
+| `img/then/dolgov-estate-1900-1917.jpg` | Усадьба Долгова — Жемочкина | 1900–1917 | автор не указан | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Ordynka_21,_1900-1917.jpg) | точка 3 (первый кадр, под шторкой) |
+| `img/now/dolgov-house-2015.jpg` | Главный дом усадьбы со стороны двора. Ракурс отличается от старого снимка. | 2015 | Svetlov Artem | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Bolshaya_Ordynka_21-16_s9_20150904_139_stitch.jpg) | точка 3 (первый кадр, современное фото) |
+| `img/now/trapeznaya-se-2010.jpg` | Похожий ракурс на портик трапезной. Точка съёмки приблизительная. | 2010 | Lodo27 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Church_of_the_Theotokos_Joy_of_All_Who_Sorrow_in_Ordynka_03.jpg) | точка 4 (первый кадр, современное фото) |
+| `img/then/bove-1832-side-facade.jpg` | Храм «Всех скорбящих Радость». Чертёж О. Бове: боковой фасад | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_side_facade,_Bove_1832.jpg) | точка 4 (карусель); точка 5 (карусель) |
+| `img/now/trapeznaya-portico-2016.jpg` | Южный портик трапезной и ротонда | 2016 | Mike1979 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_Church_Ordynka_Bol_20_str_10_2016-04-19_2636.jpg) | точка 4 (дополнительный современный кадр) |
+| `img/now/belltower-2019.jpg` | Колокольня Баженова | 2019 | Aniacra | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Москва_-_Ц._Всех_Скорбящих_Радости,_колокольня.jpg) | точка 5 (первый кадр, современное фото) |
+| `img/then/bove-1832-section.jpg` | Храм «Всех скорбящих Радость». Чертёж О. Бове: разрез ротонды | 1832 | О. И. Бове (чертёж) | Общественное достояние | [Викисклад](https://commons.wikimedia.org/wiki/File:Joy_in_Sorrow_section,_Bove_1832.jpg) | точка 6 (первый кадр, под шторкой) |
+| `img/now/interior-2018.jpg` | Интерьер ротонды: колонны и иконостас | 2018 | A.Savin | Free Art License | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_Ordynka_JoyOfAllWhoSorrow_asv2018-08_img1.jpg) | точка 6 (первый кадр, современное фото) |
+| `img/now/south-garden-2014.jpg` | Вид храма с юга. Ракурс похожий, но не совпадает точно. | 2014 | Ludvig14 | CC BY-SA 3.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Moscow_ChurchTheotokos_Joy_in_Sorrow2.jpg) | точка 7 (первый кадр, современное фото) |
+| `img/now/akhmatova-house-2023.jpg` | Дом, где жила Анна Ахматова, на Большой Ордынке | 2023 | Никонико962 | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Дом,_где_жила_А.А._Ахматова_на_Большой_Ордынке_2023_01.jpg) | точка 8 (модерн. фото); точка 8 (первый кадр, плашка «старого снимка нет») |
+| `img/now/last-address-golz-2016.jpg` | Знак «Последний адрес»: Георгий Гольц | 2016 | David Krikheli | CC BY-SA 4.0 | [Викисклад](https://commons.wikimedia.org/wiki/File:Last_Address_Sign_%E2%80%94_G._F._Golz.jpg) | точка 8 (модерн. фото) |
 
-Всего файлов: 16.
+Всего файлов: 17.
 
-## Текст
+## Первый кадр каждой точки (шторка)
+
+На каждой точке первым слайдом идёт современное фото, поверх него шторка со старым снимком. Новых файлов это не добавило, кроме одного: фото знака «Последний адрес» (David Krikheli, CC BY-SA 4.0) для точки 8. Лицензии и авторы старых и современных кадров те же, что в таблице. Автор и лицензия обоих кадров показаны под фото. «Автор не указан» значит, что Викисклад автора не называет, а файл помечен как общественное достояние.
+
+Что изменилось при проверке фото:
+- Снимок Губарева 1913 года с точки 1 перенесён на точки 5 (колокольня) и 7 (вид с улицы). На точке 1 первым стоит снимок 1883 года, потому что на нём видны ограда и ворота.
+- На точке 2 убран третий слайд (Губарев 1913): ротонда на нём мелкая и далёкая.
+- На точке 6 убран снимок 1883 года: интерьера на нём нет, остался чертёж Бове (разрез ротонды) и современный снимок интерьера.
+- Дополнительный современный кадр точек 5 и 6 стал частью шторки, а не отдельным слайдом.
+- Точка 8: исторического снимка дома Ахматовой со свободной лицензией нет, поэтому первый кадр — только современное фото с плашкой «Старого снимка нет», без шторки.
+- Чертежи Бове — чертежи, не фотографии. Они подписаны как «чертёж».
+
+Подробная таблица проверки: `docs/PHOTO_AUDIT.md`.
+
 
 Тексты рассказов написаны для этой экскурсии по открытым источникам (список в `SOURCES.md`).
 

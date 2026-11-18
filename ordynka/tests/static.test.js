@@ -9,6 +9,7 @@ const exists = f => fs.existsSync(path.join(root, f));
 const html = read("index.html");
 const app = read("js/app.js");
 const sw = read("sw.js");
+const css = read("css/style.css");
 const data = JSON.parse(read("data/points.json"));
 const pts = data.points;
 
@@ -29,7 +30,7 @@ test("скрипты подключены, nav-core раньше app; service wo
 });
 
 test("изоляция от Симонова: свой кэш, свои ключи localStorage, чистка только своих кэшей", () => {
-  assert.match(sw, /const CACHE = "ordynka-v1"/);
+  assert.match(sw, /const CACHE = "ordynka-v2"/);
   assert.match(sw, /startsWith\("ordynka-"\)/);
   assert.ok(!/simonov-v\d/.test(sw), "кэш Симонова не трогаем");
   const keys = [...app.matchAll(/ls(?:Get|Set|Del)\("([\w-]+)"/g)].map(m => m[1]);
@@ -48,6 +49,10 @@ test("локальные ресурсы из points.json существуют", 
   };
   walk(data);
   assert.deepEqual(missing, []);
+  for (const p of pts) for (const x of [p.heroNow, p.nowContext].concat(p.photos.map(ph => ph.now)).filter(Boolean)) {
+    assert.ok(exists(x.src), x.src);
+    assert.ok(exists(x.src.replace(/^img\/now\/(.+)\.jpg$/, "img/thumbs/$1-now.jpg")), "нет миниатюры " + x.src);
+  }
   for (const p of pts) for (const ph of p.photos) {
     const th = ph.src.replace(/^img\/then\//, "img/thumbs/").replace(/^img\/now\/(.+)\.jpg$/, "img/thumbs/$1-now.jpg");
     assert.ok(exists(th), "нет миниатюры " + th);
@@ -83,7 +88,7 @@ test("у каждой точки: проверяемые источники, с�
 test("права на фото: у каждого автор, год, лицензия, карточка Викисклада; лицензия свободная", () => {
   const free = /^(Общественное достояние|CC BY(-SA)? [\d.]+|Free Art License)$/;
   let n = 0;
-  for (const p of pts) for (const ph of p.photos.concat(p.photos.filter(x => x.now).map(x => x.now))) {
+  for (const p of pts) for (const ph of p.photos.concat(p.photos.filter(x => x.now).map(x => x.now), p.heroNow ? [p.heroNow] : [])) {
     n++;
     assert.ok(ph.author && ph.year && ph.license, `${p.id}: нет автора, года или лицензии`);
     assert.match(ph.license, free, `${p.id}: лицензия «${ph.license}» не из списка свободных`);
@@ -95,6 +100,27 @@ test("права на фото: у каждого автор, год, лицен
     assert.match(p.nowContext.commons, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
   }
   assert.ok(pts[7].photos[0].modern, "современный снимок дома Ахматовой помечен как современный");
+});
+
+test("первый кадр каждой точки: современное фото со шторкой старого, либо честная плашка без шторки", () => {
+  for (const p of pts) {
+    const ph0 = p.photos[0];
+    if (ph0.now) {
+      assert.ok(!ph0.modern && !p.heroNow, p.id + ": шторка и плашка вместе");
+      assert.ok(ph0.now.src && ph0.now.year && ph0.now.author && ph0.now.license && ph0.now.note, p.id + ": у современного кадра нет подписи");
+    } else {
+      assert.ok(p.heroNow && p.heroNow.src && p.heroNow.missingThen, p.id + ": нет ни пары, ни честной плашки");
+      assert.equal(p.id, "akhmatova", "плашка без шторки допустима только там, где старого снимка нет");
+    }
+    for (const f of [ph0.focal, ph0.now && ph0.now.focal, p.heroNow && p.heroNow.focal].filter(Boolean)) {
+      assert.ok(f.x >= 0 && f.x <= 100 && f.y >= 0 && f.y <= 100 && f.z >= 1 && f.z <= 3, p.id + ": focal вне допустимого");
+    }
+    assert.ok(!p.photos.some(x => x.align), p.id + ": остался устаревший align");
+  }
+  assert.ok(!html.includes('id="compare"'), "старый блок #compare убран, шторка внутри карусели");
+  for (const re of [/cmp-handle/, /touch-action:\s*none/]) assert.match(css, re);
+  assert.match(app, /function focalStyle/);
+  assert.match(app, /lsGet\("ordynka-offline"\) === "v2"/);
 });
 
 test("видео: водяных превью нет, у точки 7 карточка со ссылками и честным пояснением", () => {
@@ -113,7 +139,7 @@ test("голос: пока нет mp3 — временный голос брау
     assert.ok(p.ttsScript && exists(p.ttsScript), p.id + ": нет текста озвучки");
     assert.ok(exists(p.script), p.script);
   }
-  assert.ok(html.includes('id="tts-note"') && html.includes("Временный голос"));
+  assert.ok(html.includes('id="tts-note"') && html.includes("Голос Григорий"));
   assert.match(app, /speechSynthesis/);
   assert.match(app, /ru-RU/);
   assert.match(app, /const ttsp = /);
@@ -147,7 +173,7 @@ test("все возможности Симонова на месте: навиг
   assert.equal(html.split("js-prev").length - 1, 2);
   assert.equal(html.split("js-next").length - 1, 2);
   for (const m of ["then", "overlay", "curtain", "now", "rephoto"]) assert.ok(html.includes(`data-mode="${m}"`), m);
-  for (const re of [/function gotoNeighbor/, /NavCore\.approachState\(state\.pos, p\)/, /function startRephoto/, /function buildCarousel/, /function downloadAudioOffline/, /costing: "pedestrian"/, /controllerchange/])
+  for (const re of [/function gotoNeighbor/, /NavCore\.approachState\(state\.pos, p\)/, /function startRephoto/, /function buildSlides/, /function downloadAudioOffline/, /costing: "pedestrian"/, /controllerchange/])
     assert.match(app, re);
 });
 

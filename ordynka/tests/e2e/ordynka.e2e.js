@@ -113,8 +113,8 @@ async function open(browser, { geo, offline } = {}) {
     s = await info(page);
     ok("«Предыдущая»: снова точка 1, остановка осталась отмеченной", s.label === "Точка 1 из 8" && s.visited === 1);
     // карусель точки 1
-    const car = await page.evaluate(() => ({ slides: document.querySelectorAll("#car-track > *").length, dots: document.querySelectorAll("#car-dots > *").length, single: document.querySelector("#car").classList.contains("single"), cmp: getComputedStyle(document.querySelector("#compare")).display !== "none" }));
-    ok("Карусель точки 1: 2 фото; пара «тогда — сейчас» есть", car.slides === 2 && !car.single && car.cmp, JSON.stringify(car));
+    const car = await page.evaluate(() => ({ slides: document.querySelectorAll("#car-track > *").length, dots: document.querySelectorAll("#car-dots > *").length, single: document.querySelector("#car").classList.contains("single"), kind: document.querySelector(".car-slide").dataset.kind, pct: document.querySelector(".car-slide").dataset.pct, oldCompare: !!document.querySelector("#compare") }));
+    ok("Карусель точки 1: 2 слайда; первый — современное фото со шторкой на 50%, старого блока #compare нет", car.slides === 2 && !car.single && car.kind === "cmp" && car.pct === "50" && !car.oldCompare, JSON.stringify(car));
     // камера
     await tap(page, "#btn-camera");
     await page.waitForFunction(() => state.cameraOn, { timeout: 10000 }).catch(() => {});
@@ -159,8 +159,8 @@ async function open(browser, { geo, offline } = {}) {
     await page.evaluate(() => caches.open("simonov-v13").then(c => c.put("/marker", new Response("x"))));   // «кэш Симонова» не должен пропасть
     await page.reload({ waitUntil: "networkidle2" });
     await sleep(3000);   // предзагрузка текстов и фото
-    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("ordynka-v1")).keys()).length }));
-    ok("Свой service worker со scope /ordynka/ и кэш ordynka-v1; кэш Симонова не удалён", c.keys.includes("ordynka-v1") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/ordynka\/$/.test(s)), JSON.stringify(c).slice(0, 300));
+    const c = await page.evaluate(async () => ({ keys: await caches.keys(), ls: Object.keys(localStorage), reg: (await navigator.serviceWorker.getRegistrations()).map(r => r.scope), ordSize: (await (await caches.open("ordynka-v2")).keys()).length }));
+    ok("Свой service worker со scope /ordynka/ и кэш ordynka-v2; кэш Симонова не удалён", c.keys.includes("ordynka-v2") && c.keys.includes("simonov-v13") && c.reg.every(s => /\/ordynka\/$/.test(s)), JSON.stringify(c).slice(0, 300));
     ok("Ключи localStorage с префиксом ordynka-", c.ls.every(k => k.startsWith("ordynka-")), c.ls.join(","));
     ok("Предзагружены тексты, озвучка и фото (≥ 40 файлов)", c.ordSize >= 40, "файлов в кэше: " + c.ordSize);
     await page.setOfflineMode(true);
@@ -186,6 +186,54 @@ async function open(browser, { geo, offline } = {}) {
     await page.waitForFunction(() => /Подойдите к точке · /.test(document.querySelector("#approach-title").textContent), { timeout: 12000 }).catch(() => {});
     const t = await page.evaluate(() => document.querySelector("#approach-title").textContent);
     ok("Вдали от точки: «Подойдите к точке · ~120 м»", /^Подойдите к точке · 1[12]\d м$/.test(t), t);
+    await ctx.close();
+  }
+
+  // Первый кадр: современное фото + шторка пополам, тянется пальцем; без камеры
+  {
+    const { ctx, page, errors } = await open(browser);
+    await tap(page, "#btn-start");
+    await sleep(900);
+    const cdp = await page.createCDPSession();
+    let v = await page.evaluate(() => { const sl = document.querySelector(".car-slide"), h = sl.querySelector(".cmp-handle"), b = h.getBoundingClientRect(), f = sl.querySelector(".cmp-frame").getBoundingClientRect(); return { kind: sl.dataset.kind, pct: sl.dataset.pct, tagL: sl.querySelector(".cmp-tag-l").textContent, tagR: sl.querySelector(".cmp-tag-r").textContent, nowOk: sl.querySelector(".cmp-now").naturalWidth > 0, oldOk: sl.querySelector(".cmp-old").naturalWidth > 0, cx: b.x + b.width / 2, cy: b.y + b.height * 0.3, fx: f.x, fw: f.width, cam: state.cameraOn, clip: sl.querySelector(".cmp-clip").style.clipPath }; });
+    ok("Первый кадр без камеры: шторка на 50%, подписи «1883» и «Сейчас», обе картинки загружены", v.kind === "cmp" && v.pct === "50" && /1883/.test(v.tagL) && v.tagR === "Сейчас" && v.nowOk && v.oldOk && !v.cam && /50%/.test(v.clip), JSON.stringify(v));
+    const tx = v.fx + v.fw * 0.25;
+    const send = (type, px) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x: px, y: v.cy, id: 0 }] });
+    await send("touchStart", v.cx);
+    for (let i = 1; i <= 12; i++) { await send("touchMove", v.cx + (tx - v.cx) * i / 12); await sleep(16); }
+    await send("touchEnd", tx);
+    await sleep(500);
+    const w = await page.evaluate(() => ({ pct: Number(document.querySelector(".car-slide").dataset.pct), idx: state.slideIdx, sc: document.querySelector("#car-track").scrollLeft }));
+    ok("Шторку тянут пальцем: ушла к ~25%, карусель не листнулась", Math.abs(w.pct - 25) <= 4 && w.idx === 0 && w.sc === 0, JSON.stringify(w));
+    await page.evaluate(() => document.querySelector(".cmp-handle").focus());
+    await page.keyboard.press("ArrowRight"); await page.keyboard.press("ArrowRight");
+    const k = await page.evaluate(() => ({ pct: Number(document.querySelector(".car-slide").dataset.pct), idx: state.slideIdx, now: document.querySelector(".cmp-handle").getAttribute("aria-valuenow") }));
+    ok("Ручка шторки с клавиатуры: ← → по 5%, карусель на месте", k.pct === Number(w.pct) + 10 && k.idx === 0 && Number(k.now) === k.pct, JSON.stringify(k));
+    const y0 = await page.evaluate(() => { const b = document.querySelector("#hero").getBoundingClientRect(); return b.y + b.height * 0.8; });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 330, y: y0, id: 0 }] });
+    for (let i = 1; i <= 10; i++) { await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 330 - 26 * i, y: y0, id: 0 }] }); await sleep(16); }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await sleep(700);
+    const sw = await page.evaluate(() => state.slideIdx);
+    ok("Свайп вне ручки листает карусель дальше", sw === 1, String(sw));
+    ok("Нет ошибок страницы (шторка)", errors.length === 0, errors.join("|"));
+    await ctx.close();
+  }
+
+  // Все 8 точек: первый кадр на месте; у точки 8 честная плашка «Старого снимка нет»
+  {
+    const { ctx, page, errors } = await open(browser);
+    await tap(page, "#btn-start");
+    await sleep(600);
+    const ids = await page.evaluate(() => state.data.points.map(p => p.id));
+    for (const id of ids) {
+      await page.evaluate(id => openPoint(id, false), id);
+      await sleep(700);
+      const r = await page.evaluate(() => { const sl = document.querySelector(".car-slide"), p = currentPoint(); return { kind: sl.dataset.kind, nowOk: !!sl.querySelector(".cmp-now") && sl.querySelector(".cmp-now").naturalWidth > 0, warn: !!sl.querySelector(".cmp-tag-warn"), cap: document.querySelector("#photo-caption").innerText, hasNow: !!(p.photos[0].now || p.heroNow) }; });
+      const modern = id === "akhmatova";
+      ok(`Точка ${id}: первый кадр = ${modern ? "только современное фото с плашкой «Старого снимка нет»" : "пара с шторкой"}`, r.nowOk && r.hasNow && (modern ? r.kind === "modern" && r.warn && /Исторического снимка/.test(r.cap) : r.kind === "cmp" && !r.warn), JSON.stringify(r).slice(0, 220));
+    }
+    ok("Нет ошибок страницы (8 точек, первый кадр)", errors.length === 0, errors.join("|"));
     await ctx.close();
   }
 
