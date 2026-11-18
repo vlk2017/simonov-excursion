@@ -39,13 +39,13 @@
       "ttsScript": "tts/01-ostanovka.txt",
       "photos": [
         {
-          "src": "img/now/aerial-2024.jpg",
-          "title": "Поведники с воздуха: общий вид посёлка, 2024 (не снимок с остановки)",
-          "year": "2024",
-          "author": "Mike1979 Russia",
-          "license": "CC BY-SA 3.0",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Mytishchinsky%20District%2C%20Moscow%20Oblast%2C%20Russia%20-%20panoramio%20(33).jpg",
+          "title": "Берег Клязьминского водохранилища в Мытищинском округе, 2014",
+          "year": "2014",
+          "author": "Алексей Дегтярев",
+          "license": "CC BY 3.0",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:Mytishchinsky_District,_Moscow_Oblast,_Russia_-_panoramio_(33).jpg",
           "stand": "Вид сверху: посёлок и пансионаты на берегу Клязьминского водохранилища. Снято в сентябре 2024 года.",
           "viewpoint": null,
           "modern": true,
@@ -54,7 +54,8 @@
             "x": 7,
             "y": 84,
             "z": 1.3
-          }
+          },
+          "note": "Панорамный вид на Клязьминское водохранилище в Мытищинском округе. Это иллюстрация окрестностей, а не снимок самой автобусной остановки."
         }
       ],
       "summary": "Название «Поведники» связывают со словом «заповедный». Старожилы рассказывают о холере 1893 года и заповедном месте, Википедия — о заповедном имении Рябушинских. Деревню начали ставить в 1920-х годах, первый дом построили в 1923 году.",
@@ -84,13 +85,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/aerial-2024.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Mytishchinsky%20District%2C%20Moscow%20Oblast%2C%20Russia%20-%20panoramio%20(33).jpg",
         "remote": null,
-        "year": "2024",
-        "author": "Mike1979 Russia",
-        "license": "CC BY-SA 3.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
-        "note": "Общий вид Поведников с воздуха, 2024 год. Это обзорный кадр посёлка, а не фотография автобусной остановки.",
+        "year": "2014",
+        "author": "Алексей Дегтярев",
+        "license": "CC BY 3.0",
+        "commons": "https://commons.wikimedia.org/wiki/File:Mytishchinsky_District,_Moscow_Oblast,_Russia_-_panoramio_(33).jpg",
+        "note": "Панорамный вид на Клязьминское водохранилище в Мытищинском округе. Это иллюстрация окрестностей, а не снимок самой автобусной остановки.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. Ниже современный вид сверху.",
         "focal": {
           "x": 7,
@@ -119,13 +120,13 @@
       "ttsScript": "tts/02-shkola.txt",
       "photos": [
         {
-          "src": "img/now/troitskoe-canal-2013.jpg",
-          "title": "Церковь Троицы в соседнем селе Троицкое, 2013 (не школа)",
-          "year": "2013",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F%20%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D1%81%20%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
+          "title": "Церковь Троицы Живоначальной в Троицком, 2011",
+          "year": "2011",
           "author": "Kotjara kamenskaja",
           "license": "CC BY-SA 4.0",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Троицкое_с_канала.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:Троицкая_церковь_с_КиМа.jpg",
           "stand": "Это не школа: церковь Живоначальной Троицы в соседнем селе Троицкое, примерно в двух километрах к западу. Снимок с воды.",
           "viewpoint": null,
           "modern": true,
@@ -134,7 +135,8 @@
             "x": 50,
             "y": 55,
             "z": 1
-          }
+          },
+          "note": "Церковь Троицы в селе Троицкое, 2011 год. Другой ракурс исторического храма, о котором говорится в рассказе."
         }
       ],
       "summary": "До школы дети из Поведников ходили в школу села Троицкое. Восьмилетнюю школу в посёлке открыли в 1967 году, нынешнее здание — в 2007-м. Троицкое старше посёлка на три века: по Википедии, деревянную церковь там построили в 1653 году.",
@@ -160,13 +162,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/troitskoe-canal-2013.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%BA%D0%B0%D1%8F%20%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%20%D1%81%20%D0%9A%D0%B8%D0%9C%D0%B0.jpg",
         "remote": null,
-        "year": "2013",
+        "year": "2011",
         "author": "Kotjara kamenskaja",
         "license": "CC BY-SA 4.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Троицкое_с_канала.jpg",
-        "note": "Церковь Троицы в Троицком, 2013 год, снято с воды",
+        "commons": "https://commons.wikimedia.org/wiki/File:Троицкая_церковь_с_КиМа.jpg",
+        "note": "Церковь Троицы в селе Троицкое, 2011 год. Другой ракурс исторического храма, о котором говорится в рассказе.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. На кадре соседнее Троицкое.",
         "focal": {
           "x": 50,
@@ -195,13 +197,13 @@
       "ttsScript": "tts/03-dom-kultury.txt",
       "photos": [
         {
-          "src": "img/now/aerial-2024.jpg",
-          "title": "Поведники с воздуха, 2024: общий вид (Дом культуры не различим)",
-          "year": "2024",
-          "author": "Mike1979 Russia",
-          "license": "CC BY-SA 3.0",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2002.jpg",
+          "title": "Клязьминское водохранилище, вечерний вид, 2022",
+          "year": "2022",
+          "author": "Sergey A. Demidov",
+          "license": "CC BY 4.0",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_02.jpg",
           "stand": "Вид сверху на посёлок: в центре кадра многоэтажные жилые дома, вокруг лес. Самого Дома культуры на снимке не различить, свободных фото здания нет.",
           "viewpoint": null,
           "modern": true,
@@ -210,7 +212,8 @@
             "x": 66,
             "y": 30,
             "z": 2
-          }
+          },
+          "note": "Пейзаж Клязьминского водохранилища в Мытищинском округе. Иллюстративный кадр: Дом культуры на нём не изображён."
         }
       ],
       "summary": "В 1961 году решили устроить зону отдыха для сотрудников государственных органов СССР. Первым построили пансионат «Клязьма», в 1964 году приехали первые жильцы. Дом культуры «Подснежник» открыли в феврале 1979 года.",
@@ -236,13 +239,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/aerial-2024.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2002.jpg",
         "remote": null,
-        "year": "2024",
-        "author": "Mike1979 Russia",
-        "license": "CC BY-SA 3.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
-        "note": "Общий вид жилой части Поведников, 2024 год. Сам Дом культуры на снимке не различим.",
+        "year": "2022",
+        "author": "Sergey A. Demidov",
+        "license": "CC BY 4.0",
+        "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_02.jpg",
+        "note": "Пейзаж Клязьминского водохранилища в Мытищинском округе. Иллюстративный кадр: Дом культуры на нём не изображён.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. На кадре посёлок с воздуха, а не Дом культуры.",
         "focal": {
           "x": 66,
@@ -271,13 +274,13 @@
       "ttsScript": "tts/04-pansionaty.txt",
       "photos": [
         {
-          "src": "img/now/aerial-2024.jpg",
-          "title": "Берег Поведников с воздуха, 2024: общий вид зоны пансионатов",
-          "year": "2024",
-          "author": "Mike1979 Russia",
-          "license": "CC BY-SA 3.0",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2003.jpg",
+          "title": "Клязьминское водохранилище, вечерний вид, 2022",
+          "year": "2022",
+          "author": "Sergey A. Demidov",
+          "license": "CC BY 4.0",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_03.jpg",
           "stand": "Вид сверху: слева на берегу крупные здания, судя по расположению, из зоны пансионатов. Подписи на снимке нет, какие именно это корпуса, определить нельзя.",
           "viewpoint": null,
           "modern": true,
@@ -286,7 +289,8 @@
             "x": 0,
             "y": 81,
             "z": 2.4
-          }
+          },
+          "note": "Пейзаж Клязьминского водохранилища. Это общий вид водоёма, не фотография конкретного корпуса пансионата."
         }
       ],
       "summary": "К началу 1970-х открылись все пансионаты, в 1977 году добавились санаторий «Дружба» и дом отдыха «Берёзовая роща». Совет директоров пансионатов управлял жизнью посёлка. В девяностые пансионаты приватизировали, и жителей перестали пускать на их территорию.",
@@ -316,13 +320,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/aerial-2024.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2003.jpg",
         "remote": null,
-        "year": "2024",
-        "author": "Mike1979 Russia",
-        "license": "CC BY-SA 3.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
-        "note": "Общий вид берега и крупных зданий, которые по расположению могут относиться к зоне пансионатов. Конкретный корпус не установлен.",
+        "year": "2022",
+        "author": "Sergey A. Demidov",
+        "license": "CC BY 4.0",
+        "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_03.jpg",
+        "note": "Пейзаж Клязьминского водохранилища. Это общий вид водоёма, не фотография конкретного корпуса пансионата.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. На кадре берег с воздуха, а не конкретный пансионат.",
         "focal": {
           "x": 0,
@@ -351,13 +355,13 @@
       "ttsScript": "tts/05-bereg.txt",
       "photos": [
         {
-          "src": "img/now/aerial-2024.jpg",
-          "title": "Берег и пристань посёлка с воздуха, 2024 год",
-          "year": "2024",
-          "author": "Mike1979 Russia",
-          "license": "CC BY-SA 3.0",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2001.jpg",
+          "title": "Клязьминское водохранилище на закате, 2022",
+          "year": "2022",
+          "author": "Sergey A. Demidov",
+          "license": "CC BY 4.0",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_01.jpg",
           "stand": "Клязьминское водохранилище у посёлка: внизу кадра вода, посередине пристань с катерами и яхтами. Вид сверху.",
           "viewpoint": null,
           "modern": true,
@@ -366,7 +370,8 @@
             "x": 45,
             "y": 100,
             "z": 1.8
-          }
+          },
+          "note": "Клязьминское водохранилище, 13 августа 2022 года. Современный пейзаж водоёма."
         },
         {
           "src": "img/then/canal-1932-37-prisoners.jpg",
@@ -417,13 +422,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/aerial-2024.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20220813%20Klyazma%20reservoir%20sunset%2001.jpg",
         "remote": null,
-        "year": "2024",
-        "author": "Mike1979 Russia",
-        "license": "CC BY-SA 3.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Povedniki_2024-09-21_3857.jpg",
-        "note": "Берег и пристань посёлка с воздуха, 2024 год",
+        "year": "2022",
+        "author": "Sergey A. Demidov",
+        "license": "CC BY 4.0",
+        "commons": "https://commons.wikimedia.org/wiki/File:20220813_Klyazma_reservoir_sunset_01.jpg",
+        "note": "Клязьминское водохранилище, 13 августа 2022 года. Современный пейзаж водоёма.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. Второй кадр — общий снимок строительства канала.",
         "focal": {
           "x": 45,
@@ -452,13 +457,13 @@
       "ttsScript": "tts/06-chiverevo.txt",
       "photos": [
         {
-          "src": "img/now/chiverevo-2017.jpg",
-          "title": "Часовня Смоленской иконы в деревне Чиверёво, 2017 (в стороне от остановки)",
-          "year": "2017",
-          "author": "Viola Luchansky",
-          "license": "CC BY-SA 4.0",
+          "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F%20%D0%B2%20%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
+          "title": "Часовня в деревне Чиверёво",
+          "year": "не указан",
+          "author": "см. страницу файла Wikimedia Commons",
+          "license": "лицензия указана на странице файла",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Часовня_Смоленской_иконы_Божией_Матери_в_Чиверево.jpg",
+          "commons": "https://commons.wikimedia.org/wiki/File:Часовня_в_Чиверево.jpg",
           "stand": "Часовня 1902 года в деревне Чиверёво, примерно в полутора километрах к северу. Это иллюстрация к рассказу, а не вид с места остановки.",
           "viewpoint": null,
           "modern": true,
@@ -467,7 +472,8 @@
             "x": 50,
             "y": 40,
             "z": 1.1
-          }
+          },
+          "note": "Часовня в деревне Чиверёво. Кадр сделан не у остановки Поведников."
         },
         {
           "src": "img/now/chiverevo-2013.jpg",
@@ -511,13 +517,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/chiverevo-2017.jpg",
+        "src": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A7%D0%B0%D1%81%D0%BE%D0%B2%D0%BD%D1%8F%20%D0%B2%20%D0%A7%D0%B8%D0%B2%D0%B5%D1%80%D0%B5%D0%B2%D0%BE.jpg",
         "remote": null,
-        "year": "2017",
-        "author": "Viola Luchansky",
-        "license": "CC BY-SA 4.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Часовня_Смоленской_иконы_Божией_Матери_в_Чиверево.jpg",
-        "note": "Часовня Смоленской иконы в Чиверёве, 2017 год",
+        "year": "не указан",
+        "author": "см. страницу файла Wikimedia Commons",
+        "license": "лицензия указана на странице файла",
+        "commons": "https://commons.wikimedia.org/wiki/File:Часовня_в_Чиверево.jpg",
+        "note": "Часовня в деревне Чиверёво. Кадр сделан не у остановки Поведников.",
         "missingThen": "Старого снимка этого места со свободной лицензией мы не нашли. На кадре часовня в Чиверёве.",
         "focal": {
           "x": 50,
@@ -546,13 +552,13 @@
       "ttsScript": "tts/07-chasovnya.txt",
       "photos": [
         {
-          "src": "img/now/church-2021.jpg",
-          "title": "Церковь-часовня у нового храма, 2021 год",
-          "year": "2021",
-          "author": "Троице-Сергиева Лавра",
-          "license": "CC BY-SA 2.0",
+          "src": "https://sobory.ru/pic/42100/42128_20230706_1819570.jpg",
+          "title": "Часовня при храме в Поведниках, 2023",
+          "year": "2023",
+          "author": "Sobory.ru — автор указан в источнике",
+          "license": "условия использования уточняются у автора",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Церковь_Новомучеников_и_исповедников_Российских_в_Поведниках.jpg",
+          "commons": "https://sobory.ru/article/?object=42128",
           "stand": "Справа на снимке небольшое здание из кирпича и дерева с крестом: так в OSM описана церковь-часовня. Подписи на самом снимке нет.",
           "viewpoint": null,
           "modern": true,
@@ -595,13 +601,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/church-2021.jpg",
+        "src": "https://sobory.ru/pic/42100/42128_20230706_1819570.jpg",
         "remote": null,
-        "year": "2021",
-        "author": "Троице-Сергиева Лавра",
-        "license": "CC BY-SA 2.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Церковь_Новомучеников_и_исповедников_Российских_в_Поведниках.jpg",
-        "note": "Церковь-часовня справа от нового храма, 2021 год",
+        "year": "2023",
+        "author": "Sobory.ru — автор указан в источнике",
+        "license": "условия использования уточняются у автора",
+        "commons": "https://sobory.ru/article/?object=42128",
+        "note": "Фотография часовни при храмовом комплексе в Поведниках, 2023 год.",
         "missingThen": "Старого снимка этого места нет: часовня построена в 2000-х годах.",
         "focal": {
           "x": 80,
@@ -630,13 +636,13 @@
       "ttsScript": "tts/08-hram.txt",
       "photos": [
         {
-          "src": "img/now/church-2021.jpg",
-          "title": "Храм Новомучеников и исповедников в Поведниках, 2021 (до завершения строительства)",
-          "year": "2021",
-          "author": "Троице-Сергиева Лавра",
-          "license": "CC BY-SA 2.0",
+          "src": "https://sobory.ru/pic/42100/42128_20230722_2100110.jpg",
+          "title": "Храмовый комплекс в Поведниках, 2023",
+          "year": "2023",
+          "author": "Sobory.ru — автор указан в источнике",
+          "license": "условия использования уточняются у автора",
           "rights": "Современная фотография. Видео и снимки с водяными знаками не используются.",
-          "commons": "https://commons.wikimedia.org/wiki/File:Церковь_Новомучеников_и_исповедников_Российских_в_Поведниках.jpg",
+          "commons": "https://sobory.ru/article/?object=42128",
           "stand": "Храм в Поведниках, снимок 2021 года: вокруг ещё видны следы стройки. Строительство официально завершили в апреле 2025 года.",
           "viewpoint": null,
           "modern": true,
@@ -683,13 +689,13 @@
         ]
       },
       "heroNow": {
-        "src": "img/now/church-2021.jpg",
+        "src": "https://sobory.ru/pic/42100/42128_20230722_2100110.jpg",
         "remote": null,
-        "year": "2021",
-        "author": "Троице-Сергиева Лавра",
-        "license": "CC BY-SA 2.0",
-        "commons": "https://commons.wikimedia.org/wiki/File:Церковь_Новомучеников_и_исповедников_Российских_в_Поведниках.jpg",
-        "note": "Храм в Поведниках на снимке 2021 года, до завершения строительства в 2025 году.",
+        "year": "2023",
+        "author": "Sobory.ru — автор указан в источнике",
+        "license": "условия использования уточняются у автора",
+        "commons": "https://sobory.ru/article/?object=42128",
+        "note": "Фотография храмового комплекса в Поведниках, 2023 год.",
         "missingThen": "Старого снимка этого места нет: храм построен в наше время.",
         "focal": {
           "x": 45,
