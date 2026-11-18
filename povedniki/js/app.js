@@ -545,7 +545,7 @@ function currentPhoto() { const p = currentPoint(); return p && p.photos[state.p
 /* list for the lightbox: all old photos, then modern ones */
 function galleryItems(p) {
   const out = p.photos.map((ph, i) => ({ src: ph.src, remote: ph.remote, cap: `${ph.year} · ${shortAuthor(ph.author)} — ${ph.title}`, photoIdx: i }));
-  const nowCap = n => `Сейчас, ${n.year} · ${n.author}, ${n.license} — ${n.note}`;
+  const nowCap = n => `${n.label || n.year}, ${n.year} · ${n.author}, ${n.license} — ${n.note}`;
   p.photos.forEach(ph => { if (ph.now) out.push({ src: ph.now.src, remote: ph.now.remote, cap: nowCap(ph.now) }); });
   if (p.heroNow) out.push({ src: p.heroNow.src, remote: p.heroNow.remote, cap: nowCap(p.heroNow) });
   if (p.nowContext) out.push({ src: p.nowContext.src, remote: p.nowContext.remote, cap: nowCap(p.nowContext) });
@@ -883,8 +883,8 @@ function carBind(k) {
   if (sl.kind === "old") bindImg(el.querySelector("img"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
   else {
     const nw = sl.kind === "cmp" ? ph.now : p.heroNow;
-    bindImg(el.querySelector(".cmp-now"), nw.src, nw.remote, `Сейчас: ${nw.note}`);
-    if (sl.kind === "cmp") bindImg(el.querySelector(".cmp-old"), ph.src, ph.remote, `${ph.title}, ${ph.year}`);
+    bindImg(el.querySelector(".cmp-now"), nw.src, nw.remote, `${nw.label || nw.year || "Цвет"}: ${nw.note}`);
+    if (sl.kind === "cmp") bindImg(el.querySelector(".cmp-old"), ph.src, ph.remote, `${ph.leftLabel || ph.year}: ${ph.title}`);
   }
 }
 function carShow(i) {
