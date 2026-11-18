@@ -30,7 +30,7 @@ test("скрипты подключены, nav-core раньше app; service wo
 });
 
 test("изоляция от Симонова: свой кэш, свои ключи localStorage, чистка только своих кэшей", () => {
-  assert.match(sw, /const CACHE = "ordynka-v2"/);
+  assert.match(sw, /const CACHE = "ordynka-v\d+"/);
   assert.match(sw, /startsWith\("ordynka-"\)/);
   assert.ok(!/simonov-v\d/.test(sw), "кэш Симонова не трогаем");
   const keys = [...app.matchAll(/ls(?:Get|Set|Del)\("([\w-]+)"/g)].map(m => m[1]);
